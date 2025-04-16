@@ -201,14 +201,15 @@ class TrisPluginCompareLayerNames(Gimp.PlugIn):
         len_resu = len(resu_set)
         return resu_set, len_resu
     
-    def to_new_dialog(self, child):
+    def to_new_dialog(self, child, cust = False):
         #child = GimpUi.ImageComboBox.new(lambda current_img, unwanted_img = image: current_img is not unwanted_img)
 
         dialog_azzo = GimpUi.Dialog.new()
-        dialog_azzo.add_button("_Cork", Gtk.ResponseType.OK)
+        dialog_azzo.add_button("_Select and compare" if cust else "Ok", Gtk.ResponseType.OK)
         #dialog_azzo.add_buttons("gimp-tool-heal", 42, "Close", Gtk.ResponseType.CLOSE)
         dialog_azzo.get_content_area().add(child)
         child.show()
+        #print(f"DebuG: child get_destroy_with_parent: {child.get_destroy_with_parent()}")
         return dialog_azzo
 
 
@@ -244,27 +245,57 @@ class TrisPluginCompareLayerNames(Gimp.PlugIn):
             #TO DO - make dialog to select the other image
             to_compare = currently_open_images[0]
             im_co_box = GimpUi.ImageComboBox.new(lambda current_img, unwanted_img = image: current_img is not unwanted_img)
-            self.to_new_dialog(im_co_box).run()
-            print("############## GET_ACTIVE!:", im_co_box.get_active())
+            sel_dialog = self.to_new_dialog(im_co_box, True)
+            sel_dialog.run()
+
+            sel_success, sedl_id = im_co_box.get_active()
+            if sel_success:
+                to_compare = Gimp.Image.get_by_id(sedl_id)
+                print(f"Ok, a selection exists: ➡️➡️➡️   {to_compare.get_name()}")
+            else:
+                print("🤦merd🤦")
+            
+            sel_dialog.destroy()
+                
+            #print("############## GET_ACTIVE!:", im_co_box.get_active())
             #print("############## GET_Model!:", im_co_box.get_model())
-            aaa, bbb = im_co_box.get_active()
+            #aaa, bbb = im_co_box.get_active()
             #print("get_active VARS:", aaa, bbb) #im_co_box.get_active_id(bbb))
             #pordi = im_co_box.get_model().get_value(im_co_box.get_active_iter(), 1)
             #model = im_co_box.get_model()
             #print(model, type(model), aaa, bbb)
             #print("ATL@@@@@@@@@@@@@@@@-------->", pordi)
             #print(f"***** ***** idx: {bbb} ***** ***** Sel NAME: {im_co_box.get_model()[bbb][1]}")
-            for row in im_co_box.get_model():
-                if bbb == row[0]:
-                    print("✔️", row[1], "bbb gius:", bbb)
-                else:
-                    print("row[0]", row[0], "row:", type(row[0]),"bbb:", type(bbb))
-                    print("❌ No!")
+
+            #for row in im_co_box.get_model():
+            #    if bbb == row[0]:
+            #        print("✔️", row[1], "bbb gius:", bbb)
+            #    else:
+            #        print("row[0]", row[0], "row:", type(row[0]),"bbb:", type(bbb))
+            #        print("❌ No!")
             
             # the previous line is a placeholder!
         
         # compare
         overlapped_names, amount = self.compare_set(to_compare, image)
+
+        hint_mess = ""
+        dup_layers = []
+        if amount != 0:
+            hint_mess += f"Overlaps: {amount}\n"
+            for elem in overlapped_names:
+                hint_mess += f"{elem}\n"
+        else:
+            hint_mess += f"NO Overlaps :)\n"
+        
+        test_hint = GimpUi.HintBox.new(hint_mess)
+        if amount != 0:
+            test_hint.get_children()[0].set_from_icon_name("gimp-tool-heal", 12)
+        
+        hint_dialog = self.to_new_dialog(test_hint)
+        hint_dialog.run()
+        hint_dialog.destroy()
+
 
         #debug result:
         decor = "*" * 8
