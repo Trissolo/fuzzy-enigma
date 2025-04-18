@@ -282,19 +282,31 @@ class TrisPluginCompareLayerNames(Gimp.PlugIn):
         hint_mess = ""
         dup_layers = []
         if amount != 0:
-            hint_mess += f"Overlaps: {amount}\n"
+            hint_mess += f"*** Overlaps: {amount} ***\n\n"
             for elem in overlapped_names:
-                hint_mess += f"{elem}\n"
+                hint_mess += f"⛔ {elem}\n"
+                lay = image.get_layer_by_name(elem)
+                if lay:
+                    dup_layers.append(lay)
+                else:
+                    for layer in image.get_layers():
+                        if layer.get_name().startswith(elem):
+                            dup_layers.append(layer)
+                            break
+
         else:
             hint_mess += f"NO Overlaps :)\n"
         
         test_hint = GimpUi.HintBox.new(hint_mess)
+        test_hint.set_orientation(Gtk.Orientation.VERTICAL)
+        test_hint.set_border_width(12)
         if amount != 0:
-            test_hint.get_children()[0].set_from_icon_name("gimp-tool-heal", 12)
+            test_hint.get_children()[0].set_from_icon_name("gimp-tool-heal", 5)
         
         hint_dialog = self.to_new_dialog(test_hint)
         hint_dialog.run()
         hint_dialog.destroy()
+
 
 
         #debug result:
@@ -302,21 +314,93 @@ class TrisPluginCompareLayerNames(Gimp.PlugIn):
         print(f"{decor} Result {decor}\n Overlaps: {amount}\n {overlapped_names}\n{decor} Done processing {decor}")
 
         #optional: select layers
-        #image.set_selected_layers([layers])
+        if len(dup_layers) != 0:
+            #print(dup_layers)
+            image.set_selected_layers(dup_layers)
 
         '''
-        #reference for dialog:
-        
-        ##GimpUi.init("qwe")
-        dialogazzo = GimpUi.Dialog.new()
-        test = GimpUi.HintBox.new("*** FRFqwe ***\nRiqwe2222222")
-        test.set_size_request(300, 200) # hmm...
-        dialogazzo.get_content_area().add(test)
+        #Bitmap_font
+        chars_count = 0
+        char_info = ""
+        lineHeight = 0
+        special = {
+            "Á": 193,
+            "È": 200,
+            "Ì": 204,
+            "Ò": 210,
+            "Ù": 217,
+            "à": 224,
+            "è": 232,
+            "ì": 236,
+            "ò": 242,
+            "ù": 249,
+            "&": 38,
+            "<": 60,
+            ">": 62,
+            '"': 34,
+            "'": 39,
+            "space": 32,
+            " ": 32,
+        }
 
-        hint_immy = test.get_children()[0]
-        hint_immy.set_from_icon_name("gimp-tool-heal", 12) #GimpUi.ICON_GRAVITY_EAST   #"gimp-controller", 6)
-        test.show()
-        dialogazzo.run()
+
+        def get_char_code(string_param, i):
+            global chars_count
+            if string_param in special:
+                chars_count += 1
+                return special[string_param]
+            elif len(string_param.encode("utf-8")) == 1:
+                chars_count += 1
+                return ord(string_param)
+            else:
+                return f"***** {string_param} {str(i)} *****"
+
+
+        def make_line(c, x, y, w, h):
+            return f'<char id="{c}" x="{x}" y="{y}" width="{w}" height="{h}" xoffset="0" yoffset="0" xadvance="{w}"/>\n'
+
+
+        char_info = ""
+        for idx, layer in enumerate(image.get_layers()):
+            if layer.get_visible():
+                name = layer.get_name()
+                allowed_name = get_char_code(name, idx)
+                _bool_succ, ox, oy = layer.get_offsets()
+                w = layer.get_width()
+                h = layer.get_height()
+                char_info += make_line(allowed_name, ox, oy, w, h)
+                if h > lineHeight:
+                    lineHeight = h
+
+        res = f'<?xml version="1.0"?>\n<font>\n  <info face="Place_a_name" size="4"/>\n  <common lineHeight="{lineHeight}"/>\n  <chars count="{chars_count}">\n'
+        res += char_info
+        res +='  </chars>\n</font>'
+
+        print(res)
+
+
+
+        #align homogeneous layers evenly:
+        def align_layers_evenly(image = Gimp.get_images()[0], spacing = 0, fixed_width = None, fixed_height =  None):
+            layers = image.get_layers()
+            if len(layers) == 0:
+                return False
+            if fixed_width is None:
+                temp_lay = layers[0]
+                fixed_width = temp_lay.get_width() + spacing
+                fixed_height = temp_lay.get_height()
+                #print("Automatic:", fixed_width, fixed_height)
+            next_x = 0
+            next_y = 0
+            bounduary = image.get_width() - fixed_width
+            for lay in layers:
+                lay.set_offsets(next_x, next_y)
+                next_x += fixed_width
+                if next_x > bounduary:
+                    next_x = 0
+                    next_y += fixed_height
+
+
         '''
 
         # At this point, all is ok: return Success
