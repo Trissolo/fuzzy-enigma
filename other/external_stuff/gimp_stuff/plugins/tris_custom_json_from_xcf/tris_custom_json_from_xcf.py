@@ -35,8 +35,7 @@ from gi.repository import GLib
 from gi.repository import GObject
 
 # I/O and files
-from gi.repository import Gio
-
+#from gi.repository import Gio
 
 
 # other custom imports
@@ -47,7 +46,7 @@ import json
 
 # constants:
 class CONSTS:
-    FILE_NAME = GLib.path_get_basename(__file__).removesuffix(".py") # "tris_base_simple" # GLib.path_get_basename(__file__).removesuffix(".py")
+    FILE_NAME = GLib.path_get_basename(__file__).removesuffix(".py")
     TEXT = "QWE"
     OTHER = "FOO_NEW!"
     ARGU_TEST_BOOL = "tris_test_bool"
@@ -85,7 +84,7 @@ class AdventureGameNook(Gimp.PlugIn):
 
     # procedure(s) name in Procedure Browser. Note that this string value CANNOT have underscores, only hyphens/dashes
     def do_query_procedures(self):
-        return ["tris-custom-json-from-xcf"] #CONSTS.ID_IN_PLUGIN_BROWSER]
+        return ["tris-custom-json-from-xcf"]
 
 
     def do_set_i18n(self, name):
@@ -171,37 +170,35 @@ class AdventureGameNook(Gimp.PlugIn):
     
 
     def get_gamedata_from_json_file(self):
-        #crazy_thing = __file__.removesuffix(GLib.path_get_basename(__file__))
-        my_path = GLib.build_pathv(GLib.DIR_SEPARATOR_S, [GLib.path_get_dirname(__file__), "gamedata.json"])
-        #print("***path_get_dirname:", GLib.path_get_dirname(__file__))
-        #print("😓", crazy_thing)
-        #cazzgfile = Gio.File.new_for_path(__file__)
-        #altr = cazzgfile.get_parent().enumerate_children('standard::name,standard::type,standard::size', 0, None)
-        #for elem in altr:
-        #    print("hmm:", elem.get_name())
-
-        #print("😱", cazzgfile.get_parent().get_parse_name())
+        my_path = GLib.build_pathv(GLib.DIR_SEPARATOR_S, [GLib.path_get_dirname(__file__), "gamedata.json"])   
         data = None
         with open(my_path) as json_file:
             data = json.load(json_file)
 
-            # Print the type of data variable
-            print("Type:", type(data))
-
             # Print the data of dictionary
-            print("\\nvars:", data['vars'])
-            #print("\ntype:", data['BOOLS'])
-            print("\n element:", data['vars']['CRUMBLES'][0])
+            print("\nTop level content:", data.keys())
+            print("\nGame Vars:", data['vars'].keys())
         return data
+    
+    def change_directory_as(self):
+        GLib.chdir(GLib.path_get_dirname(__file__))
+        GLib.chdir("../..")
+        return GLib.get_current_dir()
     
 
     def update_layer(self):
         self.current_layer = self.image.get_selected_layers()[0]
         return self.current_layer
+    
+    
+    def basic_setup(self, image):
+        self.image = image
+        self.current_layer = None   
+        self.update_layer()
+        self.common_data = self.get_gamedata_from_json_file()
 
 
     def run(self, procedure, run_mode, image, drawables, config, run_data):
-        #print(f"Args:, \nprocedure: {procedure},\nrun_mode: {run_mode},\nimage: {image},\ndrawables: {drawables},\nconfig: {config},\nrun_data: {run_data}")
         # just for debug: not required for the plugin purpose 
         Gimp.message_set_handler(Gimp.MessageHandlerType.CONSOLE) # MESSAGE_BOX = 0, CONSOLE = 1, ERROR_CONSOLE = 2
 
@@ -210,36 +207,17 @@ class AdventureGameNook(Gimp.PlugIn):
             print("Quitting because there are no layers, or the image is not saved to disk...")
             return self.procedure_is_complete(procedure)
         
-        self.image = image
+        self.basic_setup(image)
 
-        self.current_layer = None
+        print("Curr path dec:", self.change_directory_as())
+
+        #self.image = image
+
+        #self.current_layer = None
         
-        self.update_layer()
+        #self.update_layer()
 
-        print(f"Filename: {image.get_xcf_file().get_basename().removesuffix('.xcf')}")
-
-        tempgamedata = self.get_gamedata_from_json_file()
-
-        print("TGD", tempgamedata['OnHoverNames'])
-
-        #print("No JSON yet")
-        
-        #import json
-
-        # Opening JSON file
-        """ with open('gamedata.json') as json_file:
-            data = json.load(json_file)
-
-            # Print the type of data variable
-            print("Type:", type(data))
-
-            # Print the data of dictionary
-            print("\nbools:", data['bools'])
-            print("\ntype:", data['bools'])
-            print("\n element:", data['bools'][2]) """
-
-
-        
+        #self.common_data = self.get_gamedata_from_json_file()
 
 
 
