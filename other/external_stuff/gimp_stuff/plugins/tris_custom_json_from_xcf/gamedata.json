@@ -1,13 +1,19 @@
 {
-    "bools": [
+  "vars": {
+    "BOOLS": [
       "none",
-      "doorIsOpen",
-      "wrenchTaken",
-      "crateIsOpen",
-      "cabinetIsOpen",
-      "cardRedTaken",
-      "buttonIsPressed"
+      "r1#doorIsOpen",
+      "r1#wrenchTaken",
+      "r1#crateIsOpen",
+      "r1#cabinetIsOpen",
+      "r1#redCardTaken",
+      "r1#buttonIsPressed"
     ],
+
+    "CRUMBLES": ["no crumble"],
+    "NIBBLE": [],
+    "BYTES": []
+  },
     "OnHoverNames": [
       "Pulsante",
       "Affare metallico",

@@ -12,7 +12,7 @@
 #
 #   (ensure the script is executable)
 
-# just fou sys.argv
+# just for sys.argv
 import sys
 
 import gi
@@ -171,18 +171,27 @@ class AdventureGameNook(Gimp.PlugIn):
     
 
     def get_gamedata_from_json_file(self):
-        crazy_thing = __file__.removesuffix(GLib.path_get_basename(__file__))
+        #crazy_thing = __file__.removesuffix(GLib.path_get_basename(__file__))
+        my_path = GLib.build_pathv(GLib.DIR_SEPARATOR_S, [GLib.path_get_dirname(__file__), "gamedata.json"])
+        #print("***path_get_dirname:", GLib.path_get_dirname(__file__))
+        #print("😓", crazy_thing)
+        #cazzgfile = Gio.File.new_for_path(__file__)
+        #altr = cazzgfile.get_parent().enumerate_children('standard::name,standard::type,standard::size', 0, None)
+        #for elem in altr:
+        #    print("hmm:", elem.get_name())
+
+        #print("😱", cazzgfile.get_parent().get_parse_name())
         data = None
-        with open(f'{crazy_thing}gamedata.json') as json_file:
+        with open(my_path) as json_file:
             data = json.load(json_file)
 
             # Print the type of data variable
             print("Type:", type(data))
 
             # Print the data of dictionary
-            print("\nbools:", data['bools'])
-            print("\ntype:", data['bools'])
-            print("\n element:", data['bools'][2])
+            print("\\nvars:", data['vars'])
+            #print("\ntype:", data['BOOLS'])
+            print("\n element:", data['vars']['CRUMBLES'][0])
         return data
     
 
