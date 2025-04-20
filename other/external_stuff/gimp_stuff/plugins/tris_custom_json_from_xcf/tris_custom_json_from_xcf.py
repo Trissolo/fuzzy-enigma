@@ -23,6 +23,9 @@ from gi.repository import Gimp
 gi.require_version("GimpUi", "3.0")
 from gi.repository import GimpUi
 
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+
 # Glib is used mostly for GLib.Error()
 # or utility functions like:
 # GLib.build_pathv(GLib.DIR_SEPARATOR_S, [GLib.get_home_dir(), "my_file_name.txt"])
@@ -34,7 +37,7 @@ from gi.repository import GLib
 # G_PARAM_READWRITE: 3 # -> Alias for: G_PARAM_READABLE | G_PARAM_WRITABLE
 from gi.repository import GObject
 
-# I/O and files
+# I/O and files, e.g., new_file = Gio.File.new_for_path("/home/USER/Graphics/my_picture.xcf")
 #from gi.repository import Gio
 
 
@@ -42,7 +45,7 @@ from gi.repository import GObject
 import json
 #import os
 
-#print("---------")
+print("** Starting Json procedure **")
 
 # constants:
 class CONSTS:
@@ -158,7 +161,7 @@ class AdventureGameNook(Gimp.PlugIn):
         return procedure
 
 
-    def procedure_is_complete(self, prcd):
+    def procedure_is_complete(self, prcdr):
         #Gimp.PDBStatusType
         #       .EXECUTION_ERROR # == 0
         #       .CALLING_ERROR # == 1
@@ -166,7 +169,19 @@ class AdventureGameNook(Gimp.PlugIn):
         #       .SUCCESS # Success == 3
         #       .CANCEL # User cancel == 4
         print("** Json procedure complete! :D **")
-        return prcd.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
+        return prcdr.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
+    
+    def elenca_figli(self, widget, lev = 1, idx = 0, lc = 1, hastrai = False, sp = "    ", hook = "╰╴", vpipe = "│"):
+            if hasattr(widget, 'get_children'):
+                gra = "└─" if (lc - idx) == 1 else "├─"
+                indent = f"{sp * lev}" if not hastrai else f"{sp * (lev-1)}{vpipe}"
+                print(f"{indent}{gra}{widget.get_name()}")
+                chi = widget.get_children()
+                lc = len(chi)
+                for idx, elem in enumerate(chi):
+                    self.elenca_figli(elem, lev + 1, idx, lc,((lc - idx) == 0), sp, hook, vpipe)
+            else:
+                print(f"{sp * (lev + 1)}└─{widget.get_name()}")
     
 
     def get_gamedata_from_json_file(self):
@@ -175,9 +190,9 @@ class AdventureGameNook(Gimp.PlugIn):
         with open(my_path) as json_file:
             data = json.load(json_file)
 
-            # Print the data of dictionary
-            print("\nTop level content:", data.keys())
-            print("\nGame Vars:", data['vars'].keys())
+            # Test: Print the data of dictionary
+            #print("\nTop level content:", data.keys())
+            #print("\nGame Vars:", data['vars'].keys())
         return data
     
     def change_directory_as(self):
@@ -190,12 +205,30 @@ class AdventureGameNook(Gimp.PlugIn):
         self.current_layer = self.image.get_selected_layers()[0]
         return self.current_layer
     
+
+    @staticmethod
+    def test_static_method(some_param = "some_param"):
+        print(some_param)
+        return some_param
+    
+
+    @staticmethod
+    def btn_update_layer_onclick(button, self):
+        print("Clicked:", button.get_name())
+        print(self.layer_dict["stoca"])
+        self.info_label.set_text(self.update_layer().get_name())
+    
     
     def basic_setup(self, image):
         self.image = image
         self.current_layer = None   
         self.update_layer()
         self.common_data = self.get_gamedata_from_json_file()
+        self.layer_dict = {"stoca": "zzo"}
+    
+    def build_main_dialog():
+        dialog = GimpUi.Dialog.new()
+        dialog.add_button("OK", Gtk.ResponseType.OK)
 
 
     def run(self, procedure, run_mode, image, drawables, config, run_data):
@@ -207,28 +240,61 @@ class AdventureGameNook(Gimp.PlugIn):
             print("Quitting because there are no layers, or the image is not saved to disk...")
             return self.procedure_is_complete(procedure)
         
+        # a sort of "__init__" method:
         self.basic_setup(image)
 
-        print("Curr path dec:", self.change_directory_as())
-
-        #self.image = image
-
-        #self.current_layer = None
-        
-        #self.update_layer()
-
-        #self.common_data = self.get_gamedata_from_json_file()
-
+        #print("Curr path dec:", self.change_directory_as())
 
 
         # Any plug-in that provides a user interface should call this function
         # (It’s a convention to use the name of the executable and _not_ the PDB procedure name)
         GimpUi.init(CONSTS.FILE_NAME)
 
+        #draft for dialog!
+        dialogazzo = dialogazzo = GimpUi.Dialog.new()
+        dialogazzo.add_button("Done", Gtk.ResponseType.OK)
+        
+
+        new_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 2)
+        new_box.set_name("menu container")
+
+        btn_update_layer = GimpUi.Button.new()
+        btn_update_layer.set_name("Button Update-Layer")
+        btn_update_layer.set_label("Upd. Layer")
+        btn_update_layer.connect('clicked', self.btn_update_layer_onclick, self)
+
+        new_box.pack_start(btn_update_layer, False, False, 1)
 
 
+        info_frame = GimpUi.Frame.new("Questa è la label del Frame")
+        info_frame.set_name("Layer-info Frame")
 
-        # At this point, all is ok: return Success
+        info_label = info_frame.get_label_widget()
+        info_label.set_name("Layer-info Frame")
+
+        #ascaxxo
+        self.info_label = info_label
+        '''
+        info_label.set_use_markup(True)
+        info_label.set_markup('<span foreground="#5687ff" size="x-large">skipCondition</span>: <i>[0, 4]</i>')
+        info_label.set_markup('<span foreground="#464646"><tt>skipCondition</tt></span>: <span background="#569a58"><i>[0, 4]</i></span>')
+        '''
+
+        new_box.pack_start(info_frame, False, False, 1)
+
+
+        main_container = dialogazzo.get_content_area()
+        main_container.set_name("MAIN_CONTAINER (BOX)")
+        main_container.pack_start(new_box, False, False, 1)
+
+        self.elenca_figli(dialogazzo)
+
+        print("SELF!!!", self, "\nTYPE:", type(self))
+        dialogazzo.show_all()
+        dialogazzo.run()
+
+
+        # We have reached the end of the procedure: let's return "Success"
         return self.procedure_is_complete(procedure)  #procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
 
 Gimp.main(AdventureGameNook.__gtype__, sys.argv)
