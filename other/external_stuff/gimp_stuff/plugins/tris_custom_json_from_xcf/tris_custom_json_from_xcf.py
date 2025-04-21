@@ -216,7 +216,10 @@ class AdventureGameNook(Gimp.PlugIn):
     def btn_update_layer_onclick(button, self):
         print("Clicked:", button.get_name())
         print(self.layer_dict["stoca"])
-        self.info_label.set_text(self.update_layer().get_name())
+        temp_layer = self.update_layer() #self.current_layer
+        some_bool, ox, oy = temp_layer.get_offsets()
+        ret_str = f"name: {temp_layer.get_name()}\nx: {ox}\ny: {oy}\nwidth: {temp_layer.get_width()}\nheight: {temp_layer.get_height()}"
+        self.info_label.set_text(ret_str)
     
     
     def basic_setup(self, image):
@@ -240,10 +243,19 @@ class AdventureGameNook(Gimp.PlugIn):
             print("Quitting because there are no layers, or the image is not saved to disk...")
             return self.procedure_is_complete(procedure)
         
+        #set current dir:
+        print("Curr path dec:", self.change_directory_as())
+        #import myutils
+        #myutils.printing()
+        from myutils import build_node as myu_build_node
+        from myutils import elenca_figli as elenca_figli
+        azz_node = myu_build_node("Riazz") #myutils.build_node("azz")
+        azz_node.level = 3
+        print(azz_node.name)
+        #print("Wcche", myutils._Node)
+
         # a sort of "__init__" method:
         self.basic_setup(image)
-
-        #print("Curr path dec:", self.change_directory_as())
 
 
         # Any plug-in that provides a user interface should call this function
@@ -269,6 +281,14 @@ class AdventureGameNook(Gimp.PlugIn):
         info_frame = GimpUi.Frame.new("Questa è la label del Frame")
         info_frame.set_name("Layer-info Frame")
 
+        tempval = 6
+        info_frame.set_margin_start(tempval)
+        info_frame.set_margin_end(tempval)
+
+        info_frame.set_margin_top(tempval)
+        info_frame.set_margin_bottom(tempval)
+
+        #sub label
         info_label = info_frame.get_label_widget()
         info_label.set_name("Layer-info Frame")
 
@@ -287,7 +307,7 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.set_name("MAIN_CONTAINER (BOX)")
         main_container.pack_start(new_box, False, False, 1)
 
-        self.elenca_figli(dialogazzo)
+        elenca_figli(dialogazzo)
 
         print("SELF!!!", self, "\nTYPE:", type(self))
         dialogazzo.show_all()
