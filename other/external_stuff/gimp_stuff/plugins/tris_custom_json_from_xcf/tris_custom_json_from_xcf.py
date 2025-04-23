@@ -44,47 +44,88 @@ from gi.repository import GObject
 # other custom imports
 import json
 #import os
+#from gimpfu.gui.dialog import Dialog 
+#print("gimpfu.gui", teimp)
 
-print("** Starting Json procedure **")
+
 
 # constants:
 class CONSTS:
     FILE_NAME = GLib.path_get_basename(__file__).removesuffix(".py")
-    TEXT = "QWE"
-    OTHER = "FOO_NEW!"
-    ARGU_TEST_BOOL = "tris_test_bool"
-    ARGU_TEXT = "tris_user_text"
-    ARGU_INTEGER = "tris_user_integer"
-    ARGU_FOLDER = "tris_user_folder"
+
+
+'''
+class TrisButton(GimpUi.Button):
+    def __init__(self, clicked_handler = None, extended_clicked_handler = None):
+        super().__init__()
+    
+    button = GimpUi.Button()
+
+    main_box.pack_start(button, False, False, 1)
+
+    button.connect("clicked", standard_click)
+    button.connect("extended-clicked", extended_click)
+    '''
+
+class ExtFrame(Gtk.Frame):
+    colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
+
+    #staticmethod
+    def customDestroy(widget):
+        print("customDestroy:", widget.porconame)
+    
+    #staticmethod
+    def first_button_clicked(widget, self):
+        self.bool_test = not self.bool_test
+        self.write_prop(self.bool_test)
+        #print("customDestroy:", widget.porconame)
+    
+    def __init__(self, json_prop):
+        super().__init__()
+        self.json_prop = json_prop
+        #self.custom_destroy_id = self.connect("destroy", type(self).customDestroy)
+        #self.porconame = "Porco Name!"
+        
+        self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
+
+        self.json_key = Gtk.Label.new(f"Prop: {json_prop}???")
+        self.json_key.set_use_markup(True)
+
+        self.json_value = Gtk.Label.new("Value ???")
+        self.json_value.set_use_markup(True)
+
+        self.btn_as = GimpUi.Button.new_from_icon_name("document-properties", 1)
+        self.btn_as.connect("clicked", type(self).first_button_clicked, self)
+        self.bool_test = True
+
+
+        self.add(self.box)
+        self.insert(self.json_key)
+        self.insert(self.json_value)
+        self.insert(self.btn_as)
+        self.show_all()
+        print(json_prop, len(self.get_children()), self.json_value.get_visible())
+    
+    def insert(self, widget):
+        self.box.pack_start(widget, False, False, 1)
+        return self
+
+    def write_prop(self, value_is_set = True):
+        cols = type(self).colors
+        fgc, bgc = (cols[0], cols[1]) if value_is_set else (cols[2], cols[3])
+
+        self.json_key.set_markup(f'<span background="{bgc}" foreground="{fgc}"> {self.json_prop} </span>:') # <i>[0, 4]</i>')
+        return self
+    
 
 
 
-""" # Helper class
-class Tris_Helper:
-    message = ""
-    prefix = "\n"
-    #def_mes_han = Gimp.message_get_handler()
 
-    @classmethod
-    def reset_message(cls):
-        cls.message = ""
-        return cls
 
-    @classmethod
-    def add_message(cls, chunk="", prepend_prefix=True):
-        cls.message += f"{cls.prefix}{chunk}" if prepend_prefix else chunk
-        return cls
-
-    @classmethod
-    def show_message(cls):
-        Gimp.message(cls.message)
-        return cls """
 
 
 # our plugin class
 class AdventureGameNook(Gimp.PlugIn):
-    # container = {}
-
     # procedure(s) name in Procedure Browser. Note that this string value CANNOT have underscores, only hyphens/dashes
     def do_query_procedures(self):
         return ["tris-custom-json-from-xcf"]
@@ -92,12 +133,6 @@ class AdventureGameNook(Gimp.PlugIn):
 
     def do_set_i18n(self, name):
         return False
-
-
-    #def do_quit(self):
-    #    #This method is internally bugged :(
-    #    print("Buggggged")
-    #    return True
 
 
     # The ImageProcedure (mostly hardcoded strings)
@@ -120,44 +155,6 @@ class AdventureGameNook(Gimp.PlugIn):
 
         procedure.set_attribution("Tris", "---", "2025")
 
-        """
-        procedure.add_string_argument(
-            CONSTS.ARGU_TEXT,
-            "Text",
-            None,
-            "Hello World!...",
-            GObject.ParamFlags.READWRITE,
-        )
-
-        procedure.add_boolean_argument(
-            CONSTS.ARGU_TEST_BOOL,
-            "Generic BOOLean",
-            "This option is a BOOL (default: false)",
-            False,
-            GObject.ParamFlags.READWRITE,
-        )
-
-        procedure.add_int_argument ( # GimpProcedure* procedure,
-            CONSTS.ARGU_INTEGER, # const gchar* name,
-            "An integer number:", # const gchar* nick,
-            "(The room number)", # const gchar* blurb,
-            0, # gint min,
-            255, # gint max,
-            0, # gint value,
-            GObject.ParamFlags.READWRITE # GParamFlags flags
-        )
-        
-        procedure.add_file_argument(
-            # GimpProcedure* procedure,
-            CONSTS.ARGU_FOLDER,  # const gchar* name,
-            "Destination folder for .png",  # const gchar* nick,
-            None,  # const gchar* blurb,
-            Gimp.FileChooserAction.SELECT_FOLDER,  # GimpFileChooserAction action,
-            True,  # gboolean none_ok,
-            None,  # GFile* default_file,
-            GObject.ParamFlags.READWRITE,  # GParamFlags flags
-        )
-        """
         return procedure
 
 
@@ -171,19 +168,8 @@ class AdventureGameNook(Gimp.PlugIn):
         print("** Json procedure complete! :D **")
         return prcdr.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
     
-    def elenca_figli(self, widget, lev = 1, idx = 0, lc = 1, hastrai = False, sp = "    ", hook = "╰╴", vpipe = "│"):
-            if hasattr(widget, 'get_children'):
-                gra = "└─" if (lc - idx) == 1 else "├─"
-                indent = f"{sp * lev}" if not hastrai else f"{sp * (lev-1)}{vpipe}"
-                print(f"{indent}{gra}{widget.get_name()}")
-                chi = widget.get_children()
-                lc = len(chi)
-                for idx, elem in enumerate(chi):
-                    self.elenca_figli(elem, lev + 1, idx, lc,((lc - idx) == 0), sp, hook, vpipe)
-            else:
-                print(f"{sp * (lev + 1)}└─{widget.get_name()}")
     
-
+    # load json
     def get_gamedata_from_json_file(self):
         my_path = GLib.build_pathv(GLib.DIR_SEPARATOR_S, [GLib.path_get_dirname(__file__), "gamedata.json"])   
         data = None
@@ -195,7 +181,7 @@ class AdventureGameNook(Gimp.PlugIn):
             #print("\nGame Vars:", data['vars'].keys())
         return data
     
-    def change_directory_as(self):
+    def set_working_directory(self):
         GLib.chdir(GLib.path_get_dirname(__file__))
         GLib.chdir("../..")
         return GLib.get_current_dir()
@@ -235,6 +221,7 @@ class AdventureGameNook(Gimp.PlugIn):
 
 
     def run(self, procedure, run_mode, image, drawables, config, run_data):
+        print("** Starting Json procedure **")
         # just for debug: not required for the plugin purpose 
         Gimp.message_set_handler(Gimp.MessageHandlerType.CONSOLE) # MESSAGE_BOX = 0, CONSOLE = 1, ERROR_CONSOLE = 2
 
@@ -244,22 +231,17 @@ class AdventureGameNook(Gimp.PlugIn):
             return self.procedure_is_complete(procedure)
         
         #set current dir:
-        print("Curr path dec:", self.change_directory_as())
-        #import myutils
-        #myutils.printing()
-        from myutils import build_node as myu_build_node
-        from myutils import elenca_figli as elenca_figli
-        azz_node = myu_build_node("Riazz") #myutils.build_node("azz")
-        azz_node.level = 3
-        print(azz_node.name)
-        #print("Wcche", myutils._Node)
+        #print("Curr path dec:", self.set_working_directory())
+        
+        # an unnecessary utility
+        from myutils import elenca_figli
+
 
         # a sort of "__init__" method:
         self.basic_setup(image)
 
 
-        # Any plug-in that provides a user interface should call this function
-        # (It’s a convention to use the name of the executable and _not_ the PDB procedure name)
+        # initialize Gtk!
         GimpUi.init(CONSTS.FILE_NAME)
 
         #draft for dialog!
@@ -272,10 +254,10 @@ class AdventureGameNook(Gimp.PlugIn):
 
         btn_update_layer = GimpUi.Button.new()
         btn_update_layer.set_name("Button Update-Layer")
-        btn_update_layer.set_label("Upd. Layer")
+        btn_update_layer.set_label("Capture Layer!")
         btn_update_layer.connect('clicked', self.btn_update_layer_onclick, self)
 
-        new_box.pack_start(btn_update_layer, False, False, 1)
+        new_box.pack_end(btn_update_layer, False, False, 1)
 
 
         info_frame = GimpUi.Frame.new("Questa è la label del Frame")
@@ -293,6 +275,7 @@ class AdventureGameNook(Gimp.PlugIn):
         info_label.set_name("Layer-info Frame")
 
         #ascaxxo
+        # a reachable reference for this Label, because the contained text is updated over time:
         self.info_label = info_label
         '''
         info_label.set_use_markup(True)
@@ -307,9 +290,13 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.set_name("MAIN_CONTAINER (BOX)")
         main_container.pack_start(new_box, False, False, 1)
 
-        elenca_figli(dialogazzo)
+        #elenca_figli(dialogazzo)
+        test = ExtFrame("Hovered_name")
+        test.write_prop()
+        main_container.pack_start(test, False, False, 1)
 
         print("SELF!!!", self, "\nTYPE:", type(self))
+
         dialogazzo.show_all()
         dialogazzo.run()
 

@@ -277,3 +277,45 @@ dialogazzo.show_all()
 uniqueObject["lettererichieste"] = "ex"
 listbox.invalidate_filter()
 '''
+
+'''
+#SearchEntry hardcoded
+
+dialogazzo = GimpUi.Dialog.new()
+dialogazzo.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+
+def on_search_activated(searchentry):
+    t = searchentry.get_text()
+    print(f"SearchEntry text: {t if len(t) != 0 else '---'}")
+
+sew = Gtk.SearchEntry()
+
+# "activate" signal -> emitted by Enter key press
+#sew.connect("activate", on_search_activated)
+
+# During text insertion
+sew.connect("search-changed", on_search_activated)
+
+dialogazzo.get_content_area().pack_start(sew, False, False, 1)
+
+sew.show()
+
+dialogazzo.run()
+#dialogazzo.destroy()
+'''
+
+'''
+# Custom Class!
+class ExtFrame(Gtk.Frame):
+    #staticmethod
+    def customDestroy(widget):
+        print("customDestroy:", widget.porconame)
+    
+    def __init__(self, name = "Label not specified"):
+        super().__init__(label=name)
+        self.custom_destroy_id = self.connect("destroy", type(self).customDestroy)
+        self.porconame = "Porco Name!"
+        self.show()
+
+    
+'''
