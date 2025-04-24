@@ -60,9 +60,9 @@ class PropWidgetManager():
 
 class ExtFrame(Gtk.Frame):
     colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
-    @staticmethod
-    def customDestroy(widget):
-        print("customDestroy:", widget.porconame)
+    #@staticmethod
+    #def customDestroy(widget):
+    #    print("customDestroy:", widget.porconame)
     @staticmethod
     def first_button_clicked(widget, self):
         print("Click", self.bool_test)
@@ -77,8 +77,9 @@ class ExtFrame(Gtk.Frame):
         else:
             container.show()
             widget.set_label(f"{raw_name} 👁️")
-    def __init__(self, json_prop):#, optional_label = None):
+    def __init__(self, json_prop, sharedInstance):#, optional_label = None):
         super().__init__()
+        self.sharedInstance = sharedInstance
         self.json_prop = json_prop
         self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
         nextWidget = self.btn_as = GimpUi.Button.new()
@@ -108,6 +109,10 @@ class ExtFrame(Gtk.Frame):
         self.json_key.set_markup(f'<span background="{bgc}" foreground="{fgc}"> {self.json_prop} </span>:') # <i>[0, 4]</i>')
         return self
     
+    @property
+    def current_layer(self):
+        return self.sharedInstance.current_layer
+
     def add_paned_test(self):     
             searcWidget = Gtk.SearchEntry()
             searcWidget.show()
@@ -152,6 +157,7 @@ class ExtFrame(Gtk.Frame):
             self.listbox = listbox
 
             def on_row_activated(listbox_widget, row, instance):
+                print(instance.sharedInstance.current_layer.get_name())
                 instance.json_value.set_markup(f'<i>{row.data}</i>')
                 #print("Option", row.data, instance.lettererichieste)
 
@@ -239,9 +245,9 @@ class AdventureGameNook(Gimp.PlugIn):
 
     @staticmethod
     def btn_update_layer_onclick(button, self):
-        print("Clicked:", button.get_name())
-        print(self.layer_dict["stoca"])
+        #print(self.layer_dict["stoca"])
         temp_layer = self.update_layer() #self.current_layer
+        print("CAPTURED:", temp_layer.get_name())
         some_bool, ox, oy = temp_layer.get_offsets()
         ret_str = f"name: {temp_layer.get_name()}\nx: {ox}\ny: {oy}\nwidth: {temp_layer.get_width()}\nheight: {temp_layer.get_height()}"
         self.info_label.set_text(ret_str)
@@ -252,7 +258,7 @@ class AdventureGameNook(Gimp.PlugIn):
         self.current_layer = None   
         self.update_layer()
         self.common_data = self.get_gamedata_from_json_file()
-        self.layer_dict = {"stoca": "zzo"}
+        #self.layer_dict = {"stoca": "zzo"}
     
     def build_main_dialog():
         dialog = GimpUi.Dialog.new()
@@ -291,9 +297,9 @@ class AdventureGameNook(Gimp.PlugIn):
         new_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 2)
         new_box.set_name("menu container")
 
-        btn_update_layer = GimpUi.Button.new()
+        btn_update_layer = Gtk.Button.new_with_mnemonic("_Update current Layer!")#GimpUi.Button.new()
         btn_update_layer.set_name("Button Update-Layer")
-        btn_update_layer.set_label("Capture Layer!")
+        #btn_update_layer.set_label("Capture Layer!")
         btn_update_layer.connect('clicked', self.btn_update_layer_onclick, self)
 
         new_box.pack_end(btn_update_layer, False, False, 1)
@@ -330,7 +336,7 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.pack_start(new_box, False, False, 1)
 
         #elenca_figli(dialogazzo)
-        test = ExtFrame("Hovered_name") ##, "HoverName")
+        test = ExtFrame("Hovered_name", self) ##, "HoverName")
         test.write_prop()
         test.add_paned_test()
         main_container.pack_start(test, False, False, 1)
