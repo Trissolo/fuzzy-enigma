@@ -94,7 +94,7 @@ class ExtFrame(Gtk.Frame):
         self.json_value = Gtk.Label.new("Value ???")
         self.json_value.set_use_markup(True)
 
-        self.btn_as = GimpUi.Button.new_from_icon_name("document-properties", 1)
+        self.btn_as = GimpUi.Button.new_from_icon_name("edit-delete", 1) #"document-properties", 1)
         self.btn_as.connect("clicked", type(self).first_button_clicked, self)
         self.bool_test = True
 
@@ -117,6 +117,54 @@ class ExtFrame(Gtk.Frame):
         self.json_key.set_markup(f'<span background="{bgc}" foreground="{fgc}"> {self.json_prop} </span>:') # <i>[0, 4]</i>')
         return self
     
+    def add_paned_test(self):     
+            searcWidget = Gtk.SearchEntry()
+            searcWidget.show()
+            
+            def on_search_activated(searchentry, self):
+                t = searchentry.get_text()
+                self.lettererichieste = t
+                self.listbox.invalidate_filter()
+                #print(f"SearchEntry text: {t if len(t) != 0 else '---'}")
+            
+            searcWidget.connect("search-changed", on_search_activated, self)
+            paned = Gtk.Paned.new(Gtk.Orientation.VERTICAL)
+            paned.pack1(searcWidget, False, False)
+            paned.show()
+            self.insert(paned)
+
+            scrolled = Gtk.ScrolledWindow.new(None, None)
+            paned.pack2(scrolled, False, False)
+
+            listbox = Gtk.ListBox()
+            scrolled.add(listbox)
+
+            #paned.pack2(listbox, False, False)
+            self.lettererichieste = "e"
+
+            for item in ["gene", "elevator", "thought", "patience", "explanation", "chemistry", "movie", "excitement"]: #items:
+                listbox_element = Gtk.ListBoxRow.new()
+                listbox_element.data = item
+                listbox_element.add(Gtk.Label(label = item))
+                listbox.add(listbox_element)
+            
+            def sort_func(row_1, row_2, data, notify_destroy):
+                return row_1.data.lower() > row_2.data.lower()
+            
+            listbox.set_sort_func(sort_func, None, False)
+
+            def another_filter_func(row, data, notify_destroy):
+                return True if data.lettererichieste in row.data else False
+            
+            listbox.set_filter_func(another_filter_func, self, False)
+
+            self.listbox = listbox
+
+            def on_row_activated(listbox_widget, row, instance):
+                instance.json_value.set_markup(f'<i>{row.data}</i>')
+                #print("Option", row.data, instance.lettererichieste)
+
+            listbox.connect("row-activated", on_row_activated, self)
 
 
 
@@ -293,6 +341,7 @@ class AdventureGameNook(Gimp.PlugIn):
         #elenca_figli(dialogazzo)
         test = ExtFrame("Hovered_name")
         test.write_prop()
+        test.add_paned_test()
         main_container.pack_start(test, False, False, 1)
 
         print("SELF!!!", self, "\nTYPE:", type(self))
