@@ -68,14 +68,24 @@ class ExtFrame(Gtk.Frame):
         print("Click", self.bool_test)
         self.bool_test = not self.bool_test
         self.write_prop(self.bool_test)
-        #print("customDestroy:", widget.porconame)
-    def __init__(self, json_prop, optional_label = None):
-        #super().__init__()
-        super().__init__(label = optional_label)
+        #print("customDestroy:", widget.porconame)   
+    @staticmethod
+    def toggle_visibility(widget, container, raw_name):
+        if container.get_visible():
+            container.hide()
+            widget.set_label(f"{raw_name} ⚫") #"🕳️"
+        else:
+            container.show()
+            widget.set_label(f"{raw_name} 👁️")
+    def __init__(self, json_prop):#, optional_label = None):
+        super().__init__()
         self.json_prop = json_prop
-        #self.custom_destroy_id = self.connect("destroy", type(self).customDestroy)
-        #self.porconame = "Porco Name!"   
         self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
+        nextWidget = self.btn_as = GimpUi.Button.new()
+        nextWidget.set_label(json_prop + " (toggle)")
+        nextWidget.connect("clicked", type(self).toggle_visibility, self.box, self.json_prop)
+        nextWidget.show()
+        self.set_label_widget(nextWidget)
         self.json_key = Gtk.Label.new(f"Prop: {json_prop}???")
         self.json_key.set_use_markup(True)
         self.json_value = Gtk.Label.new("Value ???")
@@ -320,7 +330,7 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.pack_start(new_box, False, False, 1)
 
         #elenca_figli(dialogazzo)
-        test = ExtFrame("Hovered_name", "HoverName")
+        test = ExtFrame("Hovered_name") ##, "HoverName")
         test.write_prop()
         test.add_paned_test()
         main_container.pack_start(test, False, False, 1)
