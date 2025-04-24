@@ -54,66 +54,47 @@ class CONSTS:
     FILE_NAME = GLib.path_get_basename(__file__).removesuffix(".py")
 
 
-'''
-class TrisButton(GimpUi.Button):
-    def __init__(self, clicked_handler = None, extended_clicked_handler = None):
-        super().__init__()
-    
-    button = GimpUi.Button()
+class PropWidgetManager():
+    pass
 
-    main_box.pack_start(button, False, False, 1)
-
-    button.connect("clicked", standard_click)
-    button.connect("extended-clicked", extended_click)
-    '''
 
 class ExtFrame(Gtk.Frame):
     colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
-
-    #staticmethod
+    @staticmethod
     def customDestroy(widget):
         print("customDestroy:", widget.porconame)
-    
-    #staticmethod
+    @staticmethod
     def first_button_clicked(widget, self):
+        print("Click", self.bool_test)
         self.bool_test = not self.bool_test
         self.write_prop(self.bool_test)
         #print("customDestroy:", widget.porconame)
-    
-    def __init__(self, json_prop):
-        super().__init__()
+    def __init__(self, json_prop, optional_label = None):
+        #super().__init__()
+        super().__init__(label = optional_label)
         self.json_prop = json_prop
         #self.custom_destroy_id = self.connect("destroy", type(self).customDestroy)
-        #self.porconame = "Porco Name!"
-        
+        #self.porconame = "Porco Name!"   
         self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
-
         self.json_key = Gtk.Label.new(f"Prop: {json_prop}???")
         self.json_key.set_use_markup(True)
-
         self.json_value = Gtk.Label.new("Value ???")
         self.json_value.set_use_markup(True)
-
         self.btn_as = GimpUi.Button.new_from_icon_name("edit-delete", 1) #"document-properties", 1)
         self.btn_as.connect("clicked", type(self).first_button_clicked, self)
         self.bool_test = True
-
-
         self.add(self.box)
         self.insert(self.json_key)
         self.insert(self.json_value)
         self.insert(self.btn_as)
         self.show_all()
         print(json_prop, len(self.get_children()), self.json_value.get_visible())
-    
     def insert(self, widget):
         self.box.pack_start(widget, False, False, 1)
-        return self
-
+        return self      
     def write_prop(self, value_is_set = True):
         cols = type(self).colors
         fgc, bgc = (cols[0], cols[1]) if value_is_set else (cols[2], cols[3])
-
         self.json_key.set_markup(f'<span background="{bgc}" foreground="{fgc}"> {self.json_prop} </span>:') # <i>[0, 4]</i>')
         return self
     
@@ -339,7 +320,7 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.pack_start(new_box, False, False, 1)
 
         #elenca_figli(dialogazzo)
-        test = ExtFrame("Hovered_name")
+        test = ExtFrame("Hovered_name", "HoverName")
         test.write_prop()
         test.add_paned_test()
         main_container.pack_start(test, False, False, 1)

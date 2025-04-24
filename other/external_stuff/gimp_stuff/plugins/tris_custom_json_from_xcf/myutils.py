@@ -340,3 +340,22 @@ class TrisEnum:
     def get_length(self):
         return len(self.tdict) >> 1
 '''
+
+'''
+uff :(
+def make_gimp_button(label, clicked_handler = None, sc_params = None, extended_clicked_handler = None, ec_params = None):
+    button = GimpUi.Button.new()
+    button.set_label(label)
+    if callable(clicked_handler):
+        button.connect("clicked", clicked_handler, *sc_params) if sc_params else button.connect("clicked", clicked_handler)
+    if callable(extended_clicked_handler):
+        button.connect("extended-clicked", extended_clicked_handler, modifier, *ec_params) if ec_params else button.connect("extended-clicked", modifier, extended_clicked_handler)
+    button.show()
+    return button
+
+def altHandler(widget, modifier, one, two, qwe):
+    print(one, two, qwe)
+
+def standcl(widget, q, w):
+    print(q, w)
+'''

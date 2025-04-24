@@ -1,6 +1,6 @@
 {
 
-    "BOOLS": [
+    "BOOL": [
       "unused",
       "r1#doorIsOpen",
       "r1#wrenchTaken",
@@ -10,7 +10,7 @@
       "r1#buttonIsPressed"
     ],
 
-    "CRUMBLES": [
+    "CRUMBLE": [
       "unused",
       "no crumble"
     ],
@@ -19,7 +19,7 @@
       "lighta",
       "lightb"
     ],
-    "BYTES": [
+    "BYTE": [
       "unused",
       "digita",
       "digitb",
