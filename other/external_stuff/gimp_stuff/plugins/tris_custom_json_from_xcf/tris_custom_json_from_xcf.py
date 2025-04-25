@@ -44,129 +44,11 @@ from gi.repository import GObject
 # other custom imports
 import json
 #import os
-#from gimpfu.gui.dialog import Dialog 
-#print("gimpfu.gui", teimp)
-
 
 
 # constants:
 class CONSTS:
     FILE_NAME = GLib.path_get_basename(__file__).removesuffix(".py")
-
-
-class PropWidgetManager():
-    pass
-
-
-class ExtFrame(Gtk.Frame):
-    colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
-    #@staticmethod
-    #def customDestroy(widget):
-    #    print("customDestroy:", widget.porconame)
-    @staticmethod
-    def first_button_clicked(widget, self):
-        print("Click", self.bool_test)
-        self.bool_test = not self.bool_test
-        self.write_prop(self.bool_test)
-        #print("customDestroy:", widget.porconame)   
-    @staticmethod
-    def toggle_visibility(widget, container, raw_name):
-        if container.get_visible():
-            container.hide()
-            widget.set_label(f"{raw_name} ⚫") #"🕳️"
-        else:
-            container.show()
-            widget.set_label(f"{raw_name} 👁️")
-    def __init__(self, json_prop, sharedInstance):#, optional_label = None):
-        super().__init__()
-        self.sharedInstance = sharedInstance
-        self.json_prop = json_prop
-        self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
-        nextWidget = self.btn_as = GimpUi.Button.new()
-        nextWidget.set_label(json_prop + " (toggle)")
-        nextWidget.connect("clicked", type(self).toggle_visibility, self.box, self.json_prop)
-        nextWidget.show()
-        self.set_label_widget(nextWidget)
-        self.json_key = Gtk.Label.new(f"Prop: {json_prop}???")
-        self.json_key.set_use_markup(True)
-        self.json_value = Gtk.Label.new("Value ???")
-        self.json_value.set_use_markup(True)
-        self.btn_as = GimpUi.Button.new_from_icon_name("edit-delete", 1) #"document-properties", 1)
-        self.btn_as.connect("clicked", type(self).first_button_clicked, self)
-        self.bool_test = True
-        self.add(self.box)
-        self.insert(self.json_key)
-        self.insert(self.json_value)
-        self.insert(self.btn_as)
-        self.show_all()
-        print(json_prop, len(self.get_children()), self.json_value.get_visible())
-    def insert(self, widget):
-        self.box.pack_start(widget, False, False, 1)
-        return self      
-    def write_prop(self, value_is_set = True):
-        cols = type(self).colors
-        fgc, bgc = (cols[0], cols[1]) if value_is_set else (cols[2], cols[3])
-        self.json_key.set_markup(f'<span background="{bgc}" foreground="{fgc}"> {self.json_prop} </span>:') # <i>[0, 4]</i>')
-        return self
-    
-    @property
-    def current_layer(self):
-        return self.sharedInstance.current_layer
-
-    def add_paned_test(self):     
-            searcWidget = Gtk.SearchEntry()
-            searcWidget.show()
-            
-            def on_search_activated(searchentry, self):
-                t = searchentry.get_text()
-                self.lettererichieste = t
-                self.listbox.invalidate_filter()
-                #print(f"SearchEntry text: {t if len(t) != 0 else '---'}")
-            
-            searcWidget.connect("search-changed", on_search_activated, self)
-            paned = Gtk.Paned.new(Gtk.Orientation.VERTICAL)
-            paned.pack1(searcWidget, False, False)
-            paned.show()
-            self.insert(paned)
-
-            scrolled = Gtk.ScrolledWindow.new(None, None)
-            paned.pack2(scrolled, False, False)
-
-            listbox = Gtk.ListBox()
-            scrolled.add(listbox)
-
-            #paned.pack2(listbox, False, False)
-            self.lettererichieste = "e"
-
-            for item in ["gene", "elevator", "thought", "patience", "explanation", "chemistry", "movie", "excitement"]: #items:
-                listbox_element = Gtk.ListBoxRow.new()
-                listbox_element.data = item
-                listbox_element.add(Gtk.Label(label = item))
-                listbox.add(listbox_element)
-            
-            def sort_func(row_1, row_2, data, notify_destroy):
-                return row_1.data.lower() > row_2.data.lower()
-            
-            listbox.set_sort_func(sort_func, None, False)
-
-            def another_filter_func(row, data, notify_destroy):
-                return True if data.lettererichieste in row.data else False
-            
-            listbox.set_filter_func(another_filter_func, self, False)
-
-            self.listbox = listbox
-
-            def on_row_activated(listbox_widget, row, instance):
-                print(instance.sharedInstance.current_layer.get_name())
-                instance.json_value.set_markup(f'<i>{row.data}</i>')
-                #print("Option", row.data, instance.lettererichieste)
-
-            listbox.connect("row-activated", on_row_activated, self)
-
-
-
-
-
 
 
 # our plugin class
@@ -257,8 +139,43 @@ class AdventureGameNook(Gimp.PlugIn):
         self.image = image
         self.current_layer = None   
         self.update_layer()
-        self.common_data = self.get_gamedata_from_json_file()
-        #self.layer_dict = {"stoca": "zzo"}
+        self.shared_game_data = self.get_gamedata_from_json_file()
+        # set properties for:
+        #["BOOL", "CRUMBLE", "NIBBLE", "BYTE", "OnHoverNames", "depthCategories"]
+        '''
+        gamedata = self.gamedata
+        print("gamedata!!!!!", gamedata.keys())
+        #print("CommonData:", self.gamedata)
+        for propName in gamedata.keys():
+            temp = gamedata[propName]
+            cont_temp = ""
+            print(propName)
+            for elem in temp: cont_temp += f"    {elem}\n"
+            print(cont_temp)
+        '''
+    
+    @property
+    def BOOL(self):
+        return self.shared_game_data["BOOL"]
+    
+    @property
+    def CRUMBLE(self):
+        return self.shared_game_data["CRUMBLE"]
+    
+    @property
+    def NIBBLE(self):
+        return self.shared_game_data["NIBBLE"]
+    
+    @property
+    def BYTE(self):
+        return self.shared_game_data["BYTE"]
+    
+    @property
+    def OnHoverNames(self):
+        return self.shared_game_data["OnHoverNames"]
+        
+
+
     
     def build_main_dialog():
         dialog = GimpUi.Dialog.new()
@@ -280,6 +197,7 @@ class AdventureGameNook(Gimp.PlugIn):
         
         # an unnecessary utility
         from myutils import elenca_figli
+        from myutils import TrisFrame
 
 
         # a sort of "__init__" method:
@@ -336,7 +254,7 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.pack_start(new_box, False, False, 1)
 
         #elenca_figli(dialogazzo)
-        test = ExtFrame("Hovered_name", self) ##, "HoverName")
+        test = TrisFrame("Hovered_name", self) ##, "HoverName")
         test.write_prop()
         test.add_paned_test()
         main_container.pack_start(test, False, False, 1)
