@@ -135,13 +135,23 @@ class AdventureGameNook(Gimp.PlugIn):
         self.info_label.set_text(ret_str)
     
     
-    def basic_setup(self, image):
+    def basic_setup(self, image, TrisEnum):
         self.image = image
         self.current_layer = None   
         self.update_layer()
         self.shared_game_data = self.get_gamedata_from_json_file()
         # set properties for:
         #["BOOL", "CRUMBLE", "NIBBLE", "BYTE", "OnHoverNames", "depthCategories"]
+        self.bool_enum = TrisEnum(self.BOOL)
+        self.crumble_enum = TrisEnum(self.CRUMBLE)
+        self.nibble_enum = TrisEnum(self.NIBBLE)
+        self.byte_enum = TrisEnum(self.BYTE)
+        self.OnHoverNames_enum = TrisEnum(self.OnHoverNames)
+
+        future_depthcategories = {}
+        for elem in self.shared_game_data["depthCategories"]: future_depthcategories[elem["key"]] = elem["val"]
+        
+        self.depthCategories = future_depthcategories
         '''
         gamedata = self.gamedata
         print("gamedata!!!!!", gamedata.keys())
@@ -197,12 +207,12 @@ class AdventureGameNook(Gimp.PlugIn):
         
         # an unnecessary utility
         from myutils import elenca_figli
+        # mandatory things:
         from myutils import TrisFrame
-
+        from myutils import TrisEnum
 
         # a sort of "__init__" method:
-        self.basic_setup(image)
-
+        self.basic_setup(image, TrisEnum)
 
         # initialize Gtk!
         GimpUi.init(CONSTS.FILE_NAME)

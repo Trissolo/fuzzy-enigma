@@ -30,7 +30,7 @@ class TrisBuilder():
         return newLabel
 
 
-
+#
 class TrisFrame(Gtk.Frame):
     colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
     
@@ -142,6 +142,29 @@ class TrisFrame(Gtk.Frame):
             listbox.connect("row-activated", on_row_activated, self)
 
 
+class TrisEnum:
+    def __init__(self, ary):
+        assert len(ary) == len({x for x in ary}), "TrisEnum: Duplicate names in parameter List"
+        tdict = {}
+        for idx, elem in enumerate(ary):
+            tdict[idx] = elem
+            tdict[elem] = idx
+        self.tdict = tdict
+        self.get = self.get_corresponding
+    def get_corresponding(self, param):
+        if not self.has(param):
+            raise KeyError(f'Element NOT present in TrisEnum: {param}') 
+        return self.tdict[param]
+    def get_all(self, param):
+        value = self.get_corresponding(param)
+        return (value, self.tdict[value]) if type(value) is int else (self.tdict[value], value)
+    def has(self, param):
+            return param in self.tdict
+    def get_length(self):
+        return len(self.tdict) >> 1
+
+
+# 
 def elenca_figli(widget, lev = 1, idx = 0, lc = 1, hastrai = False, sp = "    ", hook = "╰╴", vpipe = "│"):
             if hasattr(widget, 'get_children'):
                 gra = "└─" if (lc - idx) == 1 else "├─"
@@ -461,28 +484,6 @@ class ExtFrame(Gtk.Frame):
         self.porconame = "Porco Name!"
         self.show()
 
-
-
-class TrisEnum:
-    def __init__(self, ary):
-        assert len(ary) == len({x for x in ary}), "TrisEnum: Duplicate names in parameter List"
-        tdict = {}
-        for idx, elem in enumerate(ary):
-            tdict[idx] = elem
-            tdict[elem] = idx
-        self.tdict = tdict
-        self.get = self.get_corresponding
-    def get_corresponding(self, param):
-        if not self.has(param):
-            raise KeyError(f'Element NOT present in TrisEnum: {param}') 
-        return self.tdict[param]
-    def get_all(self, param):
-        value = self.get_corresponding(param)
-        return (value, self.tdict[value]) if type(value) is int else (self.tdict[value], value)
-    def has(self, param):
-            return param in self.tdict
-    def get_length(self):
-        return len(self.tdict) >> 1
 '''
 
 '''
