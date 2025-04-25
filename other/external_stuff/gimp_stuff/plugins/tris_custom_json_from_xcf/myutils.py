@@ -1,3 +1,147 @@
+import gi
+
+gi.require_version("Gimp", "3.0")
+from gi.repository import Gimp
+
+gi.require_version("GimpUi", "3.0")
+from gi.repository import GimpUi
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+
+class TrisBuilder():
+    #@staticmethod
+    def make_gimp_button(label, clicked_handler = None, *sc_params):# = None, extended_clicked_handler = None, ec_params = None):
+        button = GimpUi.Button.new()
+        button.set_label(label)
+        if callable(clicked_handler):
+            button.connect("clicked", clicked_handler, *sc_params) if sc_params else button.connect("clicked", clicked_handler)
+        #if callable(extended_clicked_handler):
+        #    button.connect("extended-clicked", extended_clicked_handler, *ec_params) if ec_params else button.connect("extended-clicked", modifier, extended_clicked_handler)
+        button.show()
+        return button
+    
+
+    def make_label(text, use_markup = True):
+        newLabel = Gtk.Label.new(text)
+        if use_markup:
+            newLabel.set_use_markup(True)
+        newLabel.show()
+        return newLabel
+
+
+
+class TrisFrame(Gtk.Frame):
+    colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
+    
+    @staticmethod
+    def first_button_clicked(widget, self):
+        print("Click", self.bool_test)
+        self.bool_test = not self.bool_test
+        self.write_prop(self.bool_test)
+
+    
+    @staticmethod
+    def toggle_visibility(widget, container, raw_name):
+        if container.get_visible():
+            container.hide()
+            widget.set_label(f"{raw_name} ⚫") #"🕳️"
+        else:
+            container.show()
+            widget.set_label(f"{raw_name} 👁️")
+    
+
+    def __init__(self, json_prop, trisParent):
+        super().__init__()
+        self.trisParent = trisParent
+        self.json_prop = json_prop
+        self.bool_test = True
+
+        self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
+        self.add(self.box)
+
+        toggle_button = TrisBuilder.make_gimp_button(json_prop + " (Tris-toggle)", type(self).toggle_visibility, self.box, self.json_prop)
+        self.set_label_widget(toggle_button)
+
+        self.json_key = TrisBuilder.make_label(f"Prop: {json_prop}???")
+        self.json_value = TrisBuilder.make_label("Value ???")
+
+        self.btn_as = GimpUi.Button.new_from_icon_name("edit-delete", 1)
+        self.btn_as.connect("clicked", type(self).first_button_clicked, self)
+
+        self.insert(self.json_key, self.json_value, self.btn_as)
+
+        self.show_all()
+    
+    
+    @property
+    def current_layer(self):
+        return self.trisParent.current_layer
+    
+
+    def insert(self, *args):
+        for w in args:
+            self.box.pack_start(w, False, False, 1)
+        return self
+       
+    
+    def write_prop(self, value_is_set = True):
+        cols = type(self).colors
+        fgc, bgc = (cols[0], cols[1]) if value_is_set else (cols[2], cols[3])
+        self.json_key.set_markup(f'<span background="{bgc}" foreground="{fgc}"> {self.json_prop} </span>:') # <i>[0, 4]</i>')
+        return self
+    
+
+    def add_paned_test(self):     
+            searcWidget = Gtk.SearchEntry()
+            searcWidget.show()
+            
+            def on_search_activated(searchentry, self):
+                t = searchentry.get_text()
+                self.lettererichieste = t
+                self.listbox.invalidate_filter()
+                #print(f"SearchEntry text: {t if len(t) != 0 else '---'}")
+            
+            searcWidget.connect("search-changed", on_search_activated, self)
+            paned = Gtk.Paned.new(Gtk.Orientation.VERTICAL)
+            paned.pack1(searcWidget, False, False)
+            paned.show()
+            self.insert(paned)
+
+            scrolled = Gtk.ScrolledWindow.new(None, None)
+            paned.pack2(scrolled, False, False)
+
+            listbox = Gtk.ListBox()
+            scrolled.add(listbox)
+
+            self.lettererichieste = "e"
+
+            for item in ["gene", "elevator", "thought", "patience", "explanation", "chemistry", "movie", "excitement"]: #items:
+                listbox_element = Gtk.ListBoxRow.new()
+                listbox_element.data = item
+                listbox_element.add(Gtk.Label(label = item))
+                listbox.add(listbox_element)
+            
+            def sort_func(row_1, row_2, data, notify_destroy):
+                return row_1.data.lower() > row_2.data.lower()
+            
+            listbox.set_sort_func(sort_func, None, False)
+
+            def another_filter_func(row, data, notify_destroy):
+                return True if data.lettererichieste in row.data else False
+            
+            listbox.set_filter_func(another_filter_func, self, False)
+
+            self.listbox = listbox
+
+            def on_row_activated(listbox_widget, row, instance):
+                print(instance.trisParent.current_layer.get_name())
+                instance.json_value.set_markup(f'<i>{row.data}</i>')
+                #print("Option", row.data, instance.lettererichieste)
+
+            listbox.connect("row-activated", on_row_activated, self)
+
+
 def elenca_figli(widget, lev = 1, idx = 0, lc = 1, hastrai = False, sp = "    ", hook = "╰╴", vpipe = "│"):
             if hasattr(widget, 'get_children'):
                 gra = "└─" if (lc - idx) == 1 else "├─"
