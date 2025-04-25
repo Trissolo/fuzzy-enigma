@@ -32,7 +32,15 @@ class TrisBuilder():
 
 #
 class TrisFrame(Gtk.Frame):
+    trisParent = None
+
+    @classmethod
+    def set_trisParent(cls, trisParent):
+        cls.trisParent = trisParent
+    
+
     colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
+
     
     @staticmethod
     def first_button_clicked(widget, self):
@@ -51,9 +59,8 @@ class TrisFrame(Gtk.Frame):
             widget.set_label(f"{raw_name} 👁️")
     
 
-    def __init__(self, json_prop, trisParent):
+    def __init__(self, json_prop):
         super().__init__()
-        self.trisParent = trisParent
         self.json_prop = json_prop
         self.bool_test = True
 
@@ -76,7 +83,7 @@ class TrisFrame(Gtk.Frame):
     
     @property
     def current_layer(self):
-        return self.trisParent.current_layer
+        return type(self).trisParent.current_layer
     
 
     def insert(self, *args):
@@ -134,9 +141,9 @@ class TrisFrame(Gtk.Frame):
 
             self.listbox = listbox
 
-            def on_row_activated(listbox_widget, row, instance):
-                print(instance.trisParent.current_layer.get_name())
-                instance.json_value.set_markup(f'<i>{row.data}</i>')
+            def on_row_activated(listbox_widget, row, self):
+                print(self.current_layer.get_name())
+                self.json_value.set_markup(f'<i>{row.data}</i>')
                 #print("Option", row.data, instance.lettererichieste)
 
             listbox.connect("row-activated", on_row_activated, self)

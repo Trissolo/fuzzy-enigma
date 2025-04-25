@@ -152,6 +152,8 @@ class AdventureGameNook(Gimp.PlugIn):
         for elem in self.shared_game_data["depthCategories"]: future_depthcategories[elem["key"]] = elem["val"]
         
         self.depthCategories = future_depthcategories
+
+        
         '''
         gamedata = self.gamedata
         print("gamedata!!!!!", gamedata.keys())
@@ -208,8 +210,12 @@ class AdventureGameNook(Gimp.PlugIn):
         # an unnecessary utility
         from myutils import elenca_figli
         # mandatory things:
-        from myutils import TrisFrame
         from myutils import TrisEnum
+
+        from myutils import TrisFrame
+        # Set 'trisParent' in any custom class that needs to reference the 'current_layer'!
+        TrisFrame.set_trisParent(self)
+
 
         # a sort of "__init__" method:
         self.basic_setup(image, TrisEnum)
@@ -264,7 +270,7 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.pack_start(new_box, False, False, 1)
 
         #elenca_figli(dialogazzo)
-        test = TrisFrame("Hovered_name", self) ##, "HoverName")
+        test = TrisFrame("Hovered_name") ###, self) ##, "HoverName")
         test.write_prop()
         test.add_paned_test()
         main_container.pack_start(test, False, False, 1)
