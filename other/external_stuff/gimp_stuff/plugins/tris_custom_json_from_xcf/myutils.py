@@ -34,9 +34,9 @@ class TrisBuilder():
 class TrisFrame(Gtk.Frame):
     trisParent = None
 
-    @classmethod
-    def set_trisParent(cls, trisParent):
-        cls.trisParent = trisParent
+    #@classmethod
+    #def set_trisParent(cls, trisParent):
+    #    cls.trisParent = trisParent
     
 
     colors = ["#f7e26b", "#eb8931", "#ccc", "#3939c8"] #["#111", "#81c784", "#333", "#777"]
@@ -59,9 +59,11 @@ class TrisFrame(Gtk.Frame):
             widget.set_label(f"{raw_name} 👁️")
     
 
-    def __init__(self, json_prop):
+    def __init__(self, json_prop, trisParent):
         super().__init__()
         self.json_prop = json_prop
+        self.trisParent = trisParent
+        trisParent.add_to_manager(json_prop, self)
         self.bool_test = True
 
         self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
@@ -83,7 +85,7 @@ class TrisFrame(Gtk.Frame):
     
     @property
     def current_layer(self):
-        return type(self).trisParent.current_layer
+        return self.trisParent.current_layer
     
 
     def insert(self, *args):
@@ -142,7 +144,7 @@ class TrisFrame(Gtk.Frame):
             self.listbox = listbox
 
             def on_row_activated(listbox_widget, row, self):
-                print(self.current_layer.get_name())
+                print("Accesso inutile a trisLayer", self.current_layer.get_name())
                 self.json_value.set_markup(f'<i>{row.data}</i>')
                 #print("Option", row.data, instance.lettererichieste)
 
