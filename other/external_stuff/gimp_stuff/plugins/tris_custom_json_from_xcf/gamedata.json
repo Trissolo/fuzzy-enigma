@@ -83,6 +83,7 @@
             "val": 800,
             "key": "fg"
         }
-    ]
+    ],
+    "thingProps": ["hoverName", "suffix", "skipCondition", "animation", "noInteraction"]
   }
   
