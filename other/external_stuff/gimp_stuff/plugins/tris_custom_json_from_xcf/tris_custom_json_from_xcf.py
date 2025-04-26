@@ -147,28 +147,28 @@ class AdventureGameNook(Gimp.PlugIn):
         self.shared_game_data = self.get_gamedata_from_json_file()
         print("🔻 Summary:")
         print('', "self.image", "self.current_layer", "self.update_layer()", "self.shared_game_data", sep='\n 🔸')
-        print("\n", "self.bool_enum", "self.crumble_enum", "self.nibble_enum", "self.byte_enum", "self.OnHoverNames_enum", sep='\n 🔸')
+        print("", "self.bool_enum", "self.crumble_enum", "self.nibble_enum", "self.byte_enum", "self.onHoverNames_enum", sep='\n 🔸')
         # set properties for:
-        #["BOOL", "CRUMBLE", "NIBBLE", "BYTE", "OnHoverNames", "depthCategories"]
+        #["BOOL", "CRUMBLE", "NIBBLE", "BYTE", "onHoverNames", "thingKind"]
         self.bool_enum = TrisEnum(self.BOOL)
         self.crumble_enum = TrisEnum(self.CRUMBLE)
         self.nibble_enum = TrisEnum(self.NIBBLE)
         self.byte_enum = TrisEnum(self.BYTE)
-        self.OnHoverNames_enum = TrisEnum(self.OnHoverNames)
+        self.onHoverNames_enum = TrisEnum(self.onHoverNames)
 
-        future_depthcategories = {}
-        for elem in self.shared_game_data["depthCategories"]: future_depthcategories[elem["key"]] = elem["val"]
-        self.depthCategories = future_depthcategories
-        print("\n 🔸self.depthCategories:")
-        #for elem in self.depthCategories: print(f"'{elem}'")
-        for elem in self.shared_game_data["depthCategories"]: print(f"{elem["key"]} ({elem["comment"]})" )
+        future_thingKind = {}
+        for elem in self.shared_game_data["thingKind"]: future_thingKind[elem["key"]] = elem["val"]
+        self.thingKind = future_thingKind
+        print("\n 🔸self.thingKind:")
+        #for elem in self.thingKind: print(f"'{elem}'")
+        for elem in self.shared_game_data["thingKind"]: print(f"{elem["key"]} ({elem["comment"]})" )
 
         # widget holder!
         self.tris_widget = {}
         print("\n 🔸self.tris_widget")
 
         print("\n 🔸(self.shared_game_data)\n")
-        print(" 🔸PROPS:", *self.shared_game_data['thingProps'], sep='"\n"', end='"' )
+        print(" 🔸PROPS:\"self.shared_game_data['thingProps']", *self.shared_game_data['thingProps'], sep='"\n"', end='"' )
         print("\n\n🔺EOSummary\n")
 
     
@@ -189,8 +189,8 @@ class AdventureGameNook(Gimp.PlugIn):
         return self.shared_game_data["BYTE"]
     
     @property
-    def OnHoverNames(self):
-        return self.shared_game_data["OnHoverNames"]
+    def onHoverNames(self):
+        return self.shared_game_data["onHoverNames"]
         
 
 
@@ -263,7 +263,7 @@ class AdventureGameNook(Gimp.PlugIn):
 
         #ascaxxo
         # a reachable reference for this Label, because the contained text is updated over time:
-        self.info_label = info_label
+        #self.info_label = info_label
         '''
         info_label.set_use_markup(True)
         info_label.set_markup('<span foreground="#5687ff" size="x-large">skipCondition</span>: <i>[0, 4]</i>')
@@ -284,6 +284,7 @@ class AdventureGameNook(Gimp.PlugIn):
 
 
         print("TrisWidget", self.tris_widget)
+        print("Test Random Enum:", self.onHoverNames_enum.get_list())
 
         dialogazzo.show_all()
         dialogazzo.run()

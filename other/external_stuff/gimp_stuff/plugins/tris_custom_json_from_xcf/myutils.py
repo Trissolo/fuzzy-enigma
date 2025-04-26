@@ -154,12 +154,17 @@ class TrisFrame(Gtk.Frame):
 class TrisEnum:
     def __init__(self, ary):
         assert len(ary) == len({x for x in ary}), "TrisEnum: Duplicate names in parameter List"
+        tlist = []
         tdict = {}
         for idx, elem in enumerate(ary):
+            tlist.append(elem)
             tdict[idx] = elem
             tdict[elem] = idx
         self.tdict = tdict
+        self.tlist = tlist
         self.get = self.get_corresponding
+    def get_list(self):
+        return self.tlist
     def get_corresponding(self, param):
         if not self.has(param):
             raise KeyError(f'Element NOT present in TrisEnum: {param}') 
