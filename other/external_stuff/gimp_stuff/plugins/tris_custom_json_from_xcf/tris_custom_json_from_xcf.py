@@ -113,18 +113,23 @@ class AdventureGameNook(Gimp.PlugIn):
         GLib.chdir("../..")
         return GLib.get_current_dir()
     
+    # Pseudo-TrisManager methods! Here!
 
     def update_layer(self):
         self.current_layer = self.image.get_selected_layers()[0]
         return self.current_layer
     
-
-    @staticmethod
-    def test_static_method(some_param = "some_param"):
-        print(some_param)
-        return some_param
+    def get_layer_parasite(self):
+        parassites = self.current_layer.get_parasite_list()
+        return parassites
+    
+    
+    def add_to_manager(self, prop, wid):
+        self.tris_widget[prop] = wid
+        return self
     
 
+    # All static methods are signal handlers
     @staticmethod
     def btn_update_layer_onclick(button, self):
         #print(self.layer_dict["stoca"])
@@ -134,12 +139,15 @@ class AdventureGameNook(Gimp.PlugIn):
         ret_str = f"name: {temp_layer.get_name()}\nx: {ox}\ny: {oy}\nwidth: {temp_layer.get_width()}\nheight: {temp_layer.get_height()}"
         self.info_label.set_text(ret_str)
     
-    
+    # CRUCIAL SETUP
     def basic_setup(self, image, TrisEnum):
         self.image = image
-        self.current_layer = None   
+        self.current_layer = None
         self.update_layer()
         self.shared_game_data = self.get_gamedata_from_json_file()
+        print("🔻 Summary:")
+        print('', "self.image", "self.current_layer", "self.update_layer()", "self.shared_game_data", sep='\n 🔸')
+        print("\n", "self.bool_enum", "self.crumble_enum", "self.nibble_enum", "self.byte_enum", "self.OnHoverNames_enum", sep='\n 🔸')
         # set properties for:
         #["BOOL", "CRUMBLE", "NIBBLE", "BYTE", "OnHoverNames", "depthCategories"]
         self.bool_enum = TrisEnum(self.BOOL)
@@ -150,21 +158,19 @@ class AdventureGameNook(Gimp.PlugIn):
 
         future_depthcategories = {}
         for elem in self.shared_game_data["depthCategories"]: future_depthcategories[elem["key"]] = elem["val"]
-        
         self.depthCategories = future_depthcategories
+        print("\n 🔸self.depthCategories:")
+        #for elem in self.depthCategories: print(f"'{elem}'")
+        for elem in self.shared_game_data["depthCategories"]: print(f"{elem["key"]} ({elem["comment"]})" )
 
-        
-        '''
-        gamedata = self.gamedata
-        print("gamedata!!!!!", gamedata.keys())
-        #print("CommonData:", self.gamedata)
-        for propName in gamedata.keys():
-            temp = gamedata[propName]
-            cont_temp = ""
-            print(propName)
-            for elem in temp: cont_temp += f"    {elem}\n"
-            print(cont_temp)
-        '''
+        # widget holder!
+        self.tris_widget = {}
+        print("\n 🔸self.tris_widget")
+
+        print("\n 🔸(self.shared_game_data)\n")
+        print(" 🔸PROPS:", *self.shared_game_data['thingProps'], sep='"\n"', end='"' )
+        print("\n\n🔺EOSummary\n")
+
     
     @property
     def BOOL(self):
@@ -208,13 +214,15 @@ class AdventureGameNook(Gimp.PlugIn):
         #print("Curr path dec:", self.set_working_directory())
         
         # an unnecessary utility
-        from myutils import elenca_figli
+        #from myutils import elenca_figli
+
         # mandatory things:
         from myutils import TrisEnum
 
         from myutils import TrisFrame
+
         # Set 'trisParent' in any custom class that needs to reference the 'current_layer'!
-        TrisFrame.set_trisParent(self)
+        #TrisFrame.set_trisParent(self)
 
 
         # a sort of "__init__" method:
@@ -269,13 +277,13 @@ class AdventureGameNook(Gimp.PlugIn):
         main_container.set_name("MAIN_CONTAINER (BOX)")
         main_container.pack_start(new_box, False, False, 1)
 
-        #elenca_figli(dialogazzo)
-        test = TrisFrame("Hovered_name") ###, self) ##, "HoverName")
+        test = TrisFrame("Hovered_name", self)
         test.write_prop()
         test.add_paned_test()
         main_container.pack_start(test, False, False, 1)
 
-        print("SELF!!!", self, "\nTYPE:", type(self))
+
+        print("TrisWidget", self.tris_widget)
 
         dialogazzo.show_all()
         dialogazzo.run()
