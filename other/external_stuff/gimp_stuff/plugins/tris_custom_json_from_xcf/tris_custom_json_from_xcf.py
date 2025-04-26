@@ -146,15 +146,16 @@ class AdventureGameNook(Gimp.PlugIn):
         self.update_layer()
         self.shared_game_data = self.get_gamedata_from_json_file()
         print("🔻 Summary:")
-        print('', "self.image", "self.current_layer", "self.update_layer()", "self.shared_game_data", sep='\n 🔸')
+        print('', "self.image", "self.current_layer", "self.update_layer()", sep='\n 🔸')
+        print(" 🔸self.shared_game_data [Parsed 'gamedata.json' file]")
         print("", "self.bool_enum", "self.crumble_enum", "self.nibble_enum", "self.byte_enum", "self.onHoverNames_enum", sep='\n 🔸')
         # set properties for:
         #["BOOL", "CRUMBLE", "NIBBLE", "BYTE", "onHoverNames", "thingKind"]
-        self.bool_enum = TrisEnum(self.BOOL)
-        self.crumble_enum = TrisEnum(self.CRUMBLE)
-        self.nibble_enum = TrisEnum(self.NIBBLE)
-        self.byte_enum = TrisEnum(self.BYTE)
-        self.onHoverNames_enum = TrisEnum(self.onHoverNames)
+        self.bool_enum = TrisEnum(self.BOOL, "The names of the gameBools")
+        self.crumble_enum = TrisEnum(self.CRUMBLE, "The names of the gameCrumbles")
+        self.nibble_enum = TrisEnum(self.NIBBLE, "The names of the gameNibbles")
+        self.byte_enum = TrisEnum(self.BYTE, "The names of the gameBytes")
+        self.onHoverNames_enum = TrisEnum(self.onHoverNames, "Things descriptions")
 
         future_thingKind = {}
         for elem in self.shared_game_data["thingKind"]: future_thingKind[elem["key"]] = elem["val"]
@@ -166,8 +167,6 @@ class AdventureGameNook(Gimp.PlugIn):
         # widget holder!
         self.tris_widget = {}
         print("\n 🔸self.tris_widget")
-
-        print("\n 🔸(self.shared_game_data)\n")
         print(" 🔸PROPS:\"self.shared_game_data['thingProps']", *self.shared_game_data['thingProps'], sep='"\n"', end='"' )
         print("\n\n🔺EOSummary\n")
 
@@ -286,8 +285,13 @@ class AdventureGameNook(Gimp.PlugIn):
         print("TrisWidget", self.tris_widget)
         print("Test Random Enum:", self.onHoverNames_enum.get_list())
 
-        dialogazzo.show_all()
-        dialogazzo.run()
+        #dialogazzo.show_all()
+        #dialogazzo.run()
+
+        print("Checking:")
+        for elem in [self.bool_enum, self.crumble_enum, self.nibble_enum, self.byte_enum, self.onHoverNames_enum]:
+            print(elem)
+
 
 
         # We have reached the end of the procedure: let's return "Success"
