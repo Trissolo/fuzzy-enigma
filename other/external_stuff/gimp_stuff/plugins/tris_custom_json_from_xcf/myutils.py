@@ -152,7 +152,7 @@ class TrisFrame(Gtk.Frame):
 
 
 class TrisEnum:
-    def __init__(self, ary):
+    def __init__(self, ary, desc = "not specified"):
         assert len(ary) == len({x for x in ary}), "TrisEnum: Duplicate names in parameter List"
         tlist = []
         tdict = {}
@@ -163,6 +163,7 @@ class TrisEnum:
         self.tdict = tdict
         self.tlist = tlist
         self.get = self.get_corresponding
+        self.desc = desc
     def get_list(self):
         return self.tlist
     def get_corresponding(self, param):
@@ -175,7 +176,16 @@ class TrisEnum:
     def has(self, param):
             return param in self.tdict
     def get_length(self):
-        return len(self.tdict) >> 1
+        #return len(self.tdict) >> 1
+        return len(self.tlist)
+    def __repr__(self):
+        l = self.get_length()
+        a = f"TrisEnum for: {self.desc}, lenght: {l}.\n"
+        if l > 0:
+
+            a += f"Elem[0]: '{self.tlist[0]}', elem[1]: '{self.tlist[1]}', elem[last]: '{self.tlist[-1]}'\n"
+
+        return a
 
 
 # 
