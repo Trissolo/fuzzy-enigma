@@ -131,7 +131,6 @@ class TrisChooser(TrisBase):
         #temp_frame_for_btn.set_label_widget(btn)
 
         btn_provando_un_altro = TrisBuilder.make_gimp_button("Alt")
-        btn_provando_un_altro.set_has_frame(False)
         #temp_frame_for_btn_provando_un_altro = Gtk.Frame.new()
         #temp_frame_for_btn_provando_un_altro.set_label_widget(btn_provando_un_altro)
         button_holder = Gtk.ButtonBox.new(Gtk.Orientation.VERTICAL)
