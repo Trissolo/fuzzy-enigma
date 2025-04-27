@@ -47,8 +47,8 @@ import json
 
 
 # constants:
-class CONSTS:
-    FILE_NAME = GLib.path_get_basename(__file__).removesuffix(".py")
+#class CONSTS:
+#    FILE_NAME = GLib.path_get_basename(__file__).removesuffix(".py")
 
 
 # our plugin class
@@ -119,25 +119,24 @@ class AdventureGameNook(Gimp.PlugIn):
         self.current_layer = self.image.get_selected_layers()[0]
         return self.current_layer
     
-    def get_layer_parasite(self):
-        parassites = self.current_layer.get_parasite_list()
-        return parassites
-    
-    
-    def add_to_manager(self, prop, wid):
-        self.tris_widget[prop] = wid
-        return self
+    @property
+    def layer_parasite(self):
+        return self.current_layer.get_parasite_list()
     
 
     # All static methods are signal handlers
     @staticmethod
     def btn_update_layer_onclick(button, self):
-        #print(self.layer_dict["stoca"])
-        temp_layer = self.update_layer() #self.current_layer
-        print("CAPTURED:", temp_layer.get_name())
-        some_bool, ox, oy = temp_layer.get_offsets()
-        ret_str = f"name: {temp_layer.get_name()}\nx: {ox}\ny: {oy}\nwidth: {temp_layer.get_width()}\nheight: {temp_layer.get_height()}"
-        self.info_label.set_text(ret_str)
+        self.update_layer()
+        if True:
+            print('Received a click!')
+        else:
+            #print(self.layer_dict["stoca"])
+            temp_layer = self.update_layer()
+            print("CAPTURED:", temp_layer.get_name())
+            some_bool, ox, oy = temp_layer.get_offsets()
+            ret_str = f"name: {temp_layer.get_name()}\nx: {ox}\ny: {oy}\nwidth: {temp_layer.get_width()}\nheight: {temp_layer.get_height()}"
+            self.info_label.set_text(ret_str)
     
     # CRUCIAL SETUP
     def basic_setup(self, image, TrisEnum):
@@ -192,11 +191,17 @@ class AdventureGameNook(Gimp.PlugIn):
         return self.shared_game_data["onHoverNames"]
         
 
-
-    
-    def build_main_dialog():
+    def build_main_dialog(self):
         dialog = GimpUi.Dialog.new()
+        #dialog.set_default_size(320, 200)
+        dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
         dialog.add_button("OK", Gtk.ResponseType.OK)
+
+        new_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 2)
+        new_box.set_name("menu container")
+
+        dialog.get_content_area().pack_start(new_box, False, False, 1)
+        return dialog, new_box
 
 
     def run(self, procedure, run_mode, image, drawables, config, run_data):
@@ -209,8 +214,6 @@ class AdventureGameNook(Gimp.PlugIn):
             print("Quitting because there are no layers, or the image is not saved to disk...")
             return self.procedure_is_complete(procedure)
         
-        #set current dir:
-        #print("Curr path dec:", self.set_working_directory())
         
         # an unnecessary utility
         #from myutils import elenca_figli
@@ -220,78 +223,59 @@ class AdventureGameNook(Gimp.PlugIn):
 
         from myutils import TrisFrame
 
-        # Set 'trisParent' in any custom class that needs to reference the 'current_layer'!
-        #TrisFrame.set_trisParent(self)
+        from myutils import TrisBase
+
+        from myutils import TrisBuilder
+
+        from myutils import TrisChooser
 
 
         # a sort of "__init__" method:
         self.basic_setup(image, TrisEnum)
 
+        print("*** Code from here ***")
+
         # initialize Gtk!
-        GimpUi.init(CONSTS.FILE_NAME)
+        #GimpUi.init(CONSTS.FILE_NAME)
+        GimpUi.init(GLib.path_get_basename(__file__).removesuffix(".py"))
 
         #draft for dialog!
-        dialogazzo = dialogazzo = GimpUi.Dialog.new()
-        dialogazzo.add_button("Done", Gtk.ResponseType.OK)
+        dialogazzo, mcontainer = self.build_main_dialog()
+
+        btn_update_layer = TrisBuilder.make_gimp_button("_Update current Layer!", self.btn_update_layer_onclick, self)
         
 
-        new_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 2)
-        new_box.set_name("menu container")
-
-        btn_update_layer = Gtk.Button.new_with_mnemonic("_Update current Layer!")#GimpUi.Button.new()
-        btn_update_layer.set_name("Button Update-Layer")
-        #btn_update_layer.set_label("Capture Layer!")
-        btn_update_layer.connect('clicked', self.btn_update_layer_onclick, self)
-
-        new_box.pack_end(btn_update_layer, False, False, 1)
-
-
         info_frame = GimpUi.Frame.new("Questa è la label del Frame")
-        info_frame.set_name("Layer-info Frame")
+        info_frame.set_name("Layer-info Frame\n" *5)
 
         tempval = 6
         info_frame.set_margin_start(tempval)
         info_frame.set_margin_end(tempval)
-
         info_frame.set_margin_top(tempval)
         info_frame.set_margin_bottom(tempval)
 
         #sub label
-        info_label = info_frame.get_label_widget()
-        info_label.set_name("Layer-info Frame")
+        info_frame.get_label_widget().set_name("Layer-info Frame")
 
-        #ascaxxo
-        # a reachable reference for this Label, because the contained text is updated over time:
-        #self.info_label = info_label
         '''
-        info_label.set_use_markup(True)
-        info_label.set_markup('<span foreground="#5687ff" size="x-large">skipCondition</span>: <i>[0, 4]</i>')
-        info_label.set_markup('<span foreground="#464646"><tt>skipCondition</tt></span>: <span background="#569a58"><i>[0, 4]</i></span>')
+        #info_label.set_use_markup(True)
+        #info_label.set_markup('<span foreground="#5687ff" size="x-large">skipCondition</span>: <i>[0, 4]</i>')
+        #info_label.set_markup('<span foreground="#464646"><tt>skipCondition</tt></span>: <span background="#569a58"><i>[0, 4]</i></span>')
         '''
 
-        new_box.pack_start(info_frame, False, False, 1)
+        newTest = TrisBase(self, "hoverName")
 
+        chooser = TrisChooser(self, "NAme", self.onHoverNames)
 
-        main_container = dialogazzo.get_content_area()
-        main_container.set_name("MAIN_CONTAINER (BOX)")
-        main_container.pack_start(new_box, False, False, 1)
+        for plc_widget in [newTest, chooser, Gtk.Separator.new(0), info_frame, btn_update_layer, Gtk.Separator.new(0)]:
+            mcontainer.pack_start(plc_widget, False, False, 1)
 
-        test = TrisFrame("Hovered_name", self)
-        test.write_prop()
-        test.add_paned_test()
-        main_container.pack_start(test, False, False, 1)
-
-
-        print("TrisWidget", self.tris_widget)
-        print("Test Random Enum:", self.onHoverNames_enum.get_list())
-
-        #dialogazzo.show_all()
-        #dialogazzo.run()
-
-        print("Checking:")
-        for elem in [self.bool_enum, self.crumble_enum, self.nibble_enum, self.byte_enum, self.onHoverNames_enum]:
-            print(elem)
-
+        #mcontainer.pack_end(btn_update_layer, False, False, 1)
+        #mcontainer.pack_start(newTest, False, False, 1)
+        
+        #
+        dialogazzo.show_all()
+        dialogazzo.run()
 
 
         # We have reached the end of the procedure: let's return "Success"
