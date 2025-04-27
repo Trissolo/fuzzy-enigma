@@ -10,7 +10,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 class TrisBuilder():
-    #@staticmethod
+    @staticmethod
     def make_gimp_button(label, clicked_handler = None, *sc_params):# = None, extended_clicked_handler = None, ec_params = None):
         button = GimpUi.Button.new()
         button.set_label(label)
@@ -21,15 +21,156 @@ class TrisBuilder():
         button.show()
         return button
     
-
+    @staticmethod
     def make_label(text, use_markup = True):
         newLabel = Gtk.Label.new(text)
         if use_markup:
             newLabel.set_use_markup(True)
         newLabel.show()
         return newLabel
+    
+    @staticmethod
+    def make_clickable_label(text, set_markup = False, callback = False, *args):
+        label = Gtk.Label(label="Click me!")
+        eventbox = Gtk.EventBox()
+        if callable(callback):
+            eventbox.connect("button-press-event", callback, *args)
+        eventbox.add(label)
+        eventbox.show()
+        return eventbox
 
 
+
+
+class TrisBase(Gtk.Frame):
+    def __init__(self, trisParent, json_prop): #, json_list):
+        super().__init__()
+        self.trisParent = trisParent
+        self.json_prop = json_prop
+        #self.tris_enum = TrisEnum(json_list)
+
+        
+
+        #Poperties:
+        #self.current_layer
+
+        self.set_label_widget(TrisBuilder.make_gimp_button(f"🟠 {json_prop}", type(self).toggle_btn_handler, self))
+        
+        #container
+        self.box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 2)
+        
+        self.add(self.box)
+        self.lbl_key = TrisBuilder.make_label(self.json_prop, False)
+        self.lbl_value = TrisBuilder.make_label("--......-", False)
+
+        #self.lbl_key.set_hexpand(True)
+        #self.lbl_value.set_hexpand(True)
+        self.insert(self.lbl_key, self.lbl_value)
+
+
+
+    @property
+    def current_layer(self):
+        return self.trisParent.current_layer
+    
+    @staticmethod
+    def toggle_btn_handler(button, self):
+        container = self.box
+        if container.get_visible():
+            container.hide()
+            button.set_label(f"⚫ {self.json_prop}") #"🕳️"
+        else:
+            container.show()
+            button.set_label(f"🟠 {self.json_prop}") # 👁️") #"🟠"
+        print(self.current_layer.get_name())
+    
+    def insert(self, *args):
+        for w in args:
+            self.box.pack_start(w, False, False, 1)
+        return self
+
+
+class TrisChooser(TrisBase):
+    def __init__(self, trisParent, json_prop, json_list): #, json_list):
+        super().__init__(trisParent, json_prop)
+        self.tris_enum = TrisEnum(json_list)
+        self.lettererichieste = "e"
+        self.lbl_value.set_size_request(150, 110)
+
+        btn = TrisBuilder.make_gimp_button("Q", type(self).tb_ba_action, self)
+        #btn.set_vexpand(False)
+
+        searcWidget = Gtk.SearchEntry()
+        searcWidget.show()
+        searcWidget.connect("search-changed", self.on_search_activated, self)
+
+        listbox = Gtk.ListBox()
+        
+        for item in self.tris_enum.tlist:
+            listbox_element = Gtk.ListBoxRow.new()
+            listbox_element.data = item
+            listbox_element.add(Gtk.Label(label = item))
+            listbox.add(listbox_element)
+
+        listbox.set_sort_func(self.sort_func, None, False)
+        listbox.set_filter_func(self.tris_filter_func, self, False)
+        listbox.connect("row-activated", self.on_row_activated, self)
+
+        self.listbox = listbox
+
+        scrolled = Gtk.ScrolledWindow.new(None, None)
+        scrolled.add(listbox)
+
+        paned = Gtk.Paned.new(Gtk.Orientation.VERTICAL)
+        paned.pack1(searcWidget, False, False)
+        paned.pack2(scrolled, False, False)
+        paned.show()
+
+
+        #temp_frame_for_btn = Gtk.Frame.new()
+        #temp_frame_for_btn.set_label_widget(btn)
+
+        btn_provando_un_altro = TrisBuilder.make_gimp_button("Alt")
+        btn_provando_un_altro.set_has_frame(False)
+        #temp_frame_for_btn_provando_un_altro = Gtk.Frame.new()
+        #temp_frame_for_btn_provando_un_altro.set_label_widget(btn_provando_un_altro)
+        button_holder = Gtk.ButtonBox.new(Gtk.Orientation.VERTICAL)
+        button_holder.pack_start(btn, False, False, 2)
+
+        button_holder.pack_start(btn_provando_un_altro, False, False, 4)
+        button_holder.pack_start(TrisBuilder.make_gimp_button("Terzo"), False, False, 4)
+        button_holder.pack_start(TrisBuilder.make_gimp_button("Ultimo"), False, False, 4)
+
+
+
+        self.insert(button_holder, paned)
+        #end test
+        #self.insert(btn, paned)
+
+    @staticmethod
+    def tb_ba_action(button, self):
+        print("TrisChooser: Not yet implemented save parasite", self.tris_enum.get_all(2))
+        print(self.current_layer.get_name(), "<--")
+    
+    @staticmethod
+    def on_search_activated(searchentry, self):
+        self.lettererichieste = searchentry.get_text()
+        self.listbox.invalidate_filter()
+    
+    @staticmethod
+    def sort_func(row_1, row_2, data, notify_destroy):
+        return row_1.data.lower() > row_2.data.lower()
+    
+    @staticmethod
+    def tris_filter_func(row, self, notify_destroy):
+        #print(data, "<--------- ORCUS")
+        return True if self.lettererichieste.lower() in row.data.lower() else False
+    
+    @staticmethod
+    def on_row_activated(listbox_widget, row, self):
+        print("Accesso inutile a trisLayer", self.current_layer.get_name())
+        num, text = self.tris_enum.get_all(row.data)
+        self.lbl_value.set_text(f'{text} [{num}]')
 #
 class TrisFrame(Gtk.Frame):
     trisParent = None
