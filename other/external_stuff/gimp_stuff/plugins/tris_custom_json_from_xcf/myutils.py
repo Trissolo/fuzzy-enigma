@@ -24,20 +24,61 @@ class TrisBuilder():
     @staticmethod
     def make_label(text, use_markup = True):
         newLabel = Gtk.Label.new(text)
-        if use_markup:
-            newLabel.set_use_markup(True)
+        newLabel.set_use_markup(use_markup)
         newLabel.show()
         return newLabel
     
     @staticmethod
-    def make_clickable_label(text, set_markup = False, callback = False, *args):
-        label = Gtk.Label(label="Click me!")
+    def make_clickable_label(text, use_markup = False, callback = False, *callback_args):
+        label = Gtk.Label.new(text)
+        label.set_use_markup(True)
+
         eventbox = Gtk.EventBox()
-        if callable(callback):
-            eventbox.connect("button-press-event", callback, *args)
         eventbox.add(label)
+        if callable(callback):
+            eventbox.connect("button-press-event", callback, *callback_args)
         eventbox.show()
         return eventbox
+
+class TrisLabel(Gtk.Label):
+    def __init__(self, lbl):
+        super().__init__(label = lbl)
+        self.set_use_markup(True)
+        self.set_default_style()
+    
+    def write_default(self, text):
+        self.raw_text_entered = text
+        self.set_markup(self.assemble_span(text, *self.default_style_params))
+        return self
+    
+    def assemble_span(self, text, color = None, bgcolor = None, size = 100, ts = 0, monospace = False):
+        color = f'color="#{str(hex(color)).removeprefix("0x").zfill(6)}"' if type(color) == int else ""
+        bgcolor = f'bgcolor="#{str(hex(bgcolor)).removeprefix("0x").zfill(6)}"' if type(bgcolor) == int else ""
+        size = f'size="{size}%"' if type(size) == int else ""
+        t = " " * ts
+        text = f"<tt>{text}</tt>" if monospace else text
+        return f"<span {color} {bgcolor} {size}>{t}{text}{t}</span>"
+    
+    def set_default_style(self, color = 0x202040, bgcolor = 0x2c2e53, size = 150, ts = 3, monospace = True):
+            self.default_style_params = [color, bgcolor, size, ts, monospace]
+            return self
+    
+    def add_to_box(self, box, widget = None, at_end = False, expand = False, fill=False,  padding=2):
+            if widget is None:
+                widget = self
+            box.pack_end(widget, expand, fill, padding) if at_end else box.pack_start(widget, expand, fill, padding)
+            return self
+    
+    def add_to_new_eventbox(self, callback, *cb_args):
+            eventbox = Gtk.EventBox()
+            if callable(callback):
+                eventbox.connect("button-press-event", callback, *cb_args)
+            eventbox.add(self)
+            eventbox.show()
+            return eventbox
+
+
+
 
 
 
@@ -115,6 +156,9 @@ class TrisChooser(TrisBase):
         listbox.set_sort_func(self.sort_func, None, False)
         listbox.set_filter_func(self.tris_filter_func, self, False)
         listbox.connect("row-activated", self.on_row_activated, self)
+        listbox.set_hexpand(True)
+        #for itlab in self.get_children()[0].get_children():
+        #    itlab.set_hexpand(True)
 
         self.listbox = listbox
 
@@ -127,12 +171,10 @@ class TrisChooser(TrisBase):
         paned.show()
 
 
-        #temp_frame_for_btn = Gtk.Frame.new()
-        #temp_frame_for_btn.set_label_widget(btn)
 
-        btn_provando_un_altro = TrisBuilder.make_gimp_button("Alt")
-        #temp_frame_for_btn_provando_un_altro = Gtk.Frame.new()
-        #temp_frame_for_btn_provando_un_altro.set_label_widget(btn_provando_un_altro)
+        btn_provando_un_altro = TrisBuilder.make_clickable_label("Altro", True)
+        btn_provando_un_altro.get_children()[0].set_markup('<span bgcolor="#8a9" color="#2378bd"> Altro </span>')
+
         button_holder = Gtk.ButtonBox.new(Gtk.Orientation.VERTICAL)
         button_holder.pack_start(btn, False, False, 2)
 
@@ -667,4 +709,37 @@ def altHandler(widget, modifier, one, two, qwe):
 
 def standcl(widget, q, w):
     print(q, w)
+'''
+'''
+# con helper
+def make_clickable_markup_label(text, callback = False, *args):
+    label = Gtk.Label(label=text)
+    label.set_use_markup(True)
+    eventbox = Gtk.EventBox()
+    if callable(callback):
+        eventbox.connect("button-press-event", callback, *args)
+    eventbox.add(label)
+    eventbox.show()
+    return eventbox
+
+def on_button_press_event(a, b, c):
+    print("ORCUS-DEUS!", a, b, c[0])
+
+eventbox = make_clickable_label("EAZZ", True, on_button_press_event, [*"ZXCVB"])
+dialogazzo = GimpUi.Dialog.new()
+dialogazzo.get_content_area().pack_start(eventbox, False, False, 1)
+dialogazzo.show_all()
+
+
+def assemble_span(text, color = None, bgcolor = None, size = 100, ts = 0, monospace = False):
+    color = f'color="#{str(hex(color)).removeprefix("0x").zfill(6)}"' if type(color) == int else ""
+    bgcolor = f'bgcolor="#{str(hex(bgcolor)).removeprefix("0x").zfill(6)}"' if type(bgcolor) == int else ""
+    size = f'size="{size}%"' if type(size) == int else ""
+    t = " " * ts
+    text = f"<tt>{text}</tt>" if monospace else text
+    return f"<span {color} {bgcolor} {size}>{t}{text}{t}</span>"
+
+
+lab = eventbox.get_children()[0]
+lab.set_markup(assemble_span("RIAZZ", None, 0xaabbff, 5))
 '''
