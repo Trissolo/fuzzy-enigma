@@ -202,7 +202,57 @@ class AdventureGameNook(Gimp.PlugIn):
 
         dialog.get_content_area().pack_start(new_box, False, False, 1)
         return dialog, new_box
+    
+    def build_test_widget_hoverna(self, dialogazzo, new_box, TrisLabel, TrisChooserGrid):
+        # Gtk.PositionType.LEFT
+        # Gtk.PositionType.RIGHT
+        # Gtk.PositionType.TOP
+        # Gtk.PositionType.BOTTOM
 
+        # https://ozh.github.io/ascii-tables/
+        #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
+        #  | . | 0        | 1        | 2          | 3          | 4                         | 5                         | 6                        |
+        #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
+        #  | 0 | Prop_Key | Prop_Key | Prop_value | Prop_value | Prop_human_readable_value | Prop_human_readable_value | Search_FieldSearch_Field |
+        #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
+        #  | 1 | ()       | ()       | BTN_del    | BTN_Select | ()                        | Scrollable with options   | Scrollable with options  |
+        #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
+        #  | 2 | ()       | ()       | ()         | ()         | ()                        | Scrollable with options   | Scrollable with options  |
+        #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
+        #  | 3 |          |          |            |            |                           |                           |                          |
+        #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
+        Prop_Key = TrisLabel("Prop-key")
+        print(Prop_Key.get_visible())
+        Prop_value = TrisLabel("Prop-value")
+        Prop_human_readable_value = TrisLabel("Prop-human_readable")
+
+        
+        psbtn_del = TrisLabel("Delete")
+        psbtn_sel = TrisLabel("New")
+
+        hn_grid = Gtk.Grid.new()
+        hn_grid.attach(Prop_Key, 0, 0, 2, 1)
+        hn_grid.attach(Prop_human_readable_value, 2, 0, 2, 1)
+        hn_grid.attach(Prop_value, 4, 0, 2, 1)
+        hn_grid.attach(psbtn_del, 5, 1, 1, 1)
+        hn_grid.attach(psbtn_sel, 5, 2, 1, 1)
+
+        name_chooser = TrisChooserGrid(self, "NameGermy", self.onHoverNames)
+        #now attach:
+        #name_chooser.searcWidget
+        #name_chooser.scrolled
+        hn_grid.attach(name_chooser.searcWidget, 6, 0, 2, 1)
+        hn_grid.attach(name_chooser.scrolled, 6, 1, 2, 3)
+        hn_grid.show_all()
+
+        frame_as = Gtk.Frame.new("QWE")
+        frame_as.add(hn_grid)
+        new_box.pack_start(frame_as, True, True, 4)
+        frame_as.show_all()
+
+
+
+        
 
     def run(self, procedure, run_mode, image, drawables, config, run_data):
         print("** Starting Json procedure **")
@@ -229,6 +279,9 @@ class AdventureGameNook(Gimp.PlugIn):
 
         from myutils import TrisChooser
 
+        from myutils import TrisLabel
+        from myutils import TrisChooserGrid
+
 
         # a sort of "__init__" method:
         self.basic_setup(image, TrisEnum)
@@ -241,6 +294,18 @@ class AdventureGameNook(Gimp.PlugIn):
 
         #draft for dialog!
         dialogazzo, mcontainer = self.build_main_dialog()
+
+        self.build_test_widget_hoverna(dialogazzo, mcontainer, TrisLabel, TrisChooserGrid)
+
+        dialogazzo.show_all()
+        dialogazzo.run()
+
+        # he he!
+        return self.procedure_is_complete(procedure)
+
+
+
+
 
         btn_update_layer = TrisBuilder.make_gimp_button("_Update current Layer!", self.btn_update_layer_onclick, self)
         

@@ -45,10 +45,16 @@ class TrisLabel(Gtk.Label):
         super().__init__(label = lbl)
         self.set_use_markup(True)
         self.set_default_style()
+        self.eventbox = None
+
+        # temporary use. Remember to delete the following line
+        self.show()
     
-    def write_default(self, text):
+    def write_default(self, text, list_params = None):
         self.raw_text_entered = text
-        self.set_markup(self.assemble_span(text, *self.default_style_params))
+        if list_params is None:
+            list_params = self.default_style_params
+        self.set_markup(self.assemble_span(text, *list_params))
         return self
     
     def assemble_span(self, text, color = None, bgcolor = None, size = 100, ts = 0, monospace = False):
@@ -70,11 +76,13 @@ class TrisLabel(Gtk.Label):
             return self
     
     def add_to_new_eventbox(self, callback, *cb_args):
+            assert self.eventbox is not None, "There is already an EventBox for TrisLabel!"
             eventbox = Gtk.EventBox()
             if callable(callback):
                 eventbox.connect("button-press-event", callback, *cb_args)
             eventbox.add(self)
             eventbox.show()
+            self.eventbox = eventbox
             return eventbox
 
 
@@ -130,6 +138,91 @@ class TrisBase(Gtk.Frame):
             self.box.pack_start(w, False, False, 1)
         return self
 
+
+class TrisChooserGrid(TrisBase):
+    def __init__(self, trisParent, json_prop, json_list): #, json_list):
+        super().__init__(trisParent, json_prop)
+        self.tris_enum = TrisEnum(json_list)
+        self.lettererichieste = "e"
+        self.lbl_value.set_size_request(150, 110)
+
+        #btn = TrisBuilder.make_gimp_button("Q", type(self).tb_ba_action, self)
+        #btn.set_vexpand(False)
+
+        searcWidget = Gtk.SearchEntry()
+        searcWidget.show()
+        searcWidget.connect("search-changed", self.on_search_activated, self)
+
+        listbox = Gtk.ListBox()
+        
+        for item in self.tris_enum.tlist:
+            listbox_element = Gtk.ListBoxRow.new()
+            listbox_element.data = item
+            listbox_element.add(Gtk.Label(label = item))
+            listbox.add(listbox_element)
+
+        listbox.set_sort_func(self.sort_func, None, False)
+        listbox.set_filter_func(self.tris_filter_func, self, False)
+        listbox.connect("row-activated", self.on_row_activated, self)
+        listbox.set_hexpand(True)
+        #for itlab in self.get_children()[0].get_children():
+        #    itlab.set_hexpand(True)
+
+        self.listbox = listbox
+
+        scrolled = Gtk.ScrolledWindow.new(None, None)
+        scrolled.add(listbox)
+
+        self.searcWidget = searcWidget
+        self.scrolled = scrolled
+
+        #paned = Gtk.Paned.new(Gtk.Orientation.VERTICAL)
+        #paned.pack1(searcWidget, False, False)
+        #paned.pack2(scrolled, False, False)
+        #paned.show()
+
+
+
+        #btn_provando_un_altro = TrisBuilder.make_clickable_label("Altro", True)
+        #btn_provando_un_altro.get_children()[0].set_markup('<span bgcolor="#8a9" color="#2378bd"> Altro </span>')
+
+        #button_holder = Gtk.ButtonBox.new(Gtk.Orientation.VERTICAL)
+        #button_holder.pack_start(btn, False, False, 2)
+
+        #button_holder.pack_start(btn_provando_un_altro, False, False, 4)
+        #button_holder.pack_start(TrisBuilder.make_gimp_button("Terzo"), False, False, 4)
+        #button_holder.pack_start(TrisBuilder.make_gimp_button("Ultimo"), False, False, 4)
+
+
+
+        #self.insert(button_holder, paned)
+        #end test
+        #self.insert(btn, paned)
+
+    @staticmethod
+    def tb_ba_action(button, self):
+        print("TrisChooser: Not yet implemented save parasite", self.tris_enum.get_all(2))
+        print(self.current_layer.get_name(), "<--")
+    
+    @staticmethod
+    def on_search_activated(searchentry, self):
+        self.lettererichieste = searchentry.get_text()
+        self.listbox.invalidate_filter()
+    
+    @staticmethod
+    def sort_func(row_1, row_2, data, notify_destroy):
+        return row_1.data.lower() > row_2.data.lower()
+    
+    @staticmethod
+    def tris_filter_func(row, self, notify_destroy):
+        #print(data, "<--------- ORCUS")
+        return True if self.lettererichieste.lower() in row.data.lower() else False
+    
+    @staticmethod
+    def on_row_activated(listbox_widget, row, self):
+        print("Accesso inutile a trisLayer", self.current_layer.get_name())
+        num, text = self.tris_enum.get_all(row.data)
+        self.lbl_value.set_text(f'{text} [{num}]')
 
 class TrisChooser(TrisBase):
     def __init__(self, trisParent, json_prop, json_list): #, json_list):
