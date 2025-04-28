@@ -144,17 +144,36 @@ class TrisChooserGrid(TrisBase):
         super().__init__(trisParent, json_prop)
         self.tris_enum = TrisEnum(json_list)
         self.lettererichieste = "e"
-        self.lbl_value.set_size_request(150, 110)
+        #self.lbl_value.set_size_request(150, 110)
+        self.lbl_value.destroy()
 
-        #btn = TrisBuilder.make_gimp_button("Q", type(self).tb_ba_action, self)
-        #btn.set_vexpand(False)
+        #from here
+        self.prop_key = TrisLabel("Prop-key")
+        self.prop_key.write_default("hoverName:", [])
+        self.prop_value = TrisLabel("Prop-value")
+        self.prop_human_readable_value = TrisLabel("Prop-human_readable")
+   
+        self.pseudobutton_delete_value = TrisLabel("Delete")
+        self.pseudobutton_select_new_value = TrisLabel("New")
 
+        hn_grid = Gtk.Grid.new()
+        hn_grid.attach(self.prop_key, 0, 0, 2, 1)
+        hn_grid.attach(self.prop_human_readable_value, 2, 0, 2, 1)
+        hn_grid.attach(self.prop_value, 4, 0, 2, 1)
+        hn_grid.attach(self.pseudobutton_delete_value, 5, 1, 1, 1)
+        hn_grid.attach(self.pseudobutton_select_new_value, 5, 2, 1, 1)
+        
+        # to here
+
+        # the Search field:
         searcWidget = Gtk.SearchEntry()
         searcWidget.show()
         searcWidget.connect("search-changed", self.on_search_activated, self)
 
+        # the ListBox:
         listbox = Gtk.ListBox()
         
+        # populate the ListBox
         for item in self.tris_enum.tlist:
             listbox_element = Gtk.ListBoxRow.new()
             listbox_element.data = item
@@ -163,41 +182,22 @@ class TrisChooserGrid(TrisBase):
 
         listbox.set_sort_func(self.sort_func, None, False)
         listbox.set_filter_func(self.tris_filter_func, self, False)
-        listbox.connect("row-activated", self.on_row_activated, self)
+        listbox.connect("row-activated", self.on_row_activated_grid, self)
         listbox.set_hexpand(True)
-        #for itlab in self.get_children()[0].get_children():
-        #    itlab.set_hexpand(True)
+        #set_hexpand(True)
 
         self.listbox = listbox
 
         scrolled = Gtk.ScrolledWindow.new(None, None)
         scrolled.add(listbox)
 
-        self.searcWidget = searcWidget
-        self.scrolled = scrolled
+        hn_grid.attach(searcWidget, 6, 0, 2, 1)
+        hn_grid.attach(scrolled, 6, 1, 2, 3)
+        hn_grid.show_all()
+        self.hn_grid = hn_grid
 
-        #paned = Gtk.Paned.new(Gtk.Orientation.VERTICAL)
-        #paned.pack1(searcWidget, False, False)
-        #paned.pack2(scrolled, False, False)
-        #paned.show()
-
-
-
-        #btn_provando_un_altro = TrisBuilder.make_clickable_label("Altro", True)
-        #btn_provando_un_altro.get_children()[0].set_markup('<span bgcolor="#8a9" color="#2378bd"> Altro </span>')
-
-        #button_holder = Gtk.ButtonBox.new(Gtk.Orientation.VERTICAL)
-        #button_holder.pack_start(btn, False, False, 2)
-
-        #button_holder.pack_start(btn_provando_un_altro, False, False, 4)
-        #button_holder.pack_start(TrisBuilder.make_gimp_button("Terzo"), False, False, 4)
-        #button_holder.pack_start(TrisBuilder.make_gimp_button("Ultimo"), False, False, 4)
-
-
-
-        #self.insert(button_holder, paned)
-        #end test
-        #self.insert(btn, paned)
+    def get_grid(self):
+        return self.hn_grid
 
     @staticmethod
     def tb_ba_action(button, self):
@@ -219,10 +219,13 @@ class TrisChooserGrid(TrisBase):
         return True if self.lettererichieste.lower() in row.data.lower() else False
     
     @staticmethod
-    def on_row_activated(listbox_widget, row, self):
+    def on_row_activated_grid(listbox_widget, row, self):
         print("Accesso inutile a trisLayer", self.current_layer.get_name())
         num, text = self.tris_enum.get_all(row.data)
-        self.lbl_value.set_text(f'{text} [{num}]')
+        #self.lbl_value.set_text(f'{text} [{num}]')
+        #self.prop_key.write_default()
+        self.prop_value.write_default(num, [0x5566aa, 0xdada86, 200, 6, True])
+        self.prop_human_readable_value.write_default(text)
 
 class TrisChooser(TrisBase):
     def __init__(self, trisParent, json_prop, json_list): #, json_list):

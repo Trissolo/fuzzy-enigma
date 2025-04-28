@@ -221,12 +221,11 @@ class AdventureGameNook(Gimp.PlugIn):
         #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
         #  | 3 |          |          |            |            |                           |                           |                          |
         #  +---+----------+----------+------------+------------+---------------------------+---------------------------+--------------------------+
+        '''
         Prop_Key = TrisLabel("Prop-key")
-        print(Prop_Key.get_visible())
         Prop_value = TrisLabel("Prop-value")
         Prop_human_readable_value = TrisLabel("Prop-human_readable")
-
-        
+   
         psbtn_del = TrisLabel("Delete")
         psbtn_sel = TrisLabel("New")
 
@@ -244,9 +243,10 @@ class AdventureGameNook(Gimp.PlugIn):
         hn_grid.attach(name_chooser.searcWidget, 6, 0, 2, 1)
         hn_grid.attach(name_chooser.scrolled, 6, 1, 2, 3)
         hn_grid.show_all()
-
-        frame_as = Gtk.Frame.new("QWE")
-        frame_as.add(hn_grid)
+        '''
+        new_name_chooser = TrisChooserGrid(self, "Thing Description", self.onHoverNames)
+        frame_as = Gtk.Frame.new("Pacco!")
+        frame_as.add(new_name_chooser.get_grid())
         new_box.pack_start(frame_as, True, True, 4)
         frame_as.show_all()
 
