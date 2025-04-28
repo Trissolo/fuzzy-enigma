@@ -138,18 +138,20 @@ class TrisBase(Gtk.Frame):
             self.box.pack_start(w, False, False, 1)
         return self
 
-
-class TrisChooserGrid(TrisBase):
-    def __init__(self, trisParent, json_prop, json_list): #, json_list):
-        super().__init__(trisParent, json_prop)
+# TO DO: derive this class form from one that, via a button, can toggle the visibility of its only child
+class TrisChooserGrid():
+    def __init__(self, trisParent, json_prop, json_list):
+        self.trisParent = trisParent
+        self.json_prop = json_prop
+        # build a brand new Enum! (...and so, all the enums in 'trisParent' becomes superfluous )
         self.tris_enum = TrisEnum(json_list)
+
         self.lettererichieste = "e"
         #self.lbl_value.set_size_request(150, 110)
-        self.lbl_value.destroy()
 
         #from here
-        self.prop_key = TrisLabel("Prop-key")
-        self.prop_key.write_default("hoverName:", [])
+        self.prop_key = TrisLabel(json_prop)
+        self.prop_key.write_default(json_prop, [0xdedede, 0x565656, 150, 4, True])
         self.prop_value = TrisLabel("Prop-value")
         self.prop_human_readable_value = TrisLabel("Prop-human_readable")
    
@@ -226,6 +228,45 @@ class TrisChooserGrid(TrisBase):
         #self.prop_key.write_default()
         self.prop_value.write_default(num, [0x5566aa, 0xdada86, 200, 6, True])
         self.prop_human_readable_value.write_default(text)
+    
+    @property
+    def current_layer(self):
+        return self.trisParent.current_layer
+    
+    @staticmethod
+    def toggle_btn_handler(button, self):
+        container = self.box
+        if container.get_visible():
+            container.hide()
+            button.set_label(f"⚫ {self.json_prop}") #"🕳️"
+        else:
+            container.show()
+            button.set_label(f"🟠 {self.json_prop}") # 👁️") #"🟠"
+        print(self.current_layer.get_name())
+    
+    def insert(self, *args):
+        for w in args:
+            self.box.pack_start(w, False, False, 1)
+        return self
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class TrisChooser(TrisBase):
     def __init__(self, trisParent, json_prop, json_list): #, json_list):
