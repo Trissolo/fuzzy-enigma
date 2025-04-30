@@ -18,7 +18,7 @@ class TrisLabel(Gtk.Label):
         self.set_use_markup(True)
         self.set_name("La TrisLABEL (my extended Gtk.Label -> the click-enabled Widget)")
         self.last_entered_raw_text = ""
-        self.default_text = ""
+        self.set_default_text(text)
         self.show()
     
     def set_default_text(self, text):
@@ -41,7 +41,14 @@ class TrisLabel(Gtk.Label):
         if bold: text = f"<b>{text}</b>"
         if monospace: text = f"<tt>{text}</tt>"
         return f"<span {color} {bgcolor} {size}>{pad}{padleft}{text}{padright}{pad}</span>"  
+    
     @staticmethod
     def int_to_hex_string(num):
         return str(hex(num)).removeprefix("0x").zfill(6)
+    
+    _special_chars = {True: "🟡", False: "⚫"}
+
+    def get_special(self, key = None):
+        return type(self)._special_chars.get(key, "🚫")
+    
     
