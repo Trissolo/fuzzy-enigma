@@ -12,6 +12,19 @@ from gi.repository import Gtk
 def test():
     print('Isolated stuff here')
 
+def util_eventbox_for_widget(widget, on_click_handler, *custom_args):
+    eventbox = Gtk.EventBox()
+    eventbox.set_name(f"EventBox for {widget.get_name()}")
+    #
+    # def minimun_handler(evbox, event):
+    #     pass
+    #
+    if callable(on_click_handler):
+        eventbox.connect("button-press-event", on_click_handler, *custom_args) #type(self).on_click_handler)
+    eventbox.add(widget)
+    #eventbox.show()
+    return eventbox
+
 class TrisLabel(Gtk.Label):
     def __init__(self, text = "My TrisLabel"):
         super().__init__()
@@ -51,4 +64,5 @@ class TrisLabel(Gtk.Label):
     def get_special(self, key = None):
         return type(self)._special_chars.get(key, "🚫")
     
-    
+
+
