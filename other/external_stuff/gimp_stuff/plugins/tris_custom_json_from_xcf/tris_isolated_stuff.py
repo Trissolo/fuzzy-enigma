@@ -3,8 +3,8 @@ import gi
 #gi.require_version("Gimp", "3.0")
 #from gi.repository import Gimp
 
-#gi.require_version("GimpUi", "3.0")
-#from gi.repository import GimpUi
+gi.require_version("GimpUi", "3.0")
+from gi.repository import GimpUi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -64,5 +64,45 @@ class TrisLabel(Gtk.Label):
     def get_special(self, key = None):
         return type(self)._special_chars.get(key, "🚫")
     
+class PorcusDialog(GimpUi.Dialog):
+    def __init__(self):
+        super().__init__()
+        self.set_border_width(10)
+        
+        left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        left_box.show()
+        right_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        right_box.show()
+        
+        #self.get_content_area().pack_start(left_box, True, True, 4)
+        #self.get_content_area().pack_start(right_box, True, True, 4)
+        ulteriore = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        ulteriore.show()
+        self.get_content_area().pack_start(ulteriore, True, True, 4)
+        ulteriore.pack_start(left_box, True, True, 4)
+        ulteriore.pack_start(right_box, True, True, 4)
+        
+        widget_list = []
+        self.widget_list = widget_list
+        
+        for idx in range(4):
+            toggle_prop_tools_button = GimpUi.Button.new_with_label(f"PR{idx} ->")
+            toggle_prop_tools_button.idx = idx
+            toggle_prop_tools_button.connect('clicked', self.show_right_widget, widget_list)
+            left_box.pack_start(toggle_prop_tools_button, True, True, 0)
+            toggle_prop_tools_button.show()
+            right_w = Gtk.Label.new(f"[Prop #{idx} label]")
+            widget_list.append(right_w)
+            right_box.pack_start(right_w, True, True, 0)
+    @staticmethod
+    def show_right_widget(button , wlist):
+        for elem in wlist:
+            elem.hide()
+        wlist[button.idx].show()
+
+#dialogazzo = PorcusDialog()
+#dialogazzo.show_all()
+#dialogazzo.run()
+#dialogazzo.destroy()
 
 
