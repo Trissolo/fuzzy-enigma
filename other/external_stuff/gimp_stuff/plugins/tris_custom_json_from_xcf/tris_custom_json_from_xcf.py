@@ -116,8 +116,9 @@ class AdventureGameNook(Gimp.PlugIn):
         #    print(f"{key}: {value}", end="\n")
         print("\ngrabbeddata KEYS:", *grabbeddata.keys(), sep="\n")
 
-        from tris_isolated_stuff import test as tris_test
-        tris_test()
+        from tris_isolated_stuff import PorcusDialog, WidgetTree
+        from tris_isolated_stuff import WidgetTree
+        return PorcusDialog, WidgetTree
 
     
     # Pseudo-TrisManager methods! Here!
@@ -139,7 +140,13 @@ class AdventureGameNook(Gimp.PlugIn):
 
         
         print("*** P L A Y G R O U N D ***")
-        self.preliminary_info()
+        #self.preliminary_info()
+
+        testClass, debugWidget  = self.preliminary_info()
+        dialog = testClass()
+        tr = debugWidget(dialog)
+        tr.generate()
+        #dialog.run()
         
 
         # initialize Gtk!

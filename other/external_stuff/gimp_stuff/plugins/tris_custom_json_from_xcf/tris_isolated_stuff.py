@@ -86,19 +86,26 @@ class PorcusDialog(GimpUi.Dialog):
         self.widget_list = widget_list
         
         for idx in range(4):
-            toggle_prop_tools_button = GimpUi.Button.new_with_label(f"PR{idx} ->")
-            toggle_prop_tools_button.idx = idx
-            toggle_prop_tools_button.connect('clicked', self.show_right_widget, widget_list)
-            left_box.pack_start(toggle_prop_tools_button, True, True, 0)
-            toggle_prop_tools_button.show()
-            right_w = Gtk.Label.new(f"[Prop #{idx} label]")
+            summary_widget = self.generate_summary_widget(idx)
+            left_box.pack_start(summary_widget, True, True, 0)
+            
+            right_w = self.generate_tool_widget(idx)
             widget_list.append(right_w)
             right_box.pack_start(right_w, True, True, 0)
     @staticmethod
-    def show_right_widget(button , wlist):
+    def show_tool_widget(button , wlist):
         for elem in wlist:
             elem.hide()
         wlist[button.idx].show()
+    def generate_tool_widget(self, param):
+        return Gtk.Label.new(f"[Prop #{param} label]")
+    def generate_summary_widget(self, param):
+            toggle_prop_tools_button = GimpUi.Button.new_with_label(f"PR{param} ->")
+            toggle_prop_tools_button.idx = param
+            toggle_prop_tools_button.connect('clicked', self.show_tool_widget, self.widget_list)
+            toggle_prop_tools_button.show()
+            return toggle_prop_tools_button
+
 
 #dialogazzo = PorcusDialog()
 #dialogazzo.show_all()
@@ -106,3 +113,58 @@ class PorcusDialog(GimpUi.Dialog):
 #dialogazzo.destroy()
 
 
+
+class WidgetTree:
+    def __init__(self, root_dir):
+        self._generator = _TreeGenerator(root_dir)
+    def generate(self):
+        tree = self._generator.build_tree()
+        for entry in tree:
+            print(entry)
+
+class _TreeGenerator:   
+    def __init__(self, root_dir):
+        self._root_dir = root_dir #pathlib.Path(root_dir)
+        self._tree = []
+        self.PIPE = "│"
+        self.ELBOW = "└──"
+        self.TEE = "├──"
+        self.PIPE_PREFIX = "│   "
+        self.SPACE_PREFIX = "    "
+    def build_tree(self):
+        self._tree_head()
+        self._tree_body(self._root_dir)
+        return self._tree
+    def _tree_head(self):
+        self._tree.append(f"{self._root_dir}")
+        self._tree.append(self.PIPE)
+    def _tree_body(self, directory, prefix=""):
+        entries = directory.get_children() #directory.iterdir()
+        entries = sorted(entries, key=lambda entry: not hasattr(entry, 'get_children')) #entry.is_file())
+        entries_count = len(entries)
+        for index, entry in enumerate(entries):
+            connector = self.ELBOW if index == entries_count - 1 else self.TEE
+            if hasattr(entry, 'get_children'):
+                self._add_directory(
+                    entry, index, entries_count, prefix, connector
+                )
+            else:
+                self._add_file(entry, prefix, connector)
+    
+    def _add_directory(self, directory, index, entries_count, prefix, connector):
+        self._tree.append(f"{prefix}{connector} {directory.get_name()}")
+        if index != entries_count - 1:
+            prefix += self.PIPE_PREFIX
+        else:
+            prefix += self.SPACE_PREFIX
+        self._tree_body(
+            directory=directory,
+            prefix=prefix,
+        )
+        self._tree.append(prefix.rstrip())
+    
+    def _add_file(self, file, prefix, connector):
+        self._tree.append(f"{prefix}{connector} {file.get_name()}")
+
+#widget =
+#WidgetTree(widget).generate()
