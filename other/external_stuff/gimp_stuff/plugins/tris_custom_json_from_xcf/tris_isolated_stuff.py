@@ -27,7 +27,7 @@ def util_eventbox_for_widget(widget, on_click_handler, *custom_args):
 
 class TrisLabel(Gtk.Label):
     def __init__(self, text = "My TrisLabel"):
-        super().__init__()
+        super().__init__(self)
         self.set_use_markup(True)
         self.set_name("La TrisLABEL (my extended Gtk.Label -> the click-enabled Widget)")
         self.last_entered_raw_text = ""
@@ -63,33 +63,49 @@ class TrisLabel(Gtk.Label):
 
     def get_special(self, key = None):
         return type(self)._special_chars.get(key, "🚫")
+    # End TrisLabel class
+
+#class PropWidget(Gtk.Box):
+#    def __init__(self, property, idx):
+#        super().__init__(self)
+
     
 class PorcusDialog(GimpUi.Dialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, tris_manager):
+        super().__init__(self)
         self.set_border_width(10)
+        self.tris_manager = tris_manager
+        self.add_button("Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("Done (Save)", Gtk.ResponseType.OK)
         
         left_box, right_box = self.generate_containers()
 
         self.widget_list = []
         
-        for idx in range(4):
-            summary_widget = self.generate_summary_widget(idx)
+        for idx, prop in enumerate(tris_manager.gamedata["thingProps"]):
+            summary_widget = self.generate_summary_widget(prop, idx)
             left_box.pack_start(summary_widget, True, True, 0)
             
-            right_w = self.generate_tool_widget(idx)
+            right_w = self.generate_tool_widget(prop, idx)
             self.widget_list.append(right_w)
             right_box.pack_start(right_w, True, True, 0)
+        #test separator:
+        #temp_sep = Gtk.Separator.new(Gtk.Orientation.HORIZONTAL)
+        #print(temp_sep.get_visible())
+        #temp_sep.show()
+        #left_box.pack_start(temp_sep, False, True, 0)
+        # end PorcusDialog's __init__
+
     @staticmethod
     def show_tool_widget(button , wlist):
         for elem in wlist:
             elem.hide()
         wlist[button.idx].show()
-    def generate_tool_widget(self, param):
+    def generate_tool_widget(self, param, idx):
         return Gtk.Label.new(f"[Prop #{param} label]")
-    def generate_summary_widget(self, param):
-            toggle_prop_tools_button = GimpUi.Button.new_with_label(f"PR{param} ->")
-            toggle_prop_tools_button.idx = param
+    def generate_summary_widget(self, param, idx):
+            toggle_prop_tools_button = GimpUi.Button.new_with_label(f"Prop-{param} ->")
+            toggle_prop_tools_button.idx = idx
             toggle_prop_tools_button.connect('clicked', self.show_tool_widget, self.widget_list)
             toggle_prop_tools_button.show()
             return toggle_prop_tools_button
@@ -119,7 +135,7 @@ class PorcusDialog(GimpUi.Dialog):
 #dialogazzo.destroy()
 
 
-
+'''
 class WidgetTree:
     def __init__(self, root_dir):
         self._generator = _TreeGenerator(root_dir)
@@ -174,3 +190,4 @@ class _TreeGenerator:
 
 #widget =
 #WidgetTree(widget).generate()
+'''

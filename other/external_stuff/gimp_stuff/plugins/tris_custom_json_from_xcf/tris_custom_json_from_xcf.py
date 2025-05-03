@@ -105,6 +105,7 @@ class AdventureGameNook(Gimp.PlugIn):
         print(sys.path[0], f"{terminal_col_start}The folder of this script (without separator in the end){terminal_col_end}")
         print(GLib.DIR_SEPARATOR_S, f"{terminal_col_start}OS Separator{terminal_col_end}")
 
+        # The JSON:
         print("Load JSON:")
         wanted_file = "gamedata.json"
         complete_path= f"{sys.path[0]}{GLib.DIR_SEPARATOR_S}{wanted_file}"
@@ -116,9 +117,21 @@ class AdventureGameNook(Gimp.PlugIn):
         #    print(f"{key}: {value}", end="\n")
         print("\ngrabbeddata KEYS:", *grabbeddata.keys(), sep="\n")
 
-        from tris_isolated_stuff import PorcusDialog, WidgetTree
-        from tris_isolated_stuff import WidgetTree
-        return PorcusDialog, WidgetTree
+        # self.gamedata:
+        # self.gamedata["BOOL"]
+        # self.gamedata["CRUMBLE"]
+        # self.gamedata["NIBBLE"]
+        # self.gamedata["BYTE"]
+        # self.gamedata["onHoverNames"]
+        # self.gamedata["thingKind"]
+        # self.gamedata["thingProps"]
+        self.gamedata = grabbeddata
+        print("gamedata", self.gamedata)
+
+        # imports:
+        from tris_isolated_stuff import PorcusDialog
+        #from tris_isolated_stuff import WidgetTree
+        return PorcusDialog
 
     
     # Pseudo-TrisManager methods! Here!
@@ -135,21 +148,34 @@ class AdventureGameNook(Gimp.PlugIn):
             print("Quitting because there are no layers, or the image is not saved to disk...")
             return self.procedure_is_complete(procedure)
         
-        
-        # custom classes imports here:
-
-        
-        print("*** P L A Y G R O U N D ***")
-        #self.preliminary_info()
-
-        testClass, debugWidget  = self.preliminary_info()
-        dialog = testClass()
-        debugWidget(dialog).generate()
-        #dialog.run()
-        
-
         # initialize Gtk!
         GimpUi.init(GLib.path_get_basename(__file__).removesuffix(".py"))
+
+        # custom classes imports here:
+        
+        print("*** P L A Y G R O U N D ***")
+        #ATM self.preliminary_info() returns two Classes:
+
+        testClass = self.preliminary_info()
+        dialog = testClass(self)
+        #debugWidget(dialog).generate()
+        #dialog.run()
+        print(dialog.tris_manager)
+        #print("CALLING TRISGAG before adding the init.py, and works")
+        #from trismodule.filenameOrc import stringLength, trisgag
+        #print(trisgag(), stringLength("ORCUSAIO"))
+
+        print("Sec tent import")
+        #import trismodule #ok
+        #print(trismodule.mosconi()) #ok con la linea sopra
+        from trismodule import mosconi, trisgag, WidgetTree, TrisLabel
+        tlb = TrisLabel()
+        tlb.write("Yay!", bgcolor= 0x990099, size=130, pad=7)
+        dialog.get_content_area().pack_end(tlb, True, True, 5)
+        WidgetTree(dialog).generate()
+        dialog.run()
+        
+
         
         # We have reached the end of the procedure: let's return "Success"
         return self.procedure_is_complete(procedure)  #procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
