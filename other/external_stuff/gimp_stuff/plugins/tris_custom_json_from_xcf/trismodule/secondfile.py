@@ -1,2 +1,0 @@
-def mosconi():
-    return "Gremano"

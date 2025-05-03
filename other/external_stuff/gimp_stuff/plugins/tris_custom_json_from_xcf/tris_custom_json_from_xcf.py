@@ -95,7 +95,7 @@ class AdventureGameNook(Gimp.PlugIn):
         GLib.chdir("../..")
         return GLib.get_current_dir()
     
-    def preliminary_info(self):
+    def get_gamedata_json_and_preliminary_info(self):
         terminal_col_start = '\033[45m'
         terminal_col_end = '\033[0m'
         terminal_col_end = f"{terminal_col_end}\n"
@@ -128,11 +128,6 @@ class AdventureGameNook(Gimp.PlugIn):
         self.gamedata = grabbeddata
         print("gamedata", self.gamedata)
 
-        # imports:
-        from tris_isolated_stuff import PorcusDialog
-        #from tris_isolated_stuff import WidgetTree
-        return PorcusDialog
-
     
     # Pseudo-TrisManager methods! Here!
 
@@ -151,30 +146,17 @@ class AdventureGameNook(Gimp.PlugIn):
         # initialize Gtk!
         GimpUi.init(GLib.path_get_basename(__file__).removesuffix(".py"))
 
-        # custom classes imports here:
         
         print("*** P L A Y G R O U N D ***")
-        #ATM self.preliminary_info() returns two Classes:
-
-        testClass = self.preliminary_info()
-        dialog = testClass(self)
-        #debugWidget(dialog).generate()
-        #dialog.run()
-        print(dialog.tris_manager)
-        #print("CALLING TRISGAG before adding the init.py, and works")
-        #from trismodule.filenameOrc import stringLength, trisgag
-        #print(trisgag(), stringLength("ORCUSAIO"))
-
-        print("Sec tent import")
-        #import trismodule #ok
-        #print(trismodule.mosconi()) #ok con la linea sopra
-        from trismodule import mosconi, trisgag, WidgetTree, TrisLabel
-        tlb = TrisLabel()
-        tlb.write("Yay!", bgcolor= 0x990099, size=130, pad=7)
-        dialog.get_content_area().pack_end(tlb, True, True, 5)
-        WidgetTree(dialog).generate()
-        dialog.run()
+        # 'self.gamedata' = parsed gamedata.json
+        self.get_gamedata_json_and_preliminary_info()
         
+        #imports
+        from trismodule import WidgetTree, TrisLabel, TrisDialog  #, makeEventboxForWidget
+
+        #test Plugin Dialog
+        dialog = TrisDialog(self).run()
+        WidgetTree(dialog).generate()
 
         
         # We have reached the end of the procedure: let's return "Success"
