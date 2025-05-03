@@ -69,28 +69,16 @@ class PorcusDialog(GimpUi.Dialog):
         super().__init__()
         self.set_border_width(10)
         
-        left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        left_box.show()
-        right_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        right_box.show()
-        
-        #self.get_content_area().pack_start(left_box, True, True, 4)
-        #self.get_content_area().pack_start(right_box, True, True, 4)
-        ulteriore = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        ulteriore.show()
-        self.get_content_area().pack_start(ulteriore, True, True, 4)
-        ulteriore.pack_start(left_box, True, True, 4)
-        ulteriore.pack_start(right_box, True, True, 4)
-        
-        widget_list = []
-        self.widget_list = widget_list
+        left_box, right_box = self.generate_containers()
+
+        self.widget_list = []
         
         for idx in range(4):
             summary_widget = self.generate_summary_widget(idx)
             left_box.pack_start(summary_widget, True, True, 0)
             
             right_w = self.generate_tool_widget(idx)
-            widget_list.append(right_w)
+            self.widget_list.append(right_w)
             right_box.pack_start(right_w, True, True, 0)
     @staticmethod
     def show_tool_widget(button , wlist):
@@ -105,6 +93,24 @@ class PorcusDialog(GimpUi.Dialog):
             toggle_prop_tools_button.connect('clicked', self.show_tool_widget, self.widget_list)
             toggle_prop_tools_button.show()
             return toggle_prop_tools_button
+    def generate_containers(self):
+        left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        left_box.set_name("Summary Box")
+        left_box.show()
+
+        right_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        right_box.set_name("Tools Box")
+        right_box.show()
+        
+        ulteriore = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        ulteriore.set_name("Ulteriore")
+        ulteriore.show()
+        ulteriore.pack_start(left_box, True, True, 4)
+        ulteriore.pack_start(right_box, True, True, 4)
+
+        self.get_content_area().pack_start(ulteriore, True, True, 4)
+        self.get_content_area().set_name("Dialog Content Area")
+        return left_box, right_box
 
 
 #dialogazzo = PorcusDialog()

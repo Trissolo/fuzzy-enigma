@@ -144,8 +144,7 @@ class AdventureGameNook(Gimp.PlugIn):
 
         testClass, debugWidget  = self.preliminary_info()
         dialog = testClass()
-        tr = debugWidget(dialog)
-        tr.generate()
+        debugWidget(dialog).generate()
         #dialog.run()
         
 
