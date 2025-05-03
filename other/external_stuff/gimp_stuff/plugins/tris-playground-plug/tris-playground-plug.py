@@ -64,13 +64,13 @@ class AdventureGameNook(Gimp.PlugIn):
 
         procedure.set_image_types("*")
 
-        procedure.set_menu_label("[Tris] 💠 Room Editor and JSON generator")
+        procedure.set_menu_label("[Tris] ⏳ Playground Plugin!")
 
         procedure.add_menu_path("<Image>/Filters/[[Tris]]/")
 
         procedure.set_documentation(
-            "[Tris] Basically, a JSON-Room editor for adventure games.",
-            "A complex plugin (GIMP 3.0). WIP",
+            "[Tris] BareBone Plugin (for GIMP 3.0)",
+            "There is also a custom module.",
             name,
         )
 
@@ -112,11 +112,12 @@ class AdventureGameNook(Gimp.PlugIn):
         with open(complete_path) as json_file:
             grabbeddata = json.load(json_file)
         
-        for key, value in grabbeddata.items():
-            print(f"{key}: {value}", end="\n")
-        print("\ngrabbeddata KEYS:", *grabbeddata.keys(), sep="\n")
+        #for key, value in grabbeddata.items():
+        #    print(f"{key}: {value}", end="\n")
+        print("\nloaded JSON keys:", *grabbeddata.keys(), sep="\n")
 
-        from tris_isolated_stuff import test as tris_test
+        print("\nand... 'import' from custom module:")
+        from TrisModule import test as tris_test
         tris_test()
 
     
