@@ -28,8 +28,9 @@ class TrisDialog(GimpUi.Dialog):
             summary_widget = self.generate_summary_widget(prop, idx)
             left_box.pack_start(summary_widget, True, True, 0)
             self.summary_widgets_ary.append(summary_widget)
-
-            tool_widget = self.generate_tool_widget(prop, idx)
+            assert hasattr(TrisDialog, f"tool_widget_for_{prop}"), f"Method {f'tool_widget_for_{prop}'} inexistent. Please add it to TrisDialog class."
+            tool_widget = getattr(TrisDialog, f"tool_widget_for_{prop}")(self, prop, idx, summary_widget)
+            #tool_widget = self.generate_tool_widget(prop, idx, summary_widget)
             self.tool_widgets_ary.append(tool_widget)
             right_box.pack_start(tool_widget, True, True, 0)
         #test separator:
@@ -44,8 +45,8 @@ class TrisDialog(GimpUi.Dialog):
         for elem in wlist:
             elem.hide()
         wlist[button.idx].show()
-    def generate_tool_widget(self, param, idx):
-        return Gtk.Label.new(f"[Prop #{param} label]")
+    def generate_tool_widget(self, param, idx, summary_widget):
+        return Gtk.Label.new(f"(Prop #{param} label[{idx}])")
     def hide_all_widget_tools(self):
         for elem in self.tool_widgets_ary:
             elem.hide()
@@ -54,17 +55,20 @@ class TrisDialog(GimpUi.Dialog):
     def tool_show_test(button):
         div = button.get_parent()
         main_dialog = div.get_ancestor(TrisDialog)
-        main_dialog.hide_all_widget_tools()
-        main_dialog.tool_widgets_ary[div.idx].show()
+        #main_dialog.hide_all_widget_tools()
+        #main_dialog.tool_widgets_ary[div.idx].show()
+        main_dialog.hide_all_widget_tools().tool_widgets_ary[div.idx].show()
         return True
     
     def generate_summary_widget(self, param, idx):
         div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
         div.set_name(f"Div {param}")
+        #div.set_halign(Gtk.Align.END) #CENTER) #.END)   #.START)
+        print("Newly create box align:", div.get_halign())
         div.idx = idx
         label = Gtk.Label.new(f"[Prop #{param} label]")
-        button_change = GimpUi.Button.new_with_label(f"confirm change")
-        button_show = GimpUi.Button.new_with_label(f"Select prop {param}")
+        button_change = GimpUi.Button.new_from_icon_name(GimpUi.ICON_SHAPE_CIRCLE, 1) #GimpUi.Button.new_with_label(f"confirm change")
+        button_show = GimpUi.Button.new_from_icon_name(GimpUi.ICON_EDIT_REDO, 1) #GimpUi.Button.new_with_label(f"Select prop {param}")
         button_show.set_name(f"Button_show {param}")
         button_show.connect('clicked', type(self).tool_show_test)
         for child in [label, button_change, button_show]:
@@ -95,4 +99,14 @@ class TrisDialog(GimpUi.Dialog):
         self.get_content_area().pack_start(ulteriore, True, True, 4)
         self.get_content_area().set_name("Dialog Content Area")
         return left_box, right_box
+    def tool_widget_for_hoverName(self, prop, idx, summary_widget):
+        return self.generate_tool_widget(prop, idx, summary_widget)
+    def tool_widget_for_suffix(self, prop, idx, summary_widget):
+        return self.generate_tool_widget(prop, idx, summary_widget)
+    def tool_widget_for_skipCondition(self, prop, idx, summary_widget):
+        return self.generate_tool_widget(prop, idx, summary_widget)
+    def tool_widget_for_animation(self, prop, idx, summary_widget):
+        return self.generate_tool_widget(prop, idx, summary_widget)
+    def tool_widget_for_noInteraction(self, prop, idx, summary_widget):
+        return self.generate_tool_widget(prop, idx, summary_widget)
     
