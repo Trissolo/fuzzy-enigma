@@ -152,7 +152,7 @@ class AdventureGameNook(Gimp.PlugIn):
         self.get_gamedata_json_and_preliminary_info()
         
         #imports
-        from trismodule import WidgetTree, TrisLabel, TrisDialog, TrisEnum  #, makeEventboxForWidget
+        from trismodule import WidgetTree, TrisLabel, TrisDialog, TrisEnum
 
         #test Plugin Dialog
         dialog = TrisDialog(self)

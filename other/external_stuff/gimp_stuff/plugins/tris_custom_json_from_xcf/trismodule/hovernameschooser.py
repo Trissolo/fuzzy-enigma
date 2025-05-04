@@ -10,6 +10,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 from .TrisEnum import TrisEnum
+from .generic_helpers import make_listbox
 
 class hovernamesChooser():
     def __init__(self, prop, idx, trisDialog):
@@ -18,13 +19,13 @@ class hovernamesChooser():
         self.idx = idx
         self.property = prop
         self.enum = TrisEnum(self.tris_manager.gamedata['onHoverNames'], "Things names (on_pointer_over")
+        self.pending_val = None
+        self.pending_num = None
+
         # "div"
-        div = Gtk.Box.new(Gtk.Orientation.VERTICAL, spacing=0)
-        #div.set_homogeneous(False)
-        div.set_hexpand(True)
-        
-        print("DIV VHEXPAND", div.get_vexpand())
-        self.div = div
+        self.div = Gtk.Box.new(Gtk.Orientation.VERTICAL, spacing=0)
+        self.div.set_hexpand(True)
+
         #searchWidget
         searcWidget = Gtk.SearchEntry()
         searcWidget.show()
@@ -32,32 +33,35 @@ class hovernamesChooser():
         searcWidget.connect("search-changed", self.on_search_activated, self)
 
         # ListBox:
-        listbox = Gtk.ListBox()
-        listbox.set_name("Listbox")
-        listbox.show()
-        # populate the ListBox
-        for item in self.enum.tlist:
-            #print(f"Enum! {item}")
-            option = Gtk.ListBoxRow.new()
-            option.data = item
-            orc_label = Gtk.Label.new(item)
-            option.add(orc_label)
-            orc_label.show()
-            option.show()
-            option.set_name(f"option {item}")
-            listbox.add(option)
+        listbox = make_listbox(self.enum.tlist)
         listbox.set_sort_func(self.sort_func, None, False)
         listbox.set_filter_func(self.tris_filter_func, self, False)
         listbox.connect("row-activated", self.on_row_activated_grid, self)
+        #scrolled
         scrolled = Gtk.ScrolledWindow.new(None, None)
         scrolled.add(listbox)
         scrolled.set_hexpand(True)
-        #scrolled.set_max_content_height(800)
-        #print("**************************scrolled.get_max_content_height()", scrolled.get_max_content_height())
+
+        #top container
+        self.pending_label = Gtk.Label.new("----")
+        self.pending_label.show()
+        self.confirm_button = GimpUi.Button.new_from_icon_name(GimpUi.ICON_MENU_LEFT, 1) #Gtk.Button.new_with_label("Click Me")
+        self.confirm_button.connect("clicked", self.on_confirm_clicked, self)
+
+        # reset option!
+        self.clear_pending_option()
+
+        tcont = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, spacing=0)
+        tcont.pack_start(self.pending_label, True, True, 2)
+        tcont.pack_end(self.confirm_button, False, False, 2)
+        tcont.show()
+
         self.listbox = listbox
         self.scrolled = scrolled
-        div.pack_start(searcWidget, False, False, 1)
-        div.pack_start(scrolled, True, True, 1)
+
+        self.div.pack_start(tcont, False, False, 1)
+        self.div.pack_start(searcWidget, False, False, 1)
+        self.div.pack_start(scrolled, True, True, 1)
     def show(self):
         self.div.show()
         self.listbox.show()
@@ -78,7 +82,27 @@ class hovernamesChooser():
     @staticmethod
     def on_row_activated_grid(listbox_widget, row, self):
         num, text = self.enum.get_all(row.data)
-        print(f"Selected: {text} -> idx: {num}")
+        self.pending_label.set_text(f"{text} [{num}]")
+        self.pending_val = text
+        self.pending_num = num
+        self.confirm_button.show()
+    def clear_pending_option(self):
+        self.confirm_button.hide()
+        self.pending_num = None
+        self.pending_val = None
+        self.pending_label.set_text("----")
+        return self
+    @staticmethod
+    def on_confirm_clicked(button, self):
+        summary_widget = self.trisDialog.summary_widget_from_idx(self.idx)
+        print(* summary_widget.get_children())
+        summary_label = summary_widget.get_children()[0]
+        summary_label.set_text(self.pending_val)
+        # TO DO: add Parasite!
+        self.confirm_button.hide()
+        self.clear_pending_option()
+        self.hide() #.tool_widget_from_idx
+        return self
 
 '''       
         

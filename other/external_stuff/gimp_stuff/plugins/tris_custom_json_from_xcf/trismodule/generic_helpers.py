@@ -21,3 +21,22 @@ def makeEventboxForWidget(widget, on_click_handler, *custom_args):
     eventbox.add(widget)
     #eventbox.show()
     return eventbox
+
+def make_listbox(option_list):
+    listbox = Gtk.ListBox()
+    listbox.set_name("Listbox")
+    listbox.show()
+    # populate the ListBox
+    for item in option_list:
+        optn_label = Gtk.Label.new(item)
+        optn_label.show()
+        option = Gtk.ListBoxRow.new()
+        option.set_name(f"option {item}")
+        option.data = item
+        option.add(optn_label)
+        option.show()
+        listbox.add(option)
+    return listbox
+    #listbox.set_sort_func(self.sort_func, None, False)
+    #listbox.set_filter_func(self.tris_filter_func, self, False)
+    #listbox.connect("row-activated", self.on_row_activated_grid, self)

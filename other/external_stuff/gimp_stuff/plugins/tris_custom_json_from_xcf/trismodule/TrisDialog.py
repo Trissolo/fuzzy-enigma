@@ -70,11 +70,11 @@ class TrisDialog(GimpUi.Dialog):
         #print("Newly create box align:", div.get_halign())
         div.idx = idx
         label = Gtk.Label.new(f"[Prop #{param} label]")
-        button_change = GimpUi.Button.new_from_icon_name(GimpUi.ICON_SHAPE_CIRCLE, 1) #GimpUi.Button.new_with_label(f"confirm change")
+        #button_change = GimpUi.Button.new_from_icon_name(GimpUi.ICON_SHAPE_CIRCLE, 1) #GimpUi.Button.new_with_label(f"confirm change")
         button_show = GimpUi.Button.new_from_icon_name(GimpUi.ICON_EDIT_REDO, 1) #GimpUi.Button.new_with_label(f"Select prop {param}")
         button_show.set_name(f"Button_show {param}")
         button_show.connect('clicked', type(self).tool_show_test)
-        for child in [label, button_change, button_show]:
+        for child in [label, button_show]:
              child.show()
              div.pack_start(child, False, False, 4)
         div.show()
