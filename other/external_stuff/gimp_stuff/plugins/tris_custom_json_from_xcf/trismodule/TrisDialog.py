@@ -52,24 +52,12 @@ class TrisDialog(GimpUi.Dialog):
         return self
     @staticmethod
     def tool_show_test(button):
-        wanted = None
-        idx = "Un cacchio!"
-        widget = button
-        for tent in range(9):
-            parent = widget.get_parent()
-            if parent is None:
-                wanted = widget
-                print(f"Found the dialog!: {wanted.get_name()} div.idx: {idx}")
-                break
-            else:
-                widget = parent
-                print(f"tent#: {tent} - Parent now: {parent.get_name()}")
-                if widget.get_name().startswith("Div"): idx = widget.idx
-        widget.hide_all_widget_tools()
-        widget.tool_widgets_ary[idx].show()
-        #print("END tool_show_test Handler:", wanted, idx)
-
-
+        div = button.get_parent()
+        main_dialog = div.get_ancestor(TrisDialog)
+        main_dialog.hide_all_widget_tools()
+        main_dialog.tool_widgets_ary[div.idx].show()
+        return True
+    
     def generate_summary_widget(self, param, idx):
         div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
         div.set_name(f"Div {param}")
