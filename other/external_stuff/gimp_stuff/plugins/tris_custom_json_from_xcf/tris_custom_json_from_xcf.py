@@ -156,7 +156,7 @@ class AdventureGameNook(Gimp.PlugIn):
 
         #test Plugin Dialog
         dialog = TrisDialog(self)
-        WidgetTree(dialog).generate()
+        #WidgetTree(dialog).generate()
         tenu = TrisEnum(self.gamedata["BOOL"], "Conditions BOol")
         print(tenu.get_all(1))
         dialog.run()

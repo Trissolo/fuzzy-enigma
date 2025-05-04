@@ -9,6 +9,8 @@ from gi.repository import GimpUi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+from .hovernameschooser import hovernamesChooser
+
 
 class TrisDialog(GimpUi.Dialog):
     def __init__(self, tris_manager):
@@ -26,13 +28,14 @@ class TrisDialog(GimpUi.Dialog):
         #populate
         for idx, prop in enumerate(tris_manager.gamedata["thingProps"]):
             summary_widget = self.generate_summary_widget(prop, idx)
-            left_box.pack_start(summary_widget, True, True, 0)
+            left_box.pack_start(summary_widget, False, False, 0)
             self.summary_widgets_ary.append(summary_widget)
             assert hasattr(TrisDialog, f"tool_widget_for_{prop}"), f"Method {f'tool_widget_for_{prop}'} inexistent. Please add it to TrisDialog class."
             tool_widget = getattr(TrisDialog, f"tool_widget_for_{prop}")(self, prop, idx, summary_widget)
             #tool_widget = self.generate_tool_widget(prop, idx, summary_widget)
+            to_append = tool_widget.div if hasattr(tool_widget, "div") else tool_widget
             self.tool_widgets_ary.append(tool_widget)
-            right_box.pack_start(tool_widget, True, True, 0)
+            right_box.pack_start(to_append, True, True, 0)
         #test separator:
         #temp_sep = Gtk.Separator.new(Gtk.Orientation.HORIZONTAL)
         #print(temp_sep.get_visible())
@@ -64,7 +67,7 @@ class TrisDialog(GimpUi.Dialog):
         div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
         div.set_name(f"Div {param}")
         #div.set_halign(Gtk.Align.END) #CENTER) #.END)   #.START)
-        print("Newly create box align:", div.get_halign())
+        #print("Newly create box align:", div.get_halign())
         div.idx = idx
         label = Gtk.Label.new(f"[Prop #{param} label]")
         button_change = GimpUi.Button.new_from_icon_name(GimpUi.ICON_SHAPE_CIRCLE, 1) #GimpUi.Button.new_with_label(f"confirm change")
@@ -73,7 +76,7 @@ class TrisDialog(GimpUi.Dialog):
         button_show.connect('clicked', type(self).tool_show_test)
         for child in [label, button_change, button_show]:
              child.show()
-             div.pack_start(child, True, False, 4)
+             div.pack_start(child, False, False, 4)
         div.show()
         return div
             #toggle_prop_tools_button = GimpUi.Button.new_with_label(f"Prop-{param} ->")
@@ -82,25 +85,33 @@ class TrisDialog(GimpUi.Dialog):
             #toggle_prop_tools_button.show()
             #return toggle_prop_tools_button
     def generate_containers(self):
-        left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        temp_sp = 0
+        left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=temp_sp)
         left_box.set_name("Summary Box")
         left_box.show()
 
-        right_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        right_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=temp_sp)
         right_box.set_name("Tools Box")
         right_box.show()
         
-        ulteriore = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        ulteriore = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=temp_sp)
         ulteriore.set_name("Ulteriore")
         ulteriore.show()
-        ulteriore.pack_start(left_box, True, True, 4)
-        ulteriore.pack_start(right_box, True, True, 4)
+        ulteriore.pack_start(left_box, True, True, temp_sp)
+        ulteriore.pack_start(right_box, True, True, temp_sp)
 
-        self.get_content_area().pack_start(ulteriore, True, True, 4)
+        self.get_content_area().pack_start(ulteriore, True, True, temp_sp)
         self.get_content_area().set_name("Dialog Content Area")
+        self.left_box = left_box
+        self.right_box = right_box
         return left_box, right_box
+    def tool_widget_from_idx(self, index):
+        return self.tool_widgets_ary[index]
+    def summary_widget_from_idx(self, index):
+        return self.summary_widgets_ary[index]
     def tool_widget_for_hoverName(self, prop, idx, summary_widget):
-        return self.generate_tool_widget(prop, idx, summary_widget)
+        return hovernamesChooser(prop, idx, self)
+        #return self.generate_tool_widget(prop, idx, summary_widget)
     def tool_widget_for_suffix(self, prop, idx, summary_widget):
         return self.generate_tool_widget(prop, idx, summary_widget)
     def tool_widget_for_skipCondition(self, prop, idx, summary_widget):
