@@ -85,7 +85,7 @@ class TrisDialog(GimpUi.Dialog):
             #toggle_prop_tools_button.show()
             #return toggle_prop_tools_button
     def generate_containers(self):
-        temp_sp = 0
+        temp_sp = 4
         left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=temp_sp)
         left_box.set_name("Summary Box")
         left_box.show()
@@ -97,7 +97,7 @@ class TrisDialog(GimpUi.Dialog):
         ulteriore = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=temp_sp)
         ulteriore.set_name("Ulteriore")
         ulteriore.show()
-        ulteriore.pack_start(left_box, True, True, temp_sp)
+        ulteriore.pack_start(left_box, False, True, temp_sp)
         ulteriore.pack_start(right_box, True, True, temp_sp)
 
         self.get_content_area().pack_start(ulteriore, True, True, temp_sp)
