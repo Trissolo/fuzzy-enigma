@@ -147,16 +147,19 @@ class AdventureGameNook(Gimp.PlugIn):
         GimpUi.init(GLib.path_get_basename(__file__).removesuffix(".py"))
 
         
-        print("*** P L A Y G R O U N D ***")
+        print("*** Generate Game Json Plugin ***")
         # 'self.gamedata' = parsed gamedata.json
         self.get_gamedata_json_and_preliminary_info()
         
         #imports
-        from trismodule import WidgetTree, TrisLabel, TrisDialog  #, makeEventboxForWidget
+        from trismodule import WidgetTree, TrisLabel, TrisDialog, TrisEnum  #, makeEventboxForWidget
 
         #test Plugin Dialog
-        dialog = TrisDialog(self).run()
+        dialog = TrisDialog(self)
         WidgetTree(dialog).generate()
+        tenu = TrisEnum(self.gamedata["BOOL"], "Conditions BOol")
+        print(tenu.get_all(1))
+        dialog.run()
 
         
         # We have reached the end of the procedure: let's return "Success"

@@ -49,3 +49,5 @@ class _TreeGenerator:
     
     def _add_file(self, file, prefix, connector):
         self._tree.append(f"{prefix}{connector} {file.get_name()}")
+
+#__all__ = ["WidgetTree"]

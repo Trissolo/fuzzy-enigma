@@ -42,9 +42,7 @@ class TrisLabel(Gtk.Label):
     @staticmethod
     def int_to_hex_string(num):
         return str(hex(num)).removeprefix("0x").zfill(6)
-    
     _special_chars = {True: "🟡", False: "⚫"}
-
     def get_special(self, key = None):
         return type(self)._special_chars.get(key, "🚫")
     # End TrisLabel class

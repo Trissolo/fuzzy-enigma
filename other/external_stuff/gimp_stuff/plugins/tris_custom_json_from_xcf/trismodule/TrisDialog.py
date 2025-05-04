@@ -14,21 +14,24 @@ class TrisDialog(GimpUi.Dialog):
     def __init__(self, tris_manager):
         super().__init__(self)
         self.set_border_width(10)
-        self.tris_manager = tris_manager
+        self.set_name("THE TrisDialog!")
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
-        self.add_button("Done (Save)", Gtk.ResponseType.OK)
-        
+        self.add_button("Done (Save [not yet implemented])", Gtk.ResponseType.OK)
+        #special properties
+        self.tris_manager = tris_manager
+        self.tool_widgets_ary = []
+        self.summary_widgets_ary = []
+        #containers
         left_box, right_box = self.generate_containers()
-
-        self.widget_list = []
-        
+        #populate
         for idx, prop in enumerate(tris_manager.gamedata["thingProps"]):
             summary_widget = self.generate_summary_widget(prop, idx)
             left_box.pack_start(summary_widget, True, True, 0)
-            
-            right_w = self.generate_tool_widget(prop, idx)
-            self.widget_list.append(right_w)
-            right_box.pack_start(right_w, True, True, 0)
+            self.summary_widgets_ary.append(summary_widget)
+
+            tool_widget = self.generate_tool_widget(prop, idx)
+            self.tool_widgets_ary.append(tool_widget)
+            right_box.pack_start(tool_widget, True, True, 0)
         #test separator:
         #temp_sep = Gtk.Separator.new(Gtk.Orientation.HORIZONTAL)
         #print(temp_sep.get_visible())
@@ -43,12 +46,49 @@ class TrisDialog(GimpUi.Dialog):
         wlist[button.idx].show()
     def generate_tool_widget(self, param, idx):
         return Gtk.Label.new(f"[Prop #{param} label]")
+    def hide_all_widget_tools(self):
+        for elem in self.tool_widgets_ary:
+            elem.hide()
+        return self
+    @staticmethod
+    def tool_show_test(button):
+        wanted = None
+        idx = "Un cacchio!"
+        widget = button
+        for tent in range(9):
+            parent = widget.get_parent()
+            if parent is None:
+                wanted = widget
+                print(f"Found the dialog!: {wanted.get_name()} div.idx: {idx}")
+                break
+            else:
+                widget = parent
+                print(f"tent#: {tent} - Parent now: {parent.get_name()}")
+                if widget.get_name().startswith("Div"): idx = widget.idx
+        widget.hide_all_widget_tools()
+        widget.tool_widgets_ary[idx].show()
+        #print("END tool_show_test Handler:", wanted, idx)
+
+
     def generate_summary_widget(self, param, idx):
-            toggle_prop_tools_button = GimpUi.Button.new_with_label(f"Prop-{param} ->")
-            toggle_prop_tools_button.idx = idx
-            toggle_prop_tools_button.connect('clicked', self.show_tool_widget, self.widget_list)
-            toggle_prop_tools_button.show()
-            return toggle_prop_tools_button
+        div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
+        div.set_name(f"Div {param}")
+        div.idx = idx
+        label = Gtk.Label.new(f"[Prop #{param} label]")
+        button_change = GimpUi.Button.new_with_label(f"confirm change")
+        button_show = GimpUi.Button.new_with_label(f"Select prop {param}")
+        button_show.set_name(f"Button_show {param}")
+        button_show.connect('clicked', type(self).tool_show_test)
+        for child in [label, button_change, button_show]:
+             child.show()
+             div.pack_start(child, True, False, 4)
+        div.show()
+        return div
+            #toggle_prop_tools_button = GimpUi.Button.new_with_label(f"Prop-{param} ->")
+            #toggle_prop_tools_button.idx = idx
+            #toggle_prop_tools_button.connect('clicked', self.show_tool_widget, self.tool_widgets_ary)
+            #toggle_prop_tools_button.show()
+            #return toggle_prop_tools_button
     def generate_containers(self):
         left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         left_box.set_name("Summary Box")
