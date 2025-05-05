@@ -25,6 +25,12 @@ class TrisDialog(GimpUi.Dialog):
         self.summary_widgets_ary = []
         #containers
         left_box, right_box = self.generate_containers()
+
+        #top bar
+        top_div = self.make_top_bar()
+        left_box.pack_start(top_div, False, False, 4)
+
+        
         #populate
         for idx, prop in enumerate(tris_manager.gamedata["thingProps"]):
             summary_widget = self.generate_summary_widget(prop, idx)
@@ -120,4 +126,27 @@ class TrisDialog(GimpUi.Dialog):
         return self.generate_tool_widget(prop, idx, summary_widget)
     def tool_widget_for_noInteraction(self, prop, idx, summary_widget):
         return self.generate_tool_widget(prop, idx, summary_widget)
+    def make_top_bar(self):
+        update_button = GimpUi.Button.new_from_icon_name(GimpUi.ICON_VIEW_REFRESH, 1) #Gtk.Button.new_with_label("Click Me")
+        update_button.set_name("Update Layer")
+        update_button.show()
+        update_button.connect("clicked", self.update_button_action, self)
+        image_name = Gtk.Label.new(f"<{self.tris_manager.image.get_name()}>")
+        image_name.set_name("Descr Image Name")
+        image_name.show()
+        top_div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
+        top_div.set_name("Div Top Bar")
+        top_div.pack_start(update_button, False, False, 0)
+        top_div.pack_start(image_name, True, True, 0)
+        #top_div.set_center_widget(image_name)
+        top_div.show()
+        self.update_button = update_button
+        self.image_name = image_name
+        return top_div
+    @staticmethod
+    def update_button_action(button, self):
+        self.tris_manager.update_current_layer()
+        self.image_name.set_text(self.tris_manager.current_layer.get_name())
+
+
     

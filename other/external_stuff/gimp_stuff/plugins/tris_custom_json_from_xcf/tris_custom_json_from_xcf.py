@@ -127,6 +127,19 @@ class AdventureGameNook(Gimp.PlugIn):
         # self.gamedata["thingProps"]
         self.gamedata = grabbeddata
         print("gamedata", self.gamedata)
+        return None
+    @property
+    def image(self):
+        return self._image
+    def update_current_layer(self):
+        temp_other_layer = self.image.get_layers()[0]
+        if temp_other_layer != self.current_layer: #self._current_layer:
+            self._current_layer = temp_other_layer
+        return temp_other_layer
+    @property
+    def current_layer(self):
+        return self._current_layer   
+        
 
     
     # Pseudo-TrisManager methods! Here!
@@ -150,6 +163,11 @@ class AdventureGameNook(Gimp.PlugIn):
         print("*** Generate Game Json Plugin ***")
         # 'self.gamedata' = parsed gamedata.json
         self.get_gamedata_json_and_preliminary_info()
+
+        #store the image somewhere:
+        self._image = image
+        self._current_layer = None
+
         
         #imports
         from trismodule import WidgetTree, TrisLabel, TrisDialog, TrisEnum
