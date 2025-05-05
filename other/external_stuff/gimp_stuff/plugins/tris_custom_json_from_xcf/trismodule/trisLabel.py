@@ -11,9 +11,9 @@ from gi.repository import Gtk
 
 class TrisLabel(Gtk.Label):
     def __init__(self, text = "My TrisLabel"):
-        super().__init__(self)
+        super().__init__()
         self.set_use_markup(True)
-        self.set_name("La TrisLABEL (my extended Gtk.Label -> the click-enabled Widget)")
+        self.set_name("TrisLABEL")
         self.last_entered_raw_text = ""
         self.set_default_text(text)
         self.show()
