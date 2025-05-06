@@ -115,7 +115,7 @@ class AdventureGameNook(Gimp.PlugIn):
         
         #for key, value in grabbeddata.items():
         #    print(f"{key}: {value}", end="\n")
-        print("\ngrabbeddata KEYS:", *grabbeddata.keys(), sep="\n")
+        #print("\ngrabbeddata KEYS:", *grabbeddata.keys(), sep="\n")
 
         # self.gamedata:
         # self.gamedata["BOOL"]
@@ -126,16 +126,16 @@ class AdventureGameNook(Gimp.PlugIn):
         # self.gamedata["thingKind"]
         # self.gamedata["thingProps"]
         self.gamedata = grabbeddata
-        print("gamedata", self.gamedata)
+        print("Gamedata acquired and stored!") #, self.gamedata)
         return None
     @property
     def image(self):
         return self._image
     def update_current_layer(self):
-        temp_other_layer = self.image.get_layers()[0]
-        if temp_other_layer != self.current_layer: #self._current_layer:
-            self._current_layer = temp_other_layer
-        return temp_other_layer
+        sel_layers = self.image.get_selected_layers()
+        assert sel_layers is not None or len(sel_layers) != 0, "No layer selected! Make sure that at least one layer exists in image!"
+        self._current_layer = sel_layers[0]
+        return self.current_layer
     @property
     def current_layer(self):
         return self._current_layer   
@@ -174,9 +174,18 @@ class AdventureGameNook(Gimp.PlugIn):
 
         #test Plugin Dialog
         dialog = TrisDialog(self)
+        
         #WidgetTree(dialog).generate()
-        tenu = TrisEnum(self.gamedata["BOOL"], "Conditions BOol")
-        print(tenu.get_all(1))
+        #tenu = TrisEnum(self.gamedata["BOOL"], "Conditions BOol")
+        #print(tenu.get_all(1))
+        #dialog = GimpUi.Dialog.new()
+        #dialog.add_button("Canc.", -5)
+        #tl = TrisLabel(None) #Gtk.Label.new("qwe")
+        #tl.write("TeSTO!", bgcolor=0x565656, color=0, pad = 6, size=180)
+        #tl.show()
+        #print("Text:", tl.get_text())
+        #dialog.get_content_area().pack_start(tl, False, False, 0)
+
         dialog.run()
 
         
