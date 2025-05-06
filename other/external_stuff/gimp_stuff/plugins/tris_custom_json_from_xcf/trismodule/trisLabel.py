@@ -17,6 +17,8 @@ class TrisLabel(Gtk.Label):
         self.last_entered_raw_text = ""
         self.set_default_text(text)
         self.show()
+        #alias?
+        self.set_text = self.write
     
     def set_default_text(self, text):
         self.default_text = text

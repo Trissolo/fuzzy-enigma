@@ -95,9 +95,9 @@ class hovernamesChooser():
     @staticmethod
     def on_confirm_clicked(button, self):
         summary_widget = self.trisDialog.summary_widget_from_idx(self.idx)
-        print(* summary_widget.get_children())
-        summary_label = summary_widget.get_children()[0]
-        summary_label.set_text(self.pending_val)
+        #print(* summary_widget.get_children())
+        #summary_label = summary_widget.prop_desc #summary_widget.get_children()[0]
+        #summary_label.write(self.pending_val)
         # TO DO: add Parasite!
         self.confirm_button.hide()
         self.clear_pending_option()

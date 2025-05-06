@@ -10,6 +10,8 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 from .hovernameschooser import hovernamesChooser
+from .TrisSummary import TrisSummary
+from .trisLabel import TrisLabel
 
 
 class TrisDialog(GimpUi.Dialog):
@@ -23,25 +25,26 @@ class TrisDialog(GimpUi.Dialog):
         self.tris_manager = tris_manager
         self.tool_widgets_ary = []
         self.summary_widgets_ary = []
-        #containers
-        left_box, right_box = self.generate_containers()
 
         #top bar
         top_div = self.make_top_bar()
-        left_box.pack_start(top_div, False, False, 4)
+        self.get_content_area().pack_start(top_div, False, False, 4)
 
+        #containers
+        left_box, right_box = self.generate_containers()
         
         #populate
         for idx, prop in enumerate(tris_manager.gamedata["thingProps"]):
-            summary_widget = self.generate_summary_widget(prop, idx)
-            left_box.pack_start(summary_widget, False, False, 0)
+            summary_widget = TrisSummary(prop, idx, self) #self.generate_summary_widget(prop, idx)
+            left_box.pack_start(summary_widget.div, False, False, 0)
             self.summary_widgets_ary.append(summary_widget)
-            assert hasattr(TrisDialog, f"tool_widget_for_{prop}"), f"Method {f'tool_widget_for_{prop}'} inexistent. Please add it to TrisDialog class."
-            tool_widget = getattr(TrisDialog, f"tool_widget_for_{prop}")(self, prop, idx, summary_widget)
+            
+            #assert hasattr(TrisDialog, f"tool_widget_for_{prop}"), f"Method {f'tool_widget_for_{prop}'} inexistent. Please add it to TrisDialog class."
+            #tool_widget = getattr(TrisDialog, f"tool_widget_for_{prop}")(self, prop, idx, summary_widget)
             #tool_widget = self.generate_tool_widget(prop, idx, summary_widget)
-            to_append = tool_widget.div if hasattr(tool_widget, "div") else tool_widget
-            self.tool_widgets_ary.append(tool_widget)
-            right_box.pack_start(to_append, True, True, 0)
+            #o_append = tool_widget.div if hasattr(tool_widget, "div") else tool_widget
+            #self.tool_widgets_ary.append(tool_widget)
+            #right_box.pack_start(to_append, True, True, 0)
         #test separator:
         #temp_sep = Gtk.Separator.new(Gtk.Orientation.HORIZONTAL)
         #print(temp_sep.get_visible())
@@ -50,41 +53,33 @@ class TrisDialog(GimpUi.Dialog):
         # end PorcusDialog's __init__
 
     @staticmethod
-    def show_tool_widget(button , wlist):
-        for elem in wlist:
-            elem.hide()
-        wlist[button.idx].show()
+    # def show_tool_widget(button , wlist):
+    #     for elem in wlist:
+    #         elem.hide()
+    #     wlist[button.idx].show()
     def generate_tool_widget(self, param, idx, summary_widget):
         return Gtk.Label.new(f"(Prop #{param} label[{idx}])")
     def hide_all_widget_tools(self):
         for elem in self.tool_widgets_ary:
             elem.hide()
         return self
-    @staticmethod
-    def tool_show_test(button):
-        div = button.get_parent()
-        main_dialog = div.get_ancestor(TrisDialog)
-        #main_dialog.hide_all_widget_tools()
-        #main_dialog.tool_widgets_ary[div.idx].show()
-        main_dialog.hide_all_widget_tools().tool_widgets_ary[div.idx].show()
-        return True
-    
     def generate_summary_widget(self, param, idx):
-        div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
-        div.set_name(f"Div {param}")
-        #div.set_halign(Gtk.Align.END) #CENTER) #.END)   #.START)
-        #print("Newly create box align:", div.get_halign())
-        div.idx = idx
-        label = Gtk.Label.new(f"[Prop #{param} label]")
-        #button_change = GimpUi.Button.new_from_icon_name(GimpUi.ICON_SHAPE_CIRCLE, 1) #GimpUi.Button.new_with_label(f"confirm change")
-        button_show = GimpUi.Button.new_from_icon_name(GimpUi.ICON_EDIT_REDO, 1) #GimpUi.Button.new_with_label(f"Select prop {param}")
-        button_show.set_name(f"Button_show {param}")
-        button_show.connect('clicked', type(self).tool_show_test)
-        for child in [label, button_show]:
-             child.show()
-             div.pack_start(child, False, False, 4)
-        div.show()
-        return div
+        return TrisSummary(param, idx, self)
+        # div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
+        # div.set_name(f"Div {param}")
+        # #div.set_halign(Gtk.Align.END) #CENTER) #.END)   #.START)
+        # #print("Newly create box align:", div.get_halign())
+        # div.idx = idx
+        # label = Gtk.Label.new(f"[Prop #{param} label]")
+        # #button_change = GimpUi.Button.new_from_icon_name(GimpUi.ICON_SHAPE_CIRCLE, 1) #GimpUi.Button.new_with_label(f"confirm change")
+        # button_show = GimpUi.Button.new_from_icon_name(GimpUi.ICON_EDIT_REDO, 1) #GimpUi.Button.new_with_label(f"Select prop {param}")
+        # button_show.set_name(f"Button_show {param}")
+        # button_show.connect('clicked', type(self).tool_show_test)
+        # for child in [label, button_show]:
+        #      child.show()
+        #      div.pack_start(child, False, False, 4)
+        # div.show()
+        # return div
             #toggle_prop_tools_button = GimpUi.Button.new_with_label(f"Prop-{param} ->")
             #toggle_prop_tools_button.idx = idx
             #toggle_prop_tools_button.connect('clicked', self.show_tool_widget, self.tool_widgets_ary)
@@ -131,7 +126,7 @@ class TrisDialog(GimpUi.Dialog):
         update_button.set_name("Update Layer")
         update_button.show()
         update_button.connect("clicked", self.update_button_action, self)
-        image_name = Gtk.Label.new(f"<{self.tris_manager.image.get_name()}>")
+        image_name = TrisLabel(f"<{self.tris_manager.image.get_name()}>")#Gtk.Label.new(f"<{self.tris_manager.image.get_name()}>")
         image_name.set_name("Descr Image Name")
         image_name.show()
         top_div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
@@ -146,7 +141,7 @@ class TrisDialog(GimpUi.Dialog):
     @staticmethod
     def update_button_action(button, self):
         self.tris_manager.update_current_layer()
-        self.image_name.set_text(self.tris_manager.current_layer.get_name())
+        self.image_name.set_text(self.tris_manager.current_layer.get_name(), bgcolor=0x656598, pad=6)
 
 
     
