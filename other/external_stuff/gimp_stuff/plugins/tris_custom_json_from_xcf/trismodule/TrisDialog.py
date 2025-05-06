@@ -16,7 +16,7 @@ from .trisLabel import TrisLabel
 
 class TrisDialog(GimpUi.Dialog):
     def __init__(self, tris_manager):
-        super().__init__(self)
+        super().__init__()
         self.set_border_width(10)
         self.set_name("THE TrisDialog!")
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
