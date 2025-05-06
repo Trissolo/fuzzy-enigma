@@ -13,17 +13,18 @@ from .hovernameschooser import hovernamesChooser
 from .TrisSummary import TrisSummary
 from .trisLabel import TrisLabel
 
+from .Necessary import Necessary
 
-class TrisDialog(GimpUi.Dialog):
-    def __init__(self, tris_manager):
+class TrisDialog(GimpUi.Dialog, Necessary):
+    def __init__(self, image, gamedata, **kwargs):
         super().__init__()
+        Necessary.__init__(self, image, gamedata)
         self.set_border_width(10)
         self.set_name("THE TrisDialog!")
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("Done (Save [not yet implemented])", Gtk.ResponseType.OK)
         #special properties
-        self.tris_manager = tris_manager
-        self.tool_widgets_ary = []
+        #self.tool_widgets_ary = []
         self.summary_widgets_ary = []
 
         #top bar
@@ -32,9 +33,9 @@ class TrisDialog(GimpUi.Dialog):
 
         #containers
         left_box, right_box = self.generate_containers()
-        
+
         #populate
-        for idx, prop in enumerate(tris_manager.gamedata["thingProps"]):
+        for idx, prop in enumerate(gamedata["thingProps"]):
             summary_widget = TrisSummary(prop, idx, self) #self.generate_summary_widget(prop, idx)
             left_box.pack_start(summary_widget.div, False, False, 0)
             self.summary_widgets_ary.append(summary_widget)
@@ -51,6 +52,7 @@ class TrisDialog(GimpUi.Dialog):
         #temp_sep.show()
         #left_box.pack_start(temp_sep, False, True, 0)
         # end PorcusDialog's __init__
+        super().__init__(**kwargs)
 
     @staticmethod
     # def show_tool_widget(button , wlist):
@@ -126,7 +128,7 @@ class TrisDialog(GimpUi.Dialog):
         update_button.set_name("Update Layer")
         update_button.show()
         update_button.connect("clicked", self.update_button_action, self)
-        image_name = TrisLabel(f"<{self.tris_manager.image.get_name()}>")#Gtk.Label.new(f"<{self.tris_manager.image.get_name()}>")
+        image_name = TrisLabel(f"<{self.image.get_name()}>")#Gtk.Label.new(f"<{self.tris_manager.image.get_name()}>")
         image_name.set_name("Descr Image Name")
         image_name.show()
         top_div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
@@ -140,8 +142,8 @@ class TrisDialog(GimpUi.Dialog):
         return top_div
     @staticmethod
     def update_button_action(button, self):
-        self.tris_manager.update_current_layer()
-        self.image_name.set_text(self.tris_manager.current_layer.get_name(), bgcolor=0x656598, pad=6)
+        self.update_current_layer()
+        self.image_name.set_text(self.current_layer.get_name(), bgcolor=0x656598, pad=6)
 
 
     

@@ -12,7 +12,6 @@ from .trisLabel import TrisLabel
 class TrisSummary():
     def __init__(self, prop, idx, trisDialog):
         self.trisDialog = trisDialog
-        self.tris_manager = trisDialog.tris_manager
         self.property = prop
         self.idx = idx
         self.prop_desc = TrisLabel(prop) #Gtk.Label.new(f"(Prop #{prop} label[{idx}])")
