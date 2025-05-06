@@ -15,16 +15,21 @@ from .trisLabel import TrisLabel
 
 from .Necessary import Necessary
 
-class TrisDialog(GimpUi.Dialog, Necessary):
+class TrisDialog(Necessary, GimpUi.Dialog):
     def __init__(self, image, gamedata, **kwargs):
-        super().__init__()
-        Necessary.__init__(self, image, gamedata)
+        notab = '@'*11
+        print(f"{notab} GimpUi.Dialog init called {notab}")
+        print(f"{notab} GimpUi.Dialog is calling -NOW- super().__init__(gimp_image=image, gamedata=gamedata, **kwargs) {notab}")
+        print(f"{notab} btw: super: {super().__init__}")
+        #super().__init__(image, gamedata,**kwargs)
+        super().__init__(gimp_image=image, gamedata=gamedata, **kwargs)
+        print(f"{notab} GimpUi.Dialog is continuing...  {notab}")
         self.set_border_width(10)
         self.set_name("THE TrisDialog!")
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("Done (Save [not yet implemented])", Gtk.ResponseType.OK)
         #special properties
-        #self.tool_widgets_ary = []
+        self.tool_widgets_ary = []
         self.summary_widgets_ary = []
 
         #top bar
@@ -52,7 +57,7 @@ class TrisDialog(GimpUi.Dialog, Necessary):
         #temp_sep.show()
         #left_box.pack_start(temp_sep, False, True, 0)
         # end PorcusDialog's __init__
-        super().__init__(**kwargs)
+        #super().__init__(**kwargs)
 
     @staticmethod
     # def show_tool_widget(button , wlist):

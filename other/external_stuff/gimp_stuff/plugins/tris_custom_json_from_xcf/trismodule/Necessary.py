@@ -12,15 +12,15 @@
 
 class Necessary():
     def __init__(self, gimp_image, gamedata, **kwargs):
-        print(f"{'@'*11} Nece init called {'@'*11}")
         self._image = gimp_image
         self._gamedata = gamedata
         self.update_current_layer()
+        notab = '@'*11
+        print(f"{notab} Necessary init called, now callng super()__init__(**kwargs) - super: {super().__init__}{notab}")
         super().__init__(**kwargs)
     
     @property
     def image(self):
-        print(f"{'@'*11} method image {'@'*11}")
         return self._image
     def update_current_layer(self):
         sel_layers = self.image.get_selected_layers()
