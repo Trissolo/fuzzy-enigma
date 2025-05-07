@@ -45,13 +45,11 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         self.tool_widgets_ary[0] = temp_tool_widget
         right_box.pack_start(temp_tool_widget.div, True, True, 0)
 
-    @staticmethod
-    def generate_tool_widget(self, param, idx, summary_widget):
-        return Gtk.Label.new(f"(Prop #{param} label[{idx}])")
     def hide_all_widget_tools(self):
         for elem in self.tool_widgets_ary:
             elem.hide()
         return self
+    
     def generate_summary_widget(self, param, idx):
         return TrisSummary(param, idx, self)
        
@@ -78,21 +76,6 @@ class TrisDialog(Necessary, GimpUi.Dialog):
     def summary_widget_from_idx(self, index):
         return self.summary_widgets_ary[index]
     
-    def tool_widget_for_hoverName(self, prop, idx, summary_widget):
-        return hovernamesChooser(prop, idx, self) 
-        #return self.generate_tool_widget(prop, idx, summary_widget)
-
-    def tool_widget_for_suffix(self, prop, idx, summary_widget):
-        return self.generate_tool_widget(prop, idx, summary_widget)
-    
-    def tool_widget_for_skipCondition(self, prop, idx, summary_widget):
-        return self.generate_tool_widget(prop, idx, summary_widget)
-    
-    def tool_widget_for_animation(self, prop, idx, summary_widget):
-        return self.generate_tool_widget(prop, idx, summary_widget)
-    
-    def tool_widget_for_noInteraction(self, prop, idx, summary_widget):
-        return self.generate_tool_widget(prop, idx, summary_widget)
     
     def make_top_bar(self):
         update_button = make_button(GimpUi.ICON_VIEW_REFRESH, "Update Layer", self.update_button_action, self)
