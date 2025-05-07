@@ -95,7 +95,7 @@ class AdventureGameNook(Gimp.PlugIn):
         GLib.chdir("../..")
         return GLib.get_current_dir()
     
-    def get_gamedata_json_and_preliminary_info(self):
+    def load_and_parse_gamedata_json(self):
         terminal_col_start = '\033[45m'
         terminal_col_end = '\033[0m'
         terminal_col_end = f"{terminal_col_end}\n"
@@ -125,9 +125,8 @@ class AdventureGameNook(Gimp.PlugIn):
         # self.gamedata["onHoverNames"]
         # self.gamedata["thingKind"]
         # self.gamedata["thingProps"]
-        self.gamedata = grabbeddata
-        print("Gamedata acquired and stored!") #, self.gamedata)
-        return None      
+        #self.gamedata = grabbeddata
+        return grabbeddata      
     
     def run(self, procedure, run_mode, image, drawables, config, run_data):
         print("** Starting -from scratch!- Json procedure **")
@@ -145,25 +144,20 @@ class AdventureGameNook(Gimp.PlugIn):
 
         
         print("*** Generate Game Json Plugin ***")
-        # 'self.gamedata' = parsed gamedata.json
-        self.get_gamedata_json_and_preliminary_info()
-
-        #store the image somewhere:
-        self._image = image
-        self._current_layer = None
-
         
         #imports
         from trismodule import WidgetTree, TrisLabel, TrisDialog, TrisEnum, Necessary
-        #print(TrisDialog.__mro__)
-        Necessary.setup(image=image, gamedata=self.gamedata)
-        
-        
-        
+        #print("TrisDialog MRO:", TrisDialog.__mro__)
 
+        # get the gamedata.JSON
+        gamedata = self.load_and_parse_gamedata_json()
+
+        # Initialize the shared stuff, managed by 'Necessary' class
+        Necessary.setup(image=image, gamedata=gamedata)
+        
         #test Plugin Dialog
-        dialog = TrisDialog()
-        dialog.run()
+        dialog = TrisDialog().run()
+        #dialog.run()
 
         
         # We have reached the end of the procedure: let's return "Success"
