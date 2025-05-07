@@ -3,8 +3,8 @@ import gi
 # gi.require_version("Gimp", "3.0")
 # from gi.repository import Gimp
 
-# gi.require_version("GimpUi", "3.0")
-# from gi.repository import GimpUi
+gi.require_version("GimpUi", "3.0")
+from gi.repository import GimpUi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -40,3 +40,17 @@ def make_listbox(option_list):
     #listbox.set_sort_func(self.sort_func, None, False)
     #listbox.set_filter_func(self.tris_filter_func, self, False)
     #listbox.connect("row-activated", self.on_row_activated_grid, self)
+
+def make_button(icon, name=None, onclick=None, *args):
+    button = GimpUi.Button.new_from_icon_name(icon, 1) #Gtk.Button.new_with_label("Click Me")
+    button.set_name(f"Button {name if name else icon}")
+    button.show()
+    if callable(onclick):
+        button.connect("clicked", onclick, *args)
+    return button
+
+def make_box(is_horizontal = True, spacing = 2, name="A Box"):
+    new_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL if is_horizontal else Gtk.Orientation.VERTICAL, spacing)
+    new_box.set_name(name)
+    new_box.show()
+    return new_box

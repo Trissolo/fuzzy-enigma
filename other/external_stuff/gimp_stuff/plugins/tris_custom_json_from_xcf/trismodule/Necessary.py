@@ -28,8 +28,6 @@ class Necessary():
             print("Necessary already set.")
 
     def __init__(self, **kwargs):
-        #self._image = gimp_image
-        #self._gamedata = gamedata
         self.update_current_layer()
         notab = '@'*11
         print(f"{notab} Necessary init called, now callng super()__init__(**kwargs) - super: {super().__init__}{notab}")
@@ -38,6 +36,7 @@ class Necessary():
     @property
     def image(self):
         return type(self)._image
+    
     def update_current_layer(self):
         sel_layers = self.image.get_selected_layers()
         assert type(sel_layers) is list and len(sel_layers) != 0, "No layer selected! Make sure that at least one layer exists in image!"
@@ -45,7 +44,8 @@ class Necessary():
         return self.current_layer
     @property
     def current_layer(self):
-        return type(self)._current_layer 
+        return type(self)._current_layer
+    
     @property
     def gamedata(self):
         return self._gamedata  

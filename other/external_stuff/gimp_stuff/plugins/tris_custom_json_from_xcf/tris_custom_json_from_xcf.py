@@ -127,24 +127,8 @@ class AdventureGameNook(Gimp.PlugIn):
         # self.gamedata["thingProps"]
         self.gamedata = grabbeddata
         print("Gamedata acquired and stored!") #, self.gamedata)
-        return None
-    @property
-    def image(self):
-        return self._image
-    def update_current_layer(self):
-        sel_layers = self.image.get_selected_layers()
-        assert sel_layers is not None or len(sel_layers) != 0, "No layer selected! Make sure that at least one layer exists in image!"
-        self._current_layer = sel_layers[0]
-        return self.current_layer
-    @property
-    def current_layer(self):
-        return self._current_layer   
-        
-
+        return None      
     
-    # Pseudo-TrisManager methods! Here!
-
-
     def run(self, procedure, run_mode, image, drawables, config, run_data):
         print("** Starting -from scratch!- Json procedure **")
         # just for debug: not required for the plugin purpose
@@ -178,19 +162,7 @@ class AdventureGameNook(Gimp.PlugIn):
         
 
         #test Plugin Dialog
-        dialog = TrisDialog()#image, self.gamedata)#image=image, gamedata=self.gamedata)
-        
-        #WidgetTree(dialog).generate()
-        #tenu = TrisEnum(self.gamedata["BOOL"], "Conditions BOol")
-        #print(tenu.get_all(1))
-        #dialog = GimpUi.Dialog.new()
-        #dialog.add_button("Canc.", -5)
-        #tl = TrisLabel(None) #Gtk.Label.new("qwe")
-        #tl.write("TeSTO!", bgcolor=0x565656, color=0, pad = 6, size=180)
-        #tl.show()
-        #print("Text:", tl.get_text())
-        #dialog.get_content_area().pack_start(tl, False, False, 0)
-
+        dialog = TrisDialog()
         dialog.run()
 
         
