@@ -26,10 +26,13 @@ class TrisSummary():
         button_show = GimpUi.Button.new_from_icon_name(GimpUi.ICON_EDIT_REDO, 1)
         button_show.set_name(f"Button_show {prop}")
         button_show.show()
-        button_show.connect('clicked', type(self).button_show_on_click, self)
+        #button_show.connect('clicked', type(self).button_show_on_click, self)
         div.pack_start(self.prop_desc, True, True, 2)
         div.pack_end(button_show, False, False, 2)
         self.button_show = button_show
+        #lastly add himself to ary
+        #trisDialog.tool_widgets_ary[idx] = self
+        button_show.connect('clicked', self.introduce_hovernames, self)
     def show(self):
         self.div.show()
         return self
@@ -41,6 +44,12 @@ class TrisSummary():
         print("Button_show Clicked")
         self.trisDialog.hide_all_widget_tools().tool_widgets_ary[self.idx].show()
         return True
+    def get_button_show(self):
+        return self.button_show
+    @staticmethod
+    def introduce_hovernames(button, self):
+        print("INTRODUCE", self.idx, self.trisDialog.tool_widgets_ary[self.idx])
+        self.trisDialog.tool_widgets_ary[self.idx].show()
 
 '''
 

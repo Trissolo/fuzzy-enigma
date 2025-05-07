@@ -15,10 +15,10 @@ from .generic_helpers import make_listbox
 class hovernamesChooser():
     def __init__(self, prop, idx, trisDialog):
         self.trisDialog = trisDialog
-        self.tris_manager = trisDialog.tris_manager
+        #self.tris_manager = trisDialog.tris_manager
         self.idx = idx
         self.property = prop
-        self.enum = TrisEnum(self.tris_manager.gamedata['onHoverNames'], "Things names (on_pointer_over")
+        self.enum = TrisEnum(self.trisDialog.gamedata['onHoverNames'], "Things names (on_pointer_over")
         self.pending_val = None
         self.pending_num = None
 

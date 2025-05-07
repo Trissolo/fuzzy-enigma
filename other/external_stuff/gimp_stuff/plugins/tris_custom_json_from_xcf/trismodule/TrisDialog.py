@@ -16,20 +16,21 @@ from .trisLabel import TrisLabel
 from .Necessary import Necessary
 
 class TrisDialog(Necessary, GimpUi.Dialog):
-    def __init__(self, image, gamedata, **kwargs):
-        notab = '@'*11
-        print(f"{notab} GimpUi.Dialog init called {notab}")
-        print(f"{notab} GimpUi.Dialog is calling -NOW- super().__init__(gimp_image=image, gamedata=gamedata, **kwargs) {notab}")
-        print(f"{notab} btw: super: {super().__init__}")
+    #def __init__(self, image, gamedata, **kwargs):
+    def __init__(self, **kwargs):
+        # notab = '@'*11
+        # print(f"{notab} GimpUi.Dialog init called {notab}")
+        # print(f"{notab} GimpUi.Dialog is calling -NOW- super().__init__(gimp_image=image, gamedata=gamedata, **kwargs) {notab}")
+        # print(f"{notab} btw: super: {super().__init__}")
         #super().__init__(image, gamedata,**kwargs)
-        super().__init__(gimp_image=image, gamedata=gamedata, **kwargs)
-        print(f"{notab} GimpUi.Dialog is continuing...  {notab}")
+        super().__init__(**kwargs)
+        #print(f"{notab} GimpUi.Dialog is continuing...  {notab}")
         self.set_border_width(10)
         self.set_name("THE TrisDialog!")
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("Done (Save [not yet implemented])", Gtk.ResponseType.OK)
         #special properties
-        self.tool_widgets_ary = []
+        self.tool_widgets_ary = [None] * 5
         self.summary_widgets_ary = []
 
         #top bar
@@ -40,10 +41,18 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         left_box, right_box = self.generate_containers()
 
         #populate
-        for idx, prop in enumerate(gamedata["thingProps"]):
+        for idx, prop in enumerate(self.gamedata["thingProps"]):
             summary_widget = TrisSummary(prop, idx, self) #self.generate_summary_widget(prop, idx)
             left_box.pack_start(summary_widget.div, False, False, 0)
             self.summary_widgets_ary.append(summary_widget)
+        
+        #hardcoded test!
+        temp_tool_widget = hovernamesChooser("hovernames", 0, self)
+        self.tool_widgets_ary[0] = temp_tool_widget
+        right_box.pack_start(temp_tool_widget.div, True, True, 0)
+        #self.summary_widgets_ary[temp_tool_widget.idx].get_button_show().connect('clicked', )
+        #type(temp_tool_widget).
+
             
             #assert hasattr(TrisDialog, f"tool_widget_for_{prop}"), f"Method {f'tool_widget_for_{prop}'} inexistent. Please add it to TrisDialog class."
             #tool_widget = getattr(TrisDialog, f"tool_widget_for_{prop}")(self, prop, idx, summary_widget)
