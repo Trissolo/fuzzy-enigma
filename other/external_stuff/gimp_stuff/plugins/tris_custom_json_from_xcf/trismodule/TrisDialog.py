@@ -23,10 +23,6 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("Done (Save [not yet implemented])", Gtk.ResponseType.OK)
 
-        #special properties
-        self.tool_widgets_ary = [None] * 5
-        self.summary_widgets_ary = []
-
         #top bar
         top_div = self.make_top_bar()
         self.get_content_area().pack_start(top_div, False, False, 4)
@@ -36,9 +32,9 @@ class TrisDialog(Necessary, GimpUi.Dialog):
 
         #populate
         for idx, prop in enumerate(self.gamedata["thingProps"]):
-            summary_widget = TrisSummary(prop, idx, self)
+            summary_widget = TrisSummary(prop, idx)
             left_box.pack_start(summary_widget.div, False, False, 0)
-            self.summary_widgets_ary.append(summary_widget)
+            self.summary_widgets_ary[idx]=summary_widget
         
         #hardcoded test!
         temp_tool_widget = hovernamesChooser("hovernames", 0, self)
@@ -46,10 +42,10 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         print("Confirm Button", temp_tool_widget.get_button())
         right_box.pack_start(temp_tool_widget.div, True, True, 0)
         
-    def hide_all_widget_tools(self):
-        for elem in self.tool_widgets_ary:
-            elem.hide()
-        return self
+    # def hide_all_widget_tools(self):
+    #     for elem in self.tool_widgets_ary:
+    #         elem.hide()
+    #     return self
     
     def generate_summary_widget(self, param, idx):
         return TrisSummary(param, idx, self)
@@ -71,11 +67,7 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         self.right_box = right_box
         return left_box, right_box
     
-    def tool_widget_from_idx(self, index):
-        return self.tool_widgets_ary[index]
     
-    def summary_widget_from_idx(self, index):
-        return self.summary_widgets_ary[index]
     
     
     def make_top_bar(self):
@@ -99,6 +91,3 @@ class TrisDialog(Necessary, GimpUi.Dialog):
     def update_button_action(button, self):
         self.update_current_layer()
         self.label_for_image_name.set_text(self.current_layer.get_name(), bgcolor=0x656598, pad=6)
-
-
-    

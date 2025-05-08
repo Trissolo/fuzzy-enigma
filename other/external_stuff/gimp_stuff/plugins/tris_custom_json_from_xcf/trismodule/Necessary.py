@@ -15,6 +15,8 @@ class Necessary():
     _image = None
     _current_layer = None
     _gamedata = None
+    _tool_widgets_ary = None
+    _summary_widgets_ary = None
 
     @classmethod
     def setup(cls, image, gamedata):
@@ -22,7 +24,10 @@ class Necessary():
             cls._ready = True
             cls._image = image
             cls._gamedata = gamedata
-            print("Necessary set-up!")
+            length = len(gamedata["thingProps"])
+            cls._tool_widgets_ary = [None] * length
+            cls._summary_widgets_ary = [None] * length
+            print(f"Necessary set-up!\n(Empty slots: [{length}])\n")
         else:
             print("Necessary already set.")
 
@@ -51,4 +56,18 @@ class Necessary():
     
     @property
     def gamedata(self):
-        return self._gamedata  
+        return self._gamedata
+    
+    @property
+    def tool_widgets_ary(self):
+        return type(self)._tool_widgets_ary
+    
+    @property
+    def summary_widgets_ary(self):
+        return type(self)._summary_widgets_ary
+    
+    def tool_widget_from_idx(self, index):
+        return self.tool_widgets_ary[index]
+    
+    def summary_widget_from_idx(self, index):
+        return self.summary_widgets_ary[index]
