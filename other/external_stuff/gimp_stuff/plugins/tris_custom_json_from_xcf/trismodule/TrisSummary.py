@@ -23,13 +23,17 @@ class TrisSummary(Necessary):
         self.prop_desc.set_xalign(0)
         self.prop_desc.write(bgcolor=0x666666, monospace=True, pad=6)
         
-        #First Button
-        self.button_a = make_button(GimpUi.ICON_EDIT_REDO, f"Button_a {prop}", type(self).introduce_hovernames, self)
+        # First Button
+        self.button_a = make_button(GimpUi.ICON_MENU_RIGHT, f"Button_a {prop}", type(self).introduce_hovernames, self)
+        
+        # Second Button
+        self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", None, self)
 
         # Box container
         div = make_box(True, 4, f"Div Left for{prop}")
         div.pack_start(self.prop_desc, True, True, 2)
         div.pack_end(self.button_a, False, False, 2)
+        div.pack_end(self.button_b, False, False, 2)
         self.div = div
     
     def show(self):
@@ -40,14 +44,25 @@ class TrisSummary(Necessary):
         self.div.hide()
         return self
     
-    # @staticmethod
-    # def button_a_on_click(button, self):
-    #     print("button_a Clicked")
-    #     self.trisDialog.hide_all_widget_tools().tool_widgets_ary[self.idx].show()
-    #     return True
+    def receive_data(self, para_data, new_desc):
+        self.parasite_data = para_data
+        self.new_description_text = new_desc
+        self.update_desc()
+        self.button_b.show()
     
     def get_button_toggle(self):
         return self.button_a
+    
+    def get_button_save(self):
+        return self.button_b
+    
+    def update_desc(self, text = None):
+        if not text:
+            text = self.prop_desc.assemble_span(f"{self.property}:", size=120, bold=True, pad=2)
+            text += self.prop_desc.assemble_span(self.new_description_text, bgcolor=0x45ba76, size=130, pad=3, monospace=True)
+            self.prop_desc.set_markup(text)
+        else:
+            self.prop_desc.write(text=text, color=0x01030a, size=111)
     
     @staticmethod
     def introduce_hovernames(button, self):

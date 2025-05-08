@@ -87,6 +87,7 @@ class hovernamesChooser():
         self.pending_label.set_text(f"{text} [{num}]")
         self.set_pending(num, text)
         self.confirm_button.show()
+    
     def clear_pending_option(self):
         self.confirm_button.hide()
         self.set_pending()
@@ -96,14 +97,16 @@ class hovernamesChooser():
     def on_confirm_clicked(button, self):
         data = self.get_for_para()
         desc = self.get_new_description()
-        print(f"Data to save: {data}, data to update: {desc}")
-        merged_stoca = f"{self.property}: {data} ({desc})"
+        
         summary_widget = self.trisDialog.summary_widget_from_idx(self.idx)
-        summary_widget.prop_desc.write(merged_stoca, bgcolor=0x666666, monospace=True, pad=6)
+        summary_widget.receive_data(data, desc)
         # TO DO: add Parasite!
+
         self.confirm_button.hide()
         self.clear_pending_option()
-        self.hide() #.tool_widget_from_idx
+        self.hide()
+
+        summary_widget.button_b.show()
         return self
     def get_button(self):
         return self.confirm_button
