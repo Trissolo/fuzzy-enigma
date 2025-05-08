@@ -43,8 +43,9 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         #hardcoded test!
         temp_tool_widget = hovernamesChooser("hovernames", 0, self)
         self.tool_widgets_ary[0] = temp_tool_widget
+        print("Confirm Button", temp_tool_widget.get_button())
         right_box.pack_start(temp_tool_widget.div, True, True, 0)
-
+        
     def hide_all_widget_tools(self):
         for elem in self.tool_widgets_ary:
             elem.hide()
@@ -81,23 +82,23 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         update_button = make_button(GimpUi.ICON_VIEW_REFRESH, "Update Layer", self.update_button_action, self)
         #update_button.connect("clicked", self.update_button_action, self)
 
-        image_name = TrisLabel(f"<{self.image.get_name()}>")
-        image_name.set_name("Descr Image Name")
-        image_name.show()
+        label_for_image_name = TrisLabel(f"<{self.image.get_name()}>")
+        label_for_image_name.set_name("Descr Image Name")
+        label_for_image_name.show()
 
         top_div = make_box(True, 4, "Div Top Bar")
 
         top_div.pack_start(update_button, False, False, 0)
-        top_div.pack_start(image_name, True, True, 0)
+        top_div.pack_start(label_for_image_name, True, True, 0)
 
         self.update_button = update_button
-        self.image_name = image_name
+        self.label_for_image_name = label_for_image_name
         return top_div
     
     @staticmethod
     def update_button_action(button, self):
         self.update_current_layer()
-        self.image_name.set_text(self.current_layer.get_name(), bgcolor=0x656598, pad=6)
+        self.label_for_image_name.set_text(self.current_layer.get_name(), bgcolor=0x656598, pad=6)
 
 
     

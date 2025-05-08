@@ -10,7 +10,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 from .TrisEnum import TrisEnum
-from .generic_helpers import make_listbox
+from .generic_helpers import make_listbox, make_box, make_button
 
 class hovernamesChooser():
     def __init__(self, prop, idx, trisDialog):
@@ -19,8 +19,11 @@ class hovernamesChooser():
         self.idx = idx
         self.property = prop
         self.enum = TrisEnum(self.trisDialog.gamedata['onHoverNames'], "Things names (on_pointer_over")
-        self.pending_val = None
-        self.pending_num = None
+        # Value to save in thr parasite
+        self.pending_value_for_parasite = None
+        # new text for the descr label
+        self.pending_new_description = None
+        self.lettererichieste = "a"
 
         # "div"
         self.div = Gtk.Box.new(Gtk.Orientation.VERTICAL, spacing=0)
@@ -28,8 +31,7 @@ class hovernamesChooser():
 
         #searchWidget
         searcWidget = Gtk.SearchEntry()
-        searcWidget.show()
-        self.lettererichieste = "a"
+        searcWidget.show()    
         searcWidget.connect("search-changed", self.on_search_activated, self)
 
         # ListBox:
@@ -45,13 +47,13 @@ class hovernamesChooser():
         #top container
         self.pending_label = Gtk.Label.new("----")
         self.pending_label.show()
-        self.confirm_button = GimpUi.Button.new_from_icon_name(GimpUi.ICON_MENU_LEFT, 1) #Gtk.Button.new_with_label("Click Me")
+        self.confirm_button = make_button(GimpUi.ICON_MENU_LEFT, "Confirm HoverName Button")# GimpUi.Button.new_from_icon_name(GimpUi.ICON_MENU_LEFT, 1) #Gtk.Button.new_with_label("Click Me")
         self.confirm_button.connect("clicked", self.on_confirm_clicked, self)
 
         # reset option!
         self.clear_pending_option()
 
-        tcont = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, spacing=0)
+        tcont = make_box(True, 0)##Gtk.Box.new(Gtk.Orientation.HORIZONTAL, spacing=0)
         tcont.pack_start(self.pending_label, True, True, 2)
         tcont.pack_end(self.confirm_button, False, False, 2)
         tcont.show()
@@ -83,26 +85,36 @@ class hovernamesChooser():
     def on_row_activated_grid(listbox_widget, row, self):
         num, text = self.enum.get_all(row.data)
         self.pending_label.set_text(f"{text} [{num}]")
-        self.pending_val = text
-        self.pending_num = num
+        self.set_pending(num, text)
         self.confirm_button.show()
     def clear_pending_option(self):
         self.confirm_button.hide()
-        self.pending_num = None
-        self.pending_val = None
+        self.set_pending()
         self.pending_label.set_text("----")
         return self
     @staticmethod
     def on_confirm_clicked(button, self):
+        data = self.get_for_para()
+        desc = self.get_new_description()
+        print(f"Data to save: {data}, data to update: {desc}")
+        merged_stoca = f"{self.property}: {data} ({desc})"
         summary_widget = self.trisDialog.summary_widget_from_idx(self.idx)
-        #print(* summary_widget.get_children())
-        #summary_label = summary_widget.prop_desc #summary_widget.get_children()[0]
-        #summary_label.write(self.pending_val)
+        summary_widget.prop_desc.write(merged_stoca, bgcolor=0x666666, monospace=True, pad=6)
         # TO DO: add Parasite!
         self.confirm_button.hide()
         self.clear_pending_option()
         self.hide() #.tool_widget_from_idx
         return self
+    def get_button(self):
+        return self.confirm_button
+    def set_pending(self, num=None, val=None):
+        self.pending_value_for_parasite = num
+        self.pending_new_description = val
+        return self
+    def get_for_para(self):
+        return self.pending_value_for_parasite
+    def get_new_description(self):
+        return self.pending_new_description
 
 '''       
         

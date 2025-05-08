@@ -52,3 +52,10 @@ class TrisSummary(Necessary):
     def introduce_hovernames(button, self):
         print("INTRODUCE", self.idx, self.trisDialog.tool_widgets_ary[self.idx])
         self.trisDialog.tool_widgets_ary[self.idx].show()
+    # def ultimate_action(self):
+    #     tool_widget = self.trisDialog.tool_widget_from_idx(self.idx)
+    #     data = tool_widget.get_for_para()
+    #     desc = tool_widget.get_new_description()
+    #     print(f"Data to save: {data}, data to update: {desc}")
+    #     merged_stoca = f"{self.property}: {data} ({desc})"
+    #     self.prop_desc.write(merged_stoca, bgcolor=0x666666, monospace=True, pad=6)
