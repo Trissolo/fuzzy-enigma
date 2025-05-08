@@ -12,10 +12,11 @@ from .generic_helpers import make_button, make_box
 from .Necessary import Necessary
 
 class TrisSummary(Necessary):
-    def __init__(self, prop, idx, trisDialog):
-        self.trisDialog = trisDialog
+    def __init__(self, prop, idx):
         self.property = prop
         self.idx = idx
+        self.parasite_data = None
+        self.new_description_text = ""
 
         #First Label
         self.prop_desc = TrisLabel(prop)
@@ -23,7 +24,7 @@ class TrisSummary(Necessary):
         self.prop_desc.write(bgcolor=0x666666, monospace=True, pad=6)
         
         #First Button
-        self.button_a = make_button(GimpUi.ICON_EDIT_REDO, f"button_a {prop}", type(self).introduce_hovernames, self)
+        self.button_a = make_button(GimpUi.ICON_EDIT_REDO, f"Button_a {prop}", type(self).introduce_hovernames, self)
 
         # Box container
         div = make_box(True, 4, f"Div Left for{prop}")
@@ -39,23 +40,23 @@ class TrisSummary(Necessary):
         self.div.hide()
         return self
     
-    @staticmethod
-    def button_a_on_click(button, self):
-        print("button_a Clicked")
-        self.trisDialog.hide_all_widget_tools().tool_widgets_ary[self.idx].show()
-        return True
+    # @staticmethod
+    # def button_a_on_click(button, self):
+    #     print("button_a Clicked")
+    #     self.trisDialog.hide_all_widget_tools().tool_widgets_ary[self.idx].show()
+    #     return True
     
     def get_button_toggle(self):
         return self.button_a
     
     @staticmethod
     def introduce_hovernames(button, self):
-        print("INTRODUCE", self.idx, self.trisDialog.tool_widgets_ary[self.idx])
-        self.trisDialog.tool_widgets_ary[self.idx].show()
-    # def ultimate_action(self):
-    #     tool_widget = self.trisDialog.tool_widget_from_idx(self.idx)
-    #     data = tool_widget.get_for_para()
-    #     desc = tool_widget.get_new_description()
-    #     print(f"Data to save: {data}, data to update: {desc}")
-    #     merged_stoca = f"{self.property}: {data} ({desc})"
-    #     self.prop_desc.write(merged_stoca, bgcolor=0x666666, monospace=True, pad=6)
+        print("Called the method 'TrisSummary.introduce_hovernames', but is still incomplete.")
+        print("INTRODUCE", self.idx, self.tool_widgets_ary[self.idx])
+        twa = self.tool_widgets_ary
+        if not twa[self.idx]:
+            print("This methos is WIP: widget not yet implemented :(")
+            return False
+        print("OK - showing the wanted widget.")
+        twa[self.idx].show()
+        #To Do: hide any other ToolWidget
