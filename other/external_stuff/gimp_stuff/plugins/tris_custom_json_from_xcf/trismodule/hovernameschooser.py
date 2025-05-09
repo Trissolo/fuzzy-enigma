@@ -100,6 +100,7 @@ class hovernamesChooser():
         
         summary_widget = self.trisDialog.summary_widget_from_idx(self.idx)
         summary_widget.receive_data(data, desc)
+        summary_widget.button_b.show()
         # TO DO: add Parasite!
 
         self.confirm_button.hide()

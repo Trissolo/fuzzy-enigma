@@ -8,7 +8,7 @@ from gi.repository import Gtk
 
 from .trisLabel import TrisLabel
 
-from .generic_helpers import make_button, make_box
+from .generic_helpers import make_button, make_box, multipack
 from .Necessary import Necessary
 
 class TrisSummary(Necessary):
@@ -19,21 +19,27 @@ class TrisSummary(Necessary):
         self.new_description_text = ""
 
         #First Label
-        self.prop_desc = TrisLabel(prop)
-        self.prop_desc.set_xalign(0)
-        self.prop_desc.write(bgcolor=0x666666, monospace=True, pad=6)
-        
+        self.label_key = TrisLabel(prop)
+        self.label_key.set_xalign(0)
+        #self.label_key.write(bgcolor=0x666666, monospace=True, pad=6)
+        self.show_off_key()
+
+        #Second Label
+        self.label_value = TrisLabel(prop)
+        self.label_value.set_xalign(0)
+        self.label_value.write("----", bgcolor=0x666666, monospace=True, pad=6)
+
         # First Button
         self.button_a = make_button(GimpUi.ICON_MENU_RIGHT, f"Button_a {prop}", type(self).introduce_hovernames, self)
         
         # Second Button
         self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", None, self)
+        self.button_b.hide()
 
         # Box container
         div = make_box(True, 4, f"Div Left for{prop}")
-        div.pack_start(self.prop_desc, True, True, 2)
-        div.pack_end(self.button_a, False, False, 2)
-        div.pack_end(self.button_b, False, False, 2)
+        multipack(div, self.label_key, self.label_value, packing=True, spacing=2)
+        multipack(div, self.button_a, self.button_b, from_end=True, packing=False, spacing=2)
         self.div = div
     
     def show(self):
@@ -47,22 +53,25 @@ class TrisSummary(Necessary):
     def receive_data(self, para_data, new_desc):
         self.parasite_data = para_data
         self.new_description_text = new_desc
-        self.update_desc()
+        self.refresh_description()
         self.button_b.show()
     
-    def get_button_toggle(self):
+    def get_button_a(self):
         return self.button_a
     
-    def get_button_save(self):
+    def get_button_b(self):
         return self.button_b
     
-    def update_desc(self, text = None):
+    def show_off_key(self, is_bold = False):
+        self.label_key.write(f"{self.property}:", color=0x989898, monospace=True, pad=1, bold=is_bold, size=110)
+        return self
+    
+    def refresh_description(self, text = None):
+        self.show_off_key(True)
         if not text:
-            text = self.prop_desc.assemble_span(f"{self.property}:", size=120, bold=True, pad=2)
-            text += self.prop_desc.assemble_span(self.new_description_text, bgcolor=0x45ba76, size=130, pad=3, monospace=True)
-            self.prop_desc.set_markup(text)
+            self.label_value.write(self.new_description_text, bgcolor=0x45ba76, size=116, pad=3, monospace=True)
         else:
-            self.prop_desc.write(text=text, color=0x01030a, size=111)
+            self.label_value.write(text=text, color=0x01030a, size=110, pad=3, monospace=True)
     
     @staticmethod
     def introduce_hovernames(button, self):
