@@ -21,8 +21,6 @@ class hovernamesChooser():
         self.enum = TrisEnum(self.trisDialog.gamedata['onHoverNames'], "Things names (on_pointer_over")
         # Value to save in thr parasite
         self.pending_value_for_parasite = None
-        # new text for the descr label
-        self.pending_new_description = None
         self.lettererichieste = "a"
 
         # "div"
@@ -85,7 +83,7 @@ class hovernamesChooser():
     def on_row_activated_grid(listbox_widget, row, self):
         num, text = self.enum.get_all(row.data)
         self.pending_label.set_text(f"{text} [{num}]")
-        self.set_pending(num, text)
+        self.set_pending(num)
         self.confirm_button.show()
     
     def clear_pending_option(self):
@@ -96,10 +94,9 @@ class hovernamesChooser():
     @staticmethod
     def on_confirm_clicked(button, self):
         data = self.get_for_para()
-        desc = self.get_new_description()
         
         summary_widget = self.trisDialog.summary_widget_from_idx(self.idx)
-        summary_widget.receive_data(data, desc)
+        summary_widget.receive_data(data)
         summary_widget.button_b.show()
         # TO DO: add Parasite!
 
@@ -111,14 +108,13 @@ class hovernamesChooser():
         return self
     def get_button(self):
         return self.confirm_button
-    def set_pending(self, num=None, val=None):
+    def set_pending(self, num=None):
         self.pending_value_for_parasite = num
-        self.pending_new_description = val
+        #self.pending_new_description = val
         return self
     def get_for_para(self):
         return self.pending_value_for_parasite
-    def get_new_description(self):
-        return self.pending_new_description
+
 
 '''       
         

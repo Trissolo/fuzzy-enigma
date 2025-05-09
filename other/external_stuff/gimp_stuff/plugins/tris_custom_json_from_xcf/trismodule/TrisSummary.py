@@ -16,12 +16,10 @@ class TrisSummary(Necessary):
         self.property = prop
         self.idx = idx
         self.parasite_data = None
-        self.new_description_text = ""
 
         #First Label
         self.label_key = TrisLabel(prop)
         self.label_key.set_xalign(0)
-        #self.label_key.write(bgcolor=0x666666, monospace=True, pad=6)
         self.show_off_key()
 
         #Second Label
@@ -41,6 +39,11 @@ class TrisSummary(Necessary):
         multipack(div, self.label_key, self.label_value, packing=True, spacing=2)
         multipack(div, self.button_a, self.button_b, from_end=True, packing=False, spacing=2)
         self.div = div
+
+        #At first the save button is hidden
+        self.button_b.hide()
+
+        # (end TrisSummary init)
     
     def show(self):
         self.div.show()
@@ -50,9 +53,8 @@ class TrisSummary(Necessary):
         self.div.hide()
         return self
     
-    def receive_data(self, para_data, new_desc):
+    def receive_data(self, para_data):
         self.parasite_data = para_data
-        self.new_description_text = new_desc
         self.refresh_description()
         self.button_b.show()
     
@@ -69,7 +71,8 @@ class TrisSummary(Necessary):
     def refresh_description(self, text = None):
         self.show_off_key(True)
         if not text:
-            self.label_value.write(self.new_description_text, bgcolor=0x45ba76, size=116, pad=3, monospace=True)
+            crazy_text = self.tool_widget_from_idx(self.idx).enum.get_corresponding(self.parasite_data)
+            self.label_value.write(crazy_text, bgcolor=0x45ba76, size=116, pad=3, monospace=True)
         else:
             self.label_value.write(text=text, color=0x01030a, size=110, pad=3, monospace=True)
     
