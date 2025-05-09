@@ -54,3 +54,10 @@ def make_box(is_horizontal = True, spacing = 2, name="A Box"):
     new_box.set_name(name)
     new_box.show()
     return new_box
+
+def multipack(box, *args, from_end=False, packing=True, spacing=2):
+    action = box.pack_end if from_end else box.pack_start
+    for elem in args:
+        action(elem, packing, packing, spacing)
+        #elem.show()
+    #return box
