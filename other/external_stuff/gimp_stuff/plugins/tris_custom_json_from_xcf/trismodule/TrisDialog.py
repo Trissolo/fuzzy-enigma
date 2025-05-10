@@ -42,13 +42,18 @@ class TrisDialog(Necessary, GimpUi.Dialog):
             temp_tool_widget = tool_class(prop, idx)
             self.tool_widgets_ary.append(temp_tool_widget)
             right_box.pack_start(temp_tool_widget.div, True, True, 0)
-
-        self.refresh_all()
+        
+        print("RICAZZZZZZZZZZZZZZZZZZZZZZZZZZZZO")
+        print(self.current_layer, type(self)._current_layer)
+        self.update_current_layer()
+        print(self.current_layer, type(self)._current_layer)
+        #self.refresh_all()
         #### END TrisDialog init ####
     
     def refresh_all(self):
         for wid in self.summary_widgets_ary:
             print(f"Refreshing: {wid}")
+            wid.refresh()
         print("Refresh_all (done)\n")
         
     def generate_summary_widget(self, param, idx):
@@ -92,3 +97,6 @@ class TrisDialog(Necessary, GimpUi.Dialog):
     def update_button_action(button, self):
         self.update_current_layer()
         self.label_for_image_name.set_text(self.current_layer.get_name(), bgcolor=0x656598, pad=6)
+
+        #not sure if this method is the right place for this
+        self.refresh_all()

@@ -18,7 +18,7 @@ class hovernamesChooser(Necessary):
         self.idx = idx
         self.property = prop
         self.enum = TrisEnum(self.gamedata['onHoverNames'], "Things names (on_pointer_over")
-        # Value to save in thr parasite
+        # Value to save in the parasite
         self.data_for_parasite = None
         self.lettererichieste = "a"
 

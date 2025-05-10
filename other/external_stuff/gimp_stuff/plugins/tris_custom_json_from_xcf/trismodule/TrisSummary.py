@@ -1,5 +1,8 @@
 import gi
 
+gi.require_version("Gimp", "3.0")
+from gi.repository import Gimp
+
 gi.require_version("GimpUi", "3.0")
 from gi.repository import GimpUi
 
@@ -31,7 +34,7 @@ class TrisSummary(Necessary):
         self.button_a = make_button(GimpUi.ICON_MENU_RIGHT, f"Button_a {prop}", type(self).introduce_hovernames, self)
         
         # Second Button (save the changes)
-        self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", None, self)
+        self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", type(self).save_prop_in_parasite, self)
         self.button_b.hide()
 
         # Box container
@@ -90,7 +93,7 @@ class TrisSummary(Necessary):
         #To Do: hide any other ToolWidget
 
     def refresh(self, parasite_list = None):
-        print("LAYER CHECK:", self.current_layer)
+        print("LAYER CHECK:", self.current_layer, type(self)._current_layer)
         # if parasite_list is None:
         #     parasite_list = self.current_layer.get_parasite_list()
         #if self.property in parasite_list:
@@ -99,9 +102,32 @@ class TrisSummary(Necessary):
         if para is None:
             self.show_off_key()
             self.show_off_value()
+            print("No parasite")
         else:
             self.show_off_key(True)
             data = type(self).grab_parasite_data(para)
             word = self.tool_widget_from_idx(self.idx).enum.get_corresponding(data)
             self.show_off_value(word)
+            print("Sì parasite")
+    def save_xcf(self):
+        file = self.image.get_xcf_file()
+        Gimp.file_save(Gimp.RunMode.NONINTERACTIVE, self.image, self.image.get_xcf_file(), None)
+        self.image.is_dirty()
+        self.image.clean_all()
+        return self
+    def remove_parasite(self):
+        if self.property in self.current_layer.get_parasite_list():
+            self.current_layer.detach_parasite(self.property)
+        return self
+    def add_parasite(self):
+        print(f"Widget {self.property} writing '{self.parasite_data}'")
+        d = type(self).encode_data(self.parasite_data)#Gimp.PARASITE_PERSISTENT
+        p = Gimp.Parasite.new(name=self.property, flags=Gimp.PARASITE_PERSISTENT, data=d)
+        self.current_layer.attach_parasite(p)
+        #self.save_xcf()
+        print("Saved?")
+    @staticmethod
+    def save_prop_in_parasite(button, self):
+        print("Saving THIS:", self.parasite_data, self.parasite_data is not None)
+        self.add_parasite()
 

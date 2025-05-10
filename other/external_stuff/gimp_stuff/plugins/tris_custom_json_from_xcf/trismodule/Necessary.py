@@ -37,24 +37,28 @@ class Necessary():
         return type(self)._image
     
     def update_current_layer(self):
+        print(f"{self} update_current_layer")
         sel_layers = self.image.get_selected_layers()
         assert type(sel_layers) is list and len(sel_layers) != 0, "No layer selected! Make sure that at least one layer exists in image!"
+        Necessary._current_layer = sel_layers[0]
+
         #type(self)._current_layer = sel_layers[0]
-        self.current_layer = sel_layers[0]
-        return self.current_layer
+        #return self.current_layer
     
     @property
     def current_layer(self):
-        return type(self)._current_layer
+        return Necessary._current_layer
+        # return type(self)._current_layer
     
-    @current_layer.setter
-    def current_layer(self, value):
-        print("Instance is setting the current_layer")
-        type(self)._current_layer = value
+    # @current_layer.setter
+    # def current_layer(self, value):
+    #     print(f"{self} current_layer.setter")
+    #     type(self)._current_layer = value
     
     @property
     def gamedata(self):
-        return self._gamedata
+        # maybe... return Necessary._gamedata
+        return type(self)._gamedata
     
     @property
     def tool_widgets_ary(self):
