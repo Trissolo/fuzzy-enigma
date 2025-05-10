@@ -105,7 +105,7 @@ class TrisSummary(Necessary):
             print("No parasite")
         else:
             self.show_off_key(True)
-            data = type(self).grab_parasite_data(para)
+            data = Necessary.grab_parasite_data(para)
             word = self.tool_widget_from_idx(self.idx).enum.get_corresponding(data)
             self.show_off_value(word)
             print("Sì parasite")
@@ -117,17 +117,21 @@ class TrisSummary(Necessary):
         return self
     def remove_parasite(self):
         if self.property in self.current_layer.get_parasite_list():
+            print('(Removing old para...)')
             self.current_layer.detach_parasite(self.property)
         return self
     def add_parasite(self):
         print(f"Widget {self.property} writing '{self.parasite_data}'")
-        d = type(self).encode_data(self.parasite_data)#Gimp.PARASITE_PERSISTENT
+        d = Necessary.encode_data(self.parasite_data)#Gimp.PARASITE_PERSISTENT
         p = Gimp.Parasite.new(name=self.property, flags=Gimp.PARASITE_PERSISTENT, data=d)
         self.current_layer.attach_parasite(p)
+        print(f"Parasite called '{p.get_name()}' has been attached")
+        print(len(self.current_layer.get_parasite_list()))
         #self.save_xcf()
-        print("Saved?")
     @staticmethod
     def save_prop_in_parasite(button, self):
         print("Saving THIS:", self.parasite_data, self.parasite_data is not None)
+        self.remove_parasite()
         self.add_parasite()
+        self.button_b.hide()
 

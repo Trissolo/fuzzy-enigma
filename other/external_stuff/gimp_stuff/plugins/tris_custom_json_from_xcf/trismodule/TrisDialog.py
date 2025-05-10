@@ -10,6 +10,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 from .hovernameschooser import hovernamesChooser
+from .ToolSuffix import ToolSuffix
 from .TrisSummary import TrisSummary
 from .trisLabel import TrisLabel
 from .generic_helpers import make_box, make_button
@@ -32,7 +33,7 @@ class TrisDialog(Necessary, GimpUi.Dialog):
 
         #populate
         #for idx, prop in enumerate(self.gamedata["thingProps"]):
-        for idx, tool_class in enumerate([hovernamesChooser]):
+        for idx, tool_class in enumerate([hovernamesChooser, ToolSuffix]):
             prop = self.gamedata["thingProps"][idx]
             # build the SummaryWidget
             summary_widget = TrisSummary(prop, idx)
