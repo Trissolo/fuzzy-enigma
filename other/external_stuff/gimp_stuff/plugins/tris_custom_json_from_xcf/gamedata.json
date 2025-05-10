@@ -45,7 +45,10 @@
       "Vai corridoio",
       "Vai altra stanza",
       "Torna Est",
-      "Armadietto"
+      "Armadietto",
+      "Piattaforma",
+      "Top window",
+      "Bottom window"
     ],
 
     "thingKind": [{
