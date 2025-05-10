@@ -62,11 +62,13 @@ class Necessary():
     
     @property
     def tool_widgets_ary(self):
-        return type(self)._tool_widgets_ary
+        #return type(self)._tool_widgets_ary
+        return Necessary._tool_widgets_ary
     
     @property
     def summary_widgets_ary(self):
-        return type(self)._summary_widgets_ary
+        #return type(self)._summary_widgets_ary
+        return Necessary._summary_widgets_ary
     
     def tool_widget_from_idx(self, index):
         return self.tool_widgets_ary[index]
