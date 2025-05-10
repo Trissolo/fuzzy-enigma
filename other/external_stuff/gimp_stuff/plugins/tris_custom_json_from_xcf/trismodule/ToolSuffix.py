@@ -56,7 +56,6 @@ class ToolSuffix(Necessary):
         multipack(self.div, hbox, from_end=False, packing=True, spacing=2)
         hbox.show()
     def on_button_toggled(self, button):
-        #print(self, sep="\n")
         if button.get_active():
             self.set_actual_varkind(button.value)
         else:

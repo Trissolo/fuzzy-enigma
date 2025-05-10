@@ -31,10 +31,10 @@ class TrisSummary(Necessary):
         self.label_value.write("----", bgcolor=0x666666, monospace=True, pad=6)
 
         # First Button (open tools)
-        self.button_a = make_button(GimpUi.ICON_MENU_RIGHT, f"Button_a {prop}", type(self).introduce_hovernames, self)
+        self.button_a = make_button(GimpUi.ICON_MENU_RIGHT, f"Button_a {prop}", self.introduce_hovernames)
         
         # Second Button (save the changes)
-        self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", type(self).save_prop_in_parasite, self)
+        self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", self.save_prop_in_parasite)
         self.button_b.hide()
 
         # Box container
@@ -80,8 +80,7 @@ class TrisSummary(Necessary):
         else:
             self.label_value.write(text=text, color=0x01030a, size=110, pad=3, monospace=True)
     
-    @staticmethod
-    def introduce_hovernames(button, self):
+    def introduce_hovernames(self, button):
         print("Called the method 'TrisSummary.introduce_hovernames', but is still incomplete.")
         print("INTRODUCE", self.idx, self.tool_widgets_ary[self.idx])
         twa = self.tool_widgets_ary
@@ -128,8 +127,7 @@ class TrisSummary(Necessary):
         print(f"Parasite called '{p.get_name()}' has been attached")
         print(len(self.current_layer.get_parasite_list()))
         #self.save_xcf()
-    @staticmethod
-    def save_prop_in_parasite(button, self):
+    def save_prop_in_parasite(self, button):
         print("Saving THIS:", self.parasite_data, self.parasite_data is not None)
         self.remove_parasite()
         self.add_parasite()

@@ -29,13 +29,13 @@ class hovernamesChooser(Necessary):
         #searchWidget
         searcWidget = Gtk.SearchEntry()
         searcWidget.show()    
-        searcWidget.connect("search-changed", self.on_search_activated, self)
+        searcWidget.connect("search-changed", self.on_search_activated)
 
         # ListBox:
         listbox = make_listbox(self.enum.tlist)
         listbox.set_sort_func(self.sort_func, None, False)
-        listbox.set_filter_func(self.tris_filter_func, self, False)
-        listbox.connect("row-activated", self.on_row_activated_grid, self)
+        listbox.set_filter_func(self.tris_filter_func, False)
+        listbox.connect("row-activated", self.on_row_activated_grid)
 
         #scrolled
         scrolled = Gtk.ScrolledWindow.new(None, None)
@@ -46,7 +46,7 @@ class hovernamesChooser(Necessary):
         self.pending_label = Gtk.Label.new("----")
         self.pending_label.show()
         self.confirm_button = make_button(GimpUi.ICON_MENU_LEFT, "Confirm HoverName Button")# GimpUi.Button.new_from_icon_name(GimpUi.ICON_MENU_LEFT, 1) #Gtk.Button.new_with_label("Click Me")
-        self.confirm_button.connect("clicked", self.on_confirm_clicked, self)
+        self.confirm_button.connect("clicked", self.on_confirm_clicked)
 
         # reset option!
         self.clear_pending_option()
@@ -72,16 +72,13 @@ class hovernamesChooser(Necessary):
     @staticmethod
     def sort_func(row_1, row_2, data, notify_destroy):
         return row_1.data.lower() > row_2.data.lower()
-    @staticmethod
-    def on_search_activated(searchentry, self):
+    def on_search_activated(self, searchentry):
         self.lettererichieste = searchentry.get_text()
         print(self.lettererichieste)
         self.listbox.invalidate_filter()
-    @staticmethod
-    def tris_filter_func(row, self, notify_destroy):
+    def tris_filter_func(self, row, notify_destroy):
         return True if self.lettererichieste.lower() in row.data.lower() else False
-    @staticmethod
-    def on_row_activated_grid(listbox_widget, row, self):
+    def on_row_activated_grid(self, listbox_widget, row):
         num, text = self.enum.get_all(row.data)
         self.pending_label.set_text(f"{text} [{num}]")
         self.set_data_for_parasite(num)
@@ -93,8 +90,7 @@ class hovernamesChooser(Necessary):
         self.set_data_for_parasite()
         return self
     
-    @staticmethod
-    def on_confirm_clicked(button, self):
+    def on_confirm_clicked(self, button):
         # transfer data for parasite to the SummaryWidget
         data = self.get_data_for_parasite()
         summary_widget = self.summary_widget_from_idx(self.idx)

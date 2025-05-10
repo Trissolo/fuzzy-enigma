@@ -78,8 +78,7 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         return left_box, right_box
     
     def make_top_bar(self):
-        update_button = make_button(GimpUi.ICON_VIEW_REFRESH, "Update Layer", self.update_button_action, self)
-        #update_button.connect("clicked", self.update_button_action, self)
+        update_button = make_button(GimpUi.ICON_VIEW_REFRESH, "Update Layer", self.update_button_action)
 
         label_for_image_name = TrisLabel(f"<{self.image.get_name()}>")
         label_for_image_name.set_name("Descr Image Name")
@@ -94,8 +93,7 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         self.label_for_image_name = label_for_image_name
         return top_div
     
-    @staticmethod
-    def update_button_action(button, self):
+    def update_button_action(self, button):
         self.update_current_layer()
         self.label_for_image_name.set_text(self.current_layer.get_name(), bgcolor=0x656598, pad=6)
 
