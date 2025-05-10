@@ -31,22 +31,26 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         left_box, right_box = self.generate_containers()
 
         #populate
-        for idx, prop in enumerate(self.gamedata["thingProps"]):
+        #for idx, prop in enumerate(self.gamedata["thingProps"]):
+        for idx, tool_class in enumerate([hovernamesChooser]):
+            prop = self.gamedata["thingProps"][idx]
+            # build the SummaryWidget
             summary_widget = TrisSummary(prop, idx)
             left_box.pack_start(summary_widget.div, False, False, 0)
-            self.summary_widgets_ary[idx]=summary_widget
-        
-        #hardcoded test!
-        temp_tool_widget = hovernamesChooser("hovernames", 0, self)
-        self.tool_widgets_ary[0] = temp_tool_widget
-        print("Confirm Button", temp_tool_widget.get_button())
-        right_box.pack_start(temp_tool_widget.div, True, True, 0)
-        
-    # def hide_all_widget_tools(self):
-    #     for elem in self.tool_widgets_ary:
-    #         elem.hide()
-    #     return self
+            self.summary_widgets_ary.append(summary_widget)
+            #and now the ToolWidget
+            temp_tool_widget = tool_class(prop, idx)
+            self.tool_widgets_ary.append(temp_tool_widget)
+            right_box.pack_start(temp_tool_widget.div, True, True, 0)
+
+        self.refresh_all()
+        #### END TrisDialog init ####
     
+    def refresh_all(self):
+        for wid in self.summary_widgets_ary:
+            print(f"Refreshing: {wid}")
+        print("Refresh_all (done)\n")
+        
     def generate_summary_widget(self, param, idx):
         return TrisSummary(param, idx, self)
        
@@ -66,9 +70,6 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         self.left_box = left_box
         self.right_box = right_box
         return left_box, right_box
-    
-    
-    
     
     def make_top_bar(self):
         update_button = make_button(GimpUi.ICON_VIEW_REFRESH, "Update Layer", self.update_button_action, self)

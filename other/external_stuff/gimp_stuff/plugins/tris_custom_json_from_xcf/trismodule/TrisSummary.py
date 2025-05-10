@@ -22,15 +22,15 @@ class TrisSummary(Necessary):
         self.label_key.set_xalign(0)
         self.show_off_key()
 
-        #Second Label
+        #Second Label (current value)
         self.label_value = TrisLabel(prop)
         self.label_value.set_xalign(0)
         self.label_value.write("----", bgcolor=0x666666, monospace=True, pad=6)
 
-        # First Button
+        # First Button (open tools)
         self.button_a = make_button(GimpUi.ICON_MENU_RIGHT, f"Button_a {prop}", type(self).introduce_hovernames, self)
         
-        # Second Button
+        # Second Button (save the changes)
         self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", None, self)
         self.button_b.hide()
 
@@ -58,14 +58,15 @@ class TrisSummary(Necessary):
         self.refresh_description()
         self.button_b.show()
     
-    def get_button_a(self):
-        return self.button_a
-    
-    def get_button_b(self):
-        return self.button_b
-    
     def show_off_key(self, is_bold = False):
         self.label_key.write(f"{self.property}:", color=0x989898, monospace=True, pad=1, bold=is_bold, size=110)
+        return self
+    
+    def show_off_value(self, text = None, highlight = False):
+        if text is None:
+            self.label_value.write("----", pad=2)
+        else:
+            self.label_value.write(text, bgcolor=0x45ba76, size=116, pad=3, monospace=True) if highlight else self.label_value.write(text, size=116, pad=3, monospace=True)
         return self
     
     def refresh_description(self, text = None):
@@ -87,3 +88,20 @@ class TrisSummary(Necessary):
         print("OK - showing the wanted widget.")
         twa[self.idx].show()
         #To Do: hide any other ToolWidget
+
+    def refresh(self, parasite_list = None):
+        print("LAYER CHECK:", self.current_layer)
+        # if parasite_list is None:
+        #     parasite_list = self.current_layer.get_parasite_list()
+        #if self.property in parasite_list:
+        #    para = self.current_layer.get_parasite(self.property)
+        para = self.current_layer.get_parasite(self.property)
+        if para is None:
+            self.show_off_key()
+            self.show_off_value()
+        else:
+            self.show_off_key(True)
+            data = type(self).grab_parasite_data(para)
+            word = self.tool_widget_from_idx(self.idx).enum.get_corresponding(data)
+            self.show_off_value(word)
+

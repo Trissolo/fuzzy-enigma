@@ -24,12 +24,10 @@ class Necessary():
             cls._ready = True
             cls._image = image
             cls._gamedata = gamedata
-            length = len(gamedata["thingProps"])
-            cls._tool_widgets_ary = [None] * length
-            cls._summary_widgets_ary = [None] * length
-            print(f"Necessary set-up!\n(Empty slots: [{length}])\n")
+            cls._tool_widgets_ary = []
+            cls._summary_widgets_ary = []
         else:
-            print("Necessary already set.")
+            print("'Necessary' Class already set.")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

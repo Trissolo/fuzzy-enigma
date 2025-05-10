@@ -11,14 +11,15 @@ from gi.repository import Gtk
 
 from .TrisEnum import TrisEnum
 from .generic_helpers import make_listbox, make_box, make_button
+from .Necessary import Necessary
 
-class hovernamesChooser():
-    def __init__(self, prop, idx, trisDialog):
-        self.trisDialog = trisDialog
+class hovernamesChooser(Necessary):
+    def __init__(self, prop, idx): #, trisDialog):
+        #self.trisDialog = trisDialog
         #self.tris_manager = trisDialog.tris_manager
         self.idx = idx
         self.property = prop
-        self.enum = TrisEnum(self.trisDialog.gamedata['onHoverNames'], "Things names (on_pointer_over")
+        self.enum = TrisEnum(self.gamedata['onHoverNames'], "Things names (on_pointer_over")
         # Value to save in thr parasite
         self.pending_value_for_parasite = None
         self.lettererichieste = "a"
@@ -95,7 +96,7 @@ class hovernamesChooser():
     def on_confirm_clicked(button, self):
         data = self.get_for_para()
         
-        summary_widget = self.trisDialog.summary_widget_from_idx(self.idx)
+        summary_widget = self.summary_widget_from_idx(self.idx)
         summary_widget.receive_data(data)
         summary_widget.button_b.show()
         # TO DO: add Parasite!
@@ -110,10 +111,12 @@ class hovernamesChooser():
         return self.confirm_button
     def set_pending(self, num=None):
         self.pending_value_for_parasite = num
-        #self.pending_new_description = val
         return self
     def get_for_para(self):
         return self.pending_value_for_parasite
+
+            
+        
 
 
 '''       
