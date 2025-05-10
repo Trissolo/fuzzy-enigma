@@ -14,14 +14,12 @@ from .generic_helpers import make_listbox, make_box, make_button
 from .Necessary import Necessary
 
 class hovernamesChooser(Necessary):
-    def __init__(self, prop, idx): #, trisDialog):
-        #self.trisDialog = trisDialog
-        #self.tris_manager = trisDialog.tris_manager
+    def __init__(self, prop, idx):
         self.idx = idx
         self.property = prop
         self.enum = TrisEnum(self.gamedata['onHoverNames'], "Things names (on_pointer_over")
         # Value to save in thr parasite
-        self.pending_value_for_parasite = None
+        self.data_for_parasite = None
         self.lettererichieste = "a"
 
         # "div"
@@ -38,6 +36,7 @@ class hovernamesChooser(Necessary):
         listbox.set_sort_func(self.sort_func, None, False)
         listbox.set_filter_func(self.tris_filter_func, self, False)
         listbox.connect("row-activated", self.on_row_activated_grid, self)
+
         #scrolled
         scrolled = Gtk.ScrolledWindow.new(None, None)
         scrolled.add(listbox)
@@ -52,7 +51,7 @@ class hovernamesChooser(Necessary):
         # reset option!
         self.clear_pending_option()
 
-        tcont = make_box(True, 0)##Gtk.Box.new(Gtk.Orientation.HORIZONTAL, spacing=0)
+        tcont = make_box(True, 0)
         tcont.pack_start(self.pending_label, True, True, 2)
         tcont.pack_end(self.confirm_button, False, False, 2)
         tcont.show()
@@ -63,6 +62,7 @@ class hovernamesChooser(Necessary):
         self.div.pack_start(tcont, False, False, 1)
         self.div.pack_start(searcWidget, False, False, 1)
         self.div.pack_start(scrolled, True, True, 1)
+
     def show(self):
         self.div.show()
         self.listbox.show()
@@ -84,94 +84,35 @@ class hovernamesChooser(Necessary):
     def on_row_activated_grid(listbox_widget, row, self):
         num, text = self.enum.get_all(row.data)
         self.pending_label.set_text(f"{text} [{num}]")
-        self.set_pending(num)
+        self.set_data_for_parasite(num)
         self.confirm_button.show()
     
     def clear_pending_option(self):
         self.confirm_button.hide()
-        self.set_pending()
         self.pending_label.set_text("----")
+        self.set_data_for_parasite()
         return self
+    
     @staticmethod
     def on_confirm_clicked(button, self):
-        data = self.get_for_para()
-        
+        # transfer data for parasite to the SummaryWidget
+        data = self.get_data_for_parasite()
         summary_widget = self.summary_widget_from_idx(self.idx)
+
         summary_widget.receive_data(data)
-        summary_widget.button_b.show()
-        # TO DO: add Parasite!
-
-        self.confirm_button.hide()
         self.clear_pending_option()
-        self.hide()
 
+        # GUI stuff
+        # hide these tools
+        self.hide()
+        # Make the Save button accessible
         summary_widget.button_b.show()
         return self
+    
     def get_button(self):
         return self.confirm_button
-    def set_pending(self, num=None):
-        self.pending_value_for_parasite = num
+    def set_data_for_parasite(self, num=None):
+        self.data_for_parasite = num
         return self
-    def get_for_para(self):
-        return self.pending_value_for_parasite
-
-            
-        
-
-
-'''       
-        
-
-        
-       
-        
-        listbox.set_hexpand(True)
-        #set_hexpand(True)
-
-        self.listbox = listbox
-
-        
-
-        hn_grid.attach(searcWidget, 6, 0, 2, 1)
-        hn_grid.attach(scrolled, 6, 1, 2, 3)
-        hn_grid.show_all()
-        self.hn_grid = hn_grid
-
-    def get_grid(self):
-        return self.hn_grid
-    @staticmethod
-    def tb_ba_action(button, self):
-        print("TrisChooser: Not yet implemented save parasite", self.tris_enum.get_all(2))
-        print(self.current_layer.get_name(), "<--")
-    
-    @staticmethod
-    def on_search_activated(searchentry, self):
-        self.lettererichieste = searchentry.get_text()
-        self.listbox.invalidate_filter()
-    
-    
-    
-    
-    
-    
-    
-    @property
-    def current_layer(self):
-        return self.trisParent.current_layer
-    
-    @staticmethod
-    def toggle_btn_handler(button, self):
-        container = self.box
-        if container.get_visible():
-            container.hide()
-            button.set_label(f"⚫ {self.json_prop}") #"🕳️"
-        else:
-            container.show()
-            button.set_label(f"🟠 {self.json_prop}") # 👁️") #"🟠"
-        print(self.current_layer.get_name())
-    
-    def insert(self, *args):
-        for w in args:
-            self.box.pack_start(w, False, False, 1)
-        return self
-'''
+    def get_data_for_parasite(self):
+        return self.data_for_parasite
