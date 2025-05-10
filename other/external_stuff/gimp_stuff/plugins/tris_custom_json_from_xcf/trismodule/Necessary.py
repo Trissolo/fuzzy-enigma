@@ -71,3 +71,17 @@ class Necessary():
     
     def summary_widget_from_idx(self, index):
         return self.summary_widgets_ary[index]
+    
+    @staticmethod
+    def encode_data(data):
+        if type(data) is not list:
+            data = [data]
+        res = " ".join([str(el) for el in data])
+        to_bytes = bytes(res.encode('utf-8'))
+        return to_bytes
+    
+    @staticmethod
+    def grab_parasite_data(parasite):
+        res_string = bytes(parasite.get_data()).decode('utf-8')
+        to_int_ary = [ int(x) for x in res_string.split(" ")]
+        return to_int_ary[0] if len(to_int_ary) == 1 else to_int_ary
