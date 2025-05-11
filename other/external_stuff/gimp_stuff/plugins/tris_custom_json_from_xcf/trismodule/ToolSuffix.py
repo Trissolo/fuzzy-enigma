@@ -24,10 +24,62 @@ class ToolSuffix(Necessary):
 
         self.data_for_parasite = []
         self._populate_enums()
+        self.lettererichieste = "a"
         self.div = Gtk.Box.new(Gtk.Orientation.VERTICAL, spacing=0)
+        self.div.set_hexpand(True)
 
         print("ToolSuffix TEST", self.enum.get_all(1))
         self._build_radio_buttons()
+
+        #searchWidget
+        searcWidget = Gtk.SearchEntry()
+        searcWidget.show()    
+        searcWidget.connect("search-changed", self.on_search_activated)
+        self.searcWidget = searcWidget
+
+        # ListBox:
+        listbox = Gtk.ListBox()
+        listbox.set_name("Listbox Varnames")
+        listbox.show()
+        self.listbox = listbox
+
+        # populate the ListBox
+        for idx, names_ary in enumerate(self._enums):
+            for item in names_ary.tlist:
+                optn_label = Gtk.Label.new(item)
+                optn_label.show()
+                option = Gtk.ListBoxRow.new()
+                option.set_name(f"option {item}")
+                option.data = item
+                option.kind = idx
+                option.add(optn_label)
+                option.show()
+                listbox.add(option)
+
+        listbox.set_sort_func(self.sort_listbox, None, False)
+        listbox.set_filter_func(self.tris_filter_func, False)
+        #listbox.connect("row-activated", self.on_row_activated_grid)
+
+        #scrolled
+        scrolled = Gtk.ScrolledWindow.new(None, None)
+        scrolled.add(listbox)
+        scrolled.set_hexpand(True)
+        scrolled.show()
+
+        self.div.pack_start(searcWidget, False, False, 1)
+        self.div.pack_start(scrolled, True, True, 1)
+
+    def on_search_activated(self, searchentry):
+        self.lettererichieste = searchentry.get_text()
+        print(self.lettererichieste)
+        self.listbox.invalidate_filter()
+
+    @staticmethod
+    def sort_listbox(row_1, row_2, data, notify_destroy):
+        return row_1.data.lower() > row_2.data.lower()
+    
+    def tris_filter_func(self, row, notify_destroy):
+        return True if row.kind == self.actual_varkind and self.lettererichieste.lower() in row.data.lower() else False
 
     def _populate_enums(self):
         for idx, elem in enumerate(type(self).vars_names):
@@ -61,6 +113,9 @@ class ToolSuffix(Necessary):
     def on_button_toggled(self, button):
         if button.get_active():
             self.set_actual_varkind(button.value)
+            self.listbox.invalidate_filter()
+            self.lettererichieste = ""
+            #self.searcWidget.emit
     
     def set_actual_varkind(self, value = 0):
         self.actual_varkind = value
