@@ -94,7 +94,7 @@ class ToolSuffix(Necessary):
         #data = self.get_data_for_parasite()
         data = self.data_for_parasite.copy()
         summary_widget = self.summary_widget_from_idx(self.idx)
-        #summary_widget.receive_data(data)
+        summary_widget.receive_data(data)
         self.clear_pending_option()
 
     def clear_pending_option(self):

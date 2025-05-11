@@ -45,7 +45,7 @@ class TrisSummary(Necessary):
 
         #At first the save button is hidden
         self.button_b.hide()
-
+        
         # (end TrisSummary init)
     
     def show(self):
@@ -58,7 +58,9 @@ class TrisSummary(Necessary):
     
     def receive_data(self, para_data):
         self.parasite_data = para_data
-        self.refresh_description()
+        print("ToolSummary's 'receive_data' calling: 'self.determine_data'()")
+        text = self.determine_data(para_data)
+        self.refresh_description(text)
         self.button_b.show()
     
     def show_off_key(self, is_bold = False):
@@ -74,6 +76,9 @@ class TrisSummary(Necessary):
     
     def refresh_description(self, text = None):
         self.show_off_key(True)
+        str = self.determine_data()
+        self.label_value.write(text, bgcolor=0x45ba76, size=116, pad=3, monospace=True)
+        return False
         if not text:
             crazy_text = self.tool_widget_from_idx(self.idx).enum.get_corresponding(self.parasite_data)
             self.label_value.write(crazy_text, bgcolor=0x45ba76, size=116, pad=3, monospace=True)
@@ -132,4 +137,22 @@ class TrisSummary(Necessary):
         self.remove_parasite()
         self.add_parasite()
         self.button_b.hide()
+    def determine_data(self, data = None):
+        if data is None and self.parasite_data is None:
+            return "----"
+        data = self.parasite_data
+        #assert data is not None, f"Message from Summart{self.property.capitalize()}: 'self.parasite_data' not yet assigned"
+        result = None
+        props_strings = self.gamedata["thingProps"]
+        is_array = self.property == props_strings[1] or self.property == props_strings[2]
+        if is_array:
+            enustoca = self.tool_widget_from_idx(self.idx).enum
+            var_value = enustoca.get_corresponding(data[1])
+            var_kind = ["BOOL", "CRUMBLE", "NIBBLE", "BYTE"][data[0]]
+            result = f"{var_value} ({var_kind}: {data[1]})"
+            if len(data) == 3:
+                result = f"if {result} == {data[2]}"
+        else:
+            result = self.gamedata["onHoverNames"][data]
+        return result
 
