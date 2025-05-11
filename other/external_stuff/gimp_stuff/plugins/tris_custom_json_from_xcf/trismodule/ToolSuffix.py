@@ -29,7 +29,8 @@ class ToolSuffix(Necessary):
         self.div.set_hexpand(True)
 
         print("ToolSuffix TEST", self.enum.get_all(1))
-        self._build_radio_buttons()
+        self.radio_container = self._build_radio_buttons()
+        self.clear_pending_option()
 
         #searchWidget
         searchWidget = Gtk.SearchEntry()
@@ -58,7 +59,7 @@ class ToolSuffix(Necessary):
 
         listbox.set_sort_func(self.sort_listbox, None, False)
         listbox.set_filter_func(self.tris_filter_func, False)
-        #listbox.connect("row-activated", self.on_row_activated_grid)
+        listbox.connect("row-activated", self.on_row_activated)
 
         #scrolled
         scrolled = Gtk.ScrolledWindow.new(None, None)
@@ -66,6 +67,20 @@ class ToolSuffix(Necessary):
         scrolled.set_hexpand(True)
         scrolled.show()
 
+        #top container
+        self.preview_label = Gtk.Label.new("----")
+        self.preview_label.show()
+        self.confirm_button = make_button(GimpUi.ICON_MENU_LEFT, "Confirm HoverName Button")# GimpUi.Button.new_from_icon_name(GimpUi.ICON_MENU_LEFT, 1) #Gtk.Button.new_with_label("Click Me")
+        self.confirm_button.connect("clicked", self.on_confirm_clicked)
+
+        # Top bar
+        tcont = make_box(True, 0)
+        tcont.pack_start(self.preview_label, True, True, 2)
+        tcont.pack_end(self.confirm_button, False, False, 2)
+        tcont.show()
+
+        self.div.pack_start(tcont, True, False, 1)  
+        self.div.pack_start(self.radio_container, False, False, 0)      
         self.div.pack_start(searchWidget, False, False, 1)
         self.div.pack_start(scrolled, True, True, 1)
 
@@ -73,6 +88,25 @@ class ToolSuffix(Necessary):
         self.lettererichieste = searchentry.get_text()
         print(self.lettererichieste)
         self.listbox.invalidate_filter()
+
+    def on_confirm_clicked(self, button):
+        # transfer data for parasite to the SummaryWidget
+        #data = self.get_data_for_parasite()
+        data = self.data_for_parasite.copy()
+        summary_widget = self.summary_widget_from_idx(self.idx)
+        #summary_widget.receive_data(data)
+        self.clear_pending_option()
+
+    def clear_pending_option(self):
+        self.radio_container.get_children()[0].emit("toggled")
+        self.radio_container.show()
+
+
+    def on_row_activated(self, listbox_widget, row):
+        num, text = self.enum.get_all(row.data)
+        self.preview_label.set_text(f"{text} {type(self).vars_names[self.actual_varkind]}[{num}]")
+        self.data_for_parasite[1] = num
+        self.confirm_button.show()
 
     @staticmethod
     def sort_listbox(row_1, row_2, data, notify_destroy):
@@ -103,11 +137,12 @@ class ToolSuffix(Necessary):
             radio_container.pack_start(button, False, False, 0)
             button.show()
             prev = button
-        self.div.pack_start(radio_container, False, False, 0)
+        #self.div.pack_start(radio_container, False, False, 0)
         
         # Directly emit the 'toggled' signal
-        radio_container.get_children()[0].emit("toggled")
-        radio_container.show()
+        #radio_container.get_children()[0].emit("toggled")
+        #radio_container.show()
+        return radio_container
         # _build_radio_buttons END
     
     def on_button_toggled(self, button):
