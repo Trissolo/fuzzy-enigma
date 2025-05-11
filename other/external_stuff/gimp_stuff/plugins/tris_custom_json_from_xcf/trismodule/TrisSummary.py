@@ -85,105 +85,58 @@ class TrisSummary(Necessary):
         self.labels_potential_data(parsed_text)
         self.button_b.show()
         return self
+    
     def hide_all_tools(self):
         for tool_widget in self.tool_widgets_ary:
             tool_widget.hide()
         return self
+    
     def manifest_tool_widget(self, button):
         self.hide_all_tools()
         self.tool_widget_from_idx(self.idx).show()
+    
+    def get_parasite(self):
+        return self.current_layer.get_parasite(self.property)
 
-    def introduce_hovernames(self, button):
-        print("Called the method 'TrisSummary.introduce_hovernames', but is still incomplete.")
-        print("INTRODUCE", self.idx, self.tool_widgets_ary[self.idx])
-        twa = self.tool_widgets_ary
-        if not twa[self.idx]:
-            print("This method is WIP: widget not yet implemented :(")
-            return False
-        print("OK - showing the wanted widget.")
-        twa[self.idx].show()
-        #To Do: hide any other ToolWidget
-
-    def refresh(self, parasite_list = None):
-        para = self.current_layer.get_parasite(self.property)
+    def refresh(self):
+        para = self.get_parasite()
         if para is None:
             self.labels_no_data()
         else:
             data = Necessary.grab_parasite_data(para)
             parsed_text = self.parse_parasite_data(data)
             self.labels_existing_data(parsed_text)
+    
     def save_xcf(self):
-        file = self.image.get_xcf_file()
         Gimp.file_save(Gimp.RunMode.NONINTERACTIVE, self.image, self.image.get_xcf_file(), None)
         self.image.is_dirty()
         self.image.clean_all()
         return self
+    
     def remove_parasite(self):
         if self.property in self.current_layer.get_parasite_list():
-            print('(Removing old para...)')
             self.current_layer.detach_parasite(self.property)
         return self
+    
     def add_parasite(self):
-        print(f"Widget {self.property} writing '{self.parasite_data}'")
-        d = Necessary.encode_data(self.parasite_data)#Gimp.PARASITE_PERSISTENT
+        d = Necessary.encode_data(self.parasite_data)
         p = Gimp.Parasite.new(name=self.property, flags=Gimp.PARASITE_PERSISTENT, data=d)
         self.current_layer.attach_parasite(p)
-        print(f"Parasite called '{p.get_name()}' has been attached")
-        print(len(self.current_layer.get_parasite_list()))
-        #self.save_xcf()
+        #return self.save_xcf()
+        return print(f"Parasite '{self.property}' attached to layer")
+    
     def save_prop_in_parasite(self, button):
-        print("Saving THIS:", self.parasite_data, self.parasite_data is not None)
-        self.remove_parasite()
-        self.add_parasite()
+        self.remove_parasite().add_parasite()
         self.button_b.hide()
     
     def parse_parasite_data(self, data):
         result = None
         if type(data) is int:
             result = self.gamedata["onHoverNames"][data]
-        else:
+        else: #if type(data is list):
             value_text = self.tool_widget_from_idx(self.idx).enum.get_corresponding(data[1])
             kind_text = ["BOOL", "CRUMBLE", "NIBBLE", "BYTE"][data[0]]
             result = f"{value_text} ({kind_text.capitalize()} #{data[1]})"
             if len(data) == 3:
                 result = f"if {result} == {data[2]}"
         return result
-
-        
-    def set_labels_from_data(self):
-        data = self.parasite_data
-        if data is None:
-            self.show_off_json_key()
-            self.show_off_json_value()
-            return True
-        self.show_off_json_key(True)
-        if data is int:
-            self.show_off_json_value(self.gamedata["onHoverNames"][data], highlight=True)
-            return
-        var_value = self.tool_widget_from_idx(self.idx).enum.get_corresponding(data[1])
-        var_kind = ["BOOL", "CRUMBLE", "NIBBLE", "BYTE"][data[0]]
-        result = f"{var_value} ({var_kind}: {data[1]})"
-        if len(data) == 3:
-                result = f"if {result} == {data[2]}"
-        self.show_off_json_value(result, highlight=True)
-        return True
-
-    # def determine_data(self, data = None):
-    #     if data is None and self.parasite_data is None:
-    #         return "----"
-    #     data = self.parasite_data
-    #     #assert data is not None, f"Message from Summart{self.property.capitalize()}: 'self.parasite_data' not yet assigned"
-    #     result = None
-    #     props_strings = self.gamedata["thingProps"]
-    #     is_array = self.property == props_strings[1] or self.property == props_strings[2]
-    #     if is_array:
-    #         enustoca = self.tool_widget_from_idx(self.idx).enum
-    #         var_value = enustoca.get_corresponding(data[1])
-    #         var_kind = ["BOOL", "CRUMBLE", "NIBBLE", "BYTE"][data[0]]
-    #         result = f"{var_value} ({var_kind}: {data[1]})"
-    #         if len(data) == 3:
-    #             result = f"if {result} == {data[2]}"
-    #     else:
-    #         result = self.gamedata["onHoverNames"][data]
-    #     return result
-
