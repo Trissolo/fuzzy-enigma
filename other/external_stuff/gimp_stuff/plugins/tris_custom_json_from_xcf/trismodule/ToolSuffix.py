@@ -14,6 +14,7 @@ from .Necessary import Necessary
 from .generic_helpers import make_button, make_box, multipack
 
 class ToolSuffix(Necessary):
+    vars_names = ["BOOL", "CRUMBLE", "NIBBLE", "BYTE"]
     def __init__(self, prop, idx):
         self.idx = idx
         self.property = prop
@@ -21,7 +22,7 @@ class ToolSuffix(Necessary):
         self._enums = []
         self.actual_varkind = 0
 
-        self.data_for_parasite = None
+        self.data_for_parasite = []
         self._populate_enums()
         self.div = Gtk.Box.new(Gtk.Orientation.VERTICAL, spacing=0)
 
@@ -29,7 +30,7 @@ class ToolSuffix(Necessary):
         self._build_radio_buttons()
 
     def _populate_enums(self):
-        for idx, elem in enumerate(["BOOL", "CRUMBLE", "NIBBLE", "BYTE"]):
+        for idx, elem in enumerate(type(self).vars_names):
             self._enums.append(TrisEnum(self.gamedata[elem], f"Names for {elem} variables"))
 
     @property
@@ -37,31 +38,36 @@ class ToolSuffix(Necessary):
         return self._enums[self.actual_varkind]
 
     def _build_radio_buttons(self):
-        #radioFrame = GimpUi.IntRadioFrame.new(["A", "B", "C"])
-        #self.div.pack_start(radioFrame, False, False, 0)
-        #radioFrame.show()
-
-        hbox = make_box(is_horizontal=True, spacing=1, name="Radio Buttons Container")
-        hbox.set_homogeneous(True)
+        radio_container = make_box(is_horizontal=True, spacing=0, name="Radio Buttons Container")
+        radio_container.set_homogeneous(True)
 
         prev = None
-        for idx, var_kind in enumerate(["BOOL", "CRUMBLE", "NIBBLE", "BYTE"]):
+        for idx, var_kind in enumerate(type(self).vars_names):
             button = Gtk.RadioButton.new_from_widget(prev)
-            button.set_label(f"{var_kind} ({idx})")
+            button.set_label(f"{var_kind.capitalize()} ({idx})")
+            button.set_name(var_kind)
             button.value = idx
             button.connect("toggled", self.on_button_toggled)
-            hbox.pack_start(button, False, False, 0)
+            radio_container.pack_start(button, False, False, 0)
             button.show()
             prev = button
-        multipack(self.div, hbox, from_end=False, packing=True, spacing=2)
-        hbox.show()
+        self.div.pack_start(radio_container, False, False, 0)
+        
+        # Directly emit the 'toggled' signal
+        radio_container.get_children()[0].emit("toggled")
+        radio_container.show()
+        # _build_radio_buttons END
+    
     def on_button_toggled(self, button):
         if button.get_active():
             self.set_actual_varkind(button.value)
-        else:
-            print("This 'else' us useless - old value was:", button.value)
+    
     def set_actual_varkind(self, value = 0):
         self.actual_varkind = value
-        print("Set:", self.actual_varkind)
+        self.data_for_parasite.clear()
+        self.data_for_parasite.append(value)
+        self.data_for_parasite.append(None)
+        print(f"\n***\nset_actual_varkind():\nactual_varkind = {self.actual_varkind} ({type(self).vars_names[value]})\nPara data array: {self.data_for_parasite}\n***\n")
+    
     def show(self):
         self.div.show()
