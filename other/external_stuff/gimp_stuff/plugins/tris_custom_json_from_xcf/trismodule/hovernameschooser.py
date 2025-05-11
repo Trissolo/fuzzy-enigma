@@ -27,9 +27,9 @@ class hovernamesChooser(Necessary):
         self.div.set_hexpand(True)
 
         #searchWidget
-        searcWidget = Gtk.SearchEntry()
-        searcWidget.show()    
-        searcWidget.connect("search-changed", self.on_search_activated)
+        searchWidget = Gtk.SearchEntry()
+        searchWidget.show()    
+        searchWidget.connect("search-changed", self.on_search_activated)
 
         # ListBox:
         listbox = make_listbox(self.enum.tlist)
@@ -43,8 +43,8 @@ class hovernamesChooser(Necessary):
         scrolled.set_hexpand(True)
 
         #top container
-        self.pending_label = Gtk.Label.new("----")
-        self.pending_label.show()
+        self.preview_label = Gtk.Label.new("----")
+        self.preview_label.show()
         self.confirm_button = make_button(GimpUi.ICON_MENU_LEFT, "Confirm HoverName Button")# GimpUi.Button.new_from_icon_name(GimpUi.ICON_MENU_LEFT, 1) #Gtk.Button.new_with_label("Click Me")
         self.confirm_button.connect("clicked", self.on_confirm_clicked)
 
@@ -52,7 +52,7 @@ class hovernamesChooser(Necessary):
         self.clear_pending_option()
 
         tcont = make_box(True, 0)
-        tcont.pack_start(self.pending_label, True, True, 2)
+        tcont.pack_start(self.preview_label, True, True, 2)
         tcont.pack_end(self.confirm_button, False, False, 2)
         tcont.show()
 
@@ -60,7 +60,7 @@ class hovernamesChooser(Necessary):
         self.scrolled = scrolled
 
         self.div.pack_start(tcont, False, False, 1)
-        self.div.pack_start(searcWidget, False, False, 1)
+        self.div.pack_start(searchWidget, False, False, 1)
         self.div.pack_start(scrolled, True, True, 1)
 
     def show(self):
@@ -80,13 +80,13 @@ class hovernamesChooser(Necessary):
         return True if self.lettererichieste.lower() in row.data.lower() else False
     def on_row_activated_grid(self, listbox_widget, row):
         num, text = self.enum.get_all(row.data)
-        self.pending_label.set_text(f"{text} [{num}]")
+        self.preview_label.set_text(f"{text} [{num}]")
         self.set_data_for_parasite(num)
         self.confirm_button.show()
     
     def clear_pending_option(self):
         self.confirm_button.hide()
-        self.pending_label.set_text("----")
+        self.preview_label.set_text("----")
         self.set_data_for_parasite()
         return self
     
