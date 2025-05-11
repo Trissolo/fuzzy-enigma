@@ -83,6 +83,9 @@ class ToolSuffix(Necessary):
         self.div.pack_start(self.radio_container, False, False, 0)      
         self.div.pack_start(searchWidget, False, False, 1)
         self.div.pack_start(scrolled, True, True, 1)
+    
+    def hide(self):
+        self.div.hide()
 
     def on_search_activated(self, searchentry):
         self.lettererichieste = searchentry.get_text()
