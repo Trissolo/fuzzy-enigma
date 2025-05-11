@@ -32,10 +32,10 @@ class ToolSuffix(Necessary):
         self._build_radio_buttons()
 
         #searchWidget
-        searcWidget = Gtk.SearchEntry()
-        searcWidget.show()    
-        searcWidget.connect("search-changed", self.on_search_activated)
-        self.searcWidget = searcWidget
+        searchWidget = Gtk.SearchEntry()
+        searchWidget.show()    
+        searchWidget.connect("search-changed", self.on_search_activated)
+        self.searchWidget = searchWidget
 
         # ListBox:
         listbox = Gtk.ListBox()
@@ -66,7 +66,7 @@ class ToolSuffix(Necessary):
         scrolled.set_hexpand(True)
         scrolled.show()
 
-        self.div.pack_start(searcWidget, False, False, 1)
+        self.div.pack_start(searchWidget, False, False, 1)
         self.div.pack_start(scrolled, True, True, 1)
 
     def on_search_activated(self, searchentry):
@@ -114,8 +114,8 @@ class ToolSuffix(Necessary):
         if button.get_active():
             self.set_actual_varkind(button.value)
             self.listbox.invalidate_filter()
-            self.lettererichieste = ""
-            #self.searcWidget.emit
+            self.searchWidget.set_text("")
+            self.searchWidget.emit("search-changed")
     
     def set_actual_varkind(self, value = 0):
         self.actual_varkind = value
