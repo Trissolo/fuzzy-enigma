@@ -17,6 +17,11 @@ class Necessary():
     _gamedata = None
     _tool_widgets_ary = None
     _summary_widgets_ary = None
+    _layer_name = None
+    _layer_x = None
+    _layer_y = None
+    _layer_width = None
+    _layer_height = None
 
     @classmethod
     def setup(cls, image, gamedata):
@@ -29,31 +34,55 @@ class Necessary():
         else:
             print("'Necessary' Class already set.")
 
+    @classmethod
+    def update_layer(cls):
+        print(f"{cls} update_layer")
+        sel_layers = cls._image.get_selected_layers()
+        assert type(sel_layers) is list and len(sel_layers) != 0, "No layer selected! Make sure that at least one layer exists in image!"
+        l = sel_layers[0]
+
+        cls._current_layer = l
+
+        some_bool, ox, oy = l.get_offsets()
+        cls._layer_x = ox
+        cls._layer_y = oy
+        cls._layer_width = l.get_width()
+        cls._layer_height = l.get_height()
+        cls._layer_name = l.get_name()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
     @property
     def image(self):
-        return type(self)._image
+        return Necessary._image #type(self)._image
     
     def update_current_layer(self):
-        print(f"{self} update_current_layer")
-        sel_layers = self.image.get_selected_layers()
-        assert type(sel_layers) is list and len(sel_layers) != 0, "No layer selected! Make sure that at least one layer exists in image!"
-        Necessary._current_layer = sel_layers[0]
+        Necessary.update_layer() #update_layer
 
-        #type(self)._current_layer = sel_layers[0]
-        #return self.current_layer
-    
     @property
     def current_layer(self):
         return Necessary._current_layer
-        # return type(self)._current_layer
     
-    # @current_layer.setter
-    # def current_layer(self, value):
-    #     print(f"{self} current_layer.setter")
-    #     type(self)._current_layer = value
+    @property
+    def layer_x(self):
+        return Necessary._layer_x
+    
+    @property
+    def layer_y(self):
+        return Necessary._layer_y
+    
+    @property
+    def layer_width(self):
+        return Necessary.layer_width
+    
+    @property
+    def layer_height(self):
+        return Necessary._layer_height
+    
+    @property
+    def layer_name(self):
+        return Necessary._layer_name
     
     @property
     def gamedata(self):
