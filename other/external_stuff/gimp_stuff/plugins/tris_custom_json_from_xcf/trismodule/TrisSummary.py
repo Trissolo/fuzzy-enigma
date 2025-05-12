@@ -23,24 +23,29 @@ class TrisSummary(Necessary):
         #First Label
         self.label_key = TrisLabel(f"{prop}:")
         self.label_key.set_xalign(0)
-        self._show_off_json_key()
 
         #Second Label (current value)
         self.label_value = TrisLabel("----")
         self.label_value.set_xalign(0)
-        #self.label_value.write(None, bgcolor=0x666666, monospace=True, pad=6)
 
         # First Button (open tools)
-        self.button_a = make_button(GimpUi.ICON_MENU_RIGHT, f"Button_a {prop}", self.manifest_tool_widget)
+        self.button_a = make_button(GimpUi.ICON_GO_NEXT, f"Button_a {prop}", self.manifest_tool_widget)
         
         # Second Button (save the changes)
         self.button_b = make_button(GimpUi.ICON_DOCUMENT_SAVE, f"Button_b for saving: {prop}", self.save_prop_in_parasite)
         self.button_b.hide()
 
+        # Third Button (clear ongoing changes)
+        #self.button_c = make_button(GimpUi.ICON_GO_DOWN, f"Button_c for canceling: {prop}", self.clear_reset_cancel)
+
+        # Fourth Button (clear ongoing changes)
+        self.button_d = make_button(GimpUi.ICON_DIALOG_ERROR, f"Button_d for REMOVE: {prop}", self.on_remove_clicked)
+        self.button_d.hide()
+
         # Box container
         div = make_box(True, 4, f"Div Left for{prop}")
         multipack(div, self.label_key, self.label_value, packing=True, spacing=2)
-        multipack(div, self.button_a, self.button_b, from_end=True, packing=False, spacing=2)
+        multipack(div, self.button_a, self.button_b, self.button_d, from_end=True, packing=False, spacing=2)
         self.div = div
 
         #At first the save button is hidden
@@ -95,6 +100,10 @@ class TrisSummary(Necessary):
         self.hide_all_tools()
         self.tool_widget_from_idx(self.idx).show()
     
+    def clear_reset_cancel(self, button):
+        button.hide()
+        self.refresh()
+    
     def get_parasite(self):
         return self.current_layer.get_parasite(self.property)
 
@@ -106,6 +115,7 @@ class TrisSummary(Necessary):
             data = Necessary.grab_parasite_data(para)
             parsed_text = self.parse_parasite_data(data)
             self.labels_existing_data(parsed_text)
+            self.button_d.show()
     
     def save_xcf(self):
         Gimp.file_save(Gimp.RunMode.NONINTERACTIVE, self.image, self.image.get_xcf_file(), None)
@@ -128,6 +138,7 @@ class TrisSummary(Necessary):
     def save_prop_in_parasite(self, button):
         self.remove_parasite().add_parasite()
         self.button_b.hide()
+        self.refresh()
     
     def parse_parasite_data(self, data):
         result = None
@@ -140,3 +151,8 @@ class TrisSummary(Necessary):
             if len(data) == 3:
                 result = f"if {result} == {data[2]}"
         return result
+    
+    def on_remove_clicked(self, button):
+        self.remove_parasite()
+        self.button_d.hide()
+        self.refresh()
