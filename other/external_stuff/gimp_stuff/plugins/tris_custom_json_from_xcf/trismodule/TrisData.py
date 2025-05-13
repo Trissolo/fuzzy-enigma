@@ -1,10 +1,14 @@
 class TrisData():
     def __init__(self):
-        self.data = []
+        self._data = []
         self._max_length = 0
         self.emu_number = False
         self.emu_variable = False
         self.emu_condition = False
+    
+    @property
+    def data(self):
+        return self._data
     
     @property
     def max_length(self):
@@ -17,7 +21,7 @@ class TrisData():
         if 0 < value < 4:
             self._max_length = value
         else:
-            raise ValueError("Wrong value. TrisData values must be between 1 and 3")
+            raise ValueError("OutOfRange Error. 'TrisData.max_length' must be between 1 and 3")
 
     def set_behavior(self, behavior):
         self.max_length = behavior
@@ -28,7 +32,7 @@ class TrisData():
     
     def reset(self):
         self.data.clear()
-        self.data += [None] * self._max_length
+        for x in range(0, self.max_length): self.data.append(None)
         return self
     
     def has_a_number(self):
