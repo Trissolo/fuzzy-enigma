@@ -91,14 +91,12 @@ class TrisSummary(Necessary):
         self.button_b.show()
         return self
     
-    def hide_all_tools(self):
+    def manifest_tool_widget(self, button):
+        target_widget = self.tool_widget_from_idx(self.idx)
+        to_be_shown = not target_widget.div.get_visible()
         for tool_widget in self.tool_widgets_ary:
             tool_widget.hide()
-        return self
-    
-    def manifest_tool_widget(self, button):
-        self.hide_all_tools()
-        self.tool_widget_from_idx(self.idx).show()
+        if to_be_shown: target_widget.show()
     
     def clear_reset_cancel(self, button):
         button.hide()
@@ -116,6 +114,10 @@ class TrisSummary(Necessary):
             parsed_text = self.parse_parasite_data(data)
             self.labels_existing_data(parsed_text)
             self.button_d.show()
+            # duplicate code
+            for tool_widget in self.tool_widgets_ary:
+                tool_widget.hide()
+            # end duplicate code
     
     def save_xcf(self):
         Gimp.file_save(Gimp.RunMode.NONINTERACTIVE, self.image, self.image.get_xcf_file(), None)
