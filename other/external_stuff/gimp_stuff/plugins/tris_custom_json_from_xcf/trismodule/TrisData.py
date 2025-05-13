@@ -31,8 +31,7 @@ class TrisData():
         return self.reset()
     
     def reset(self):
-        self.data.clear()
-        for x in range(0, self.max_length): self.data.append(None)
+        self.set_from_array([None] * self.max_length)
         return self
     
     def has_a_number(self):
@@ -43,4 +42,44 @@ class TrisData():
     
     def has_a_condition(self):
         return self.emu_condition
+    
+    def set_from_array(self, array):
+        self.data.clear()
+        self.data.extend(array)
+        return self
+    def set_at_zero(self, value):
+        self.data[0] = value
+        return self
+    
+    def set_at_one(self, value):
+        if not self.has_a_number:
+            self.data[1] = value
+            return self
+        
+    def set_at_two(self, value):
+        if self.has_a_condition:
+            self.data[2] = value
+            return self
+    
+    def get_at_zero(self):
+        return self.data[0]
+    
+    def get_at_one(self):
+        if not self.has_a_number:
+            return self.data[1] 
+        
+    def get_at_two(self):
+        if self.has_a_condition:
+            return self.data[2]
+    
+    def is_valid(self):
+        return not None in self.data
+    
+    @staticmethod
+    def encode_utf8(data):
+        #if type(data) is not list:
+         #   data = [data]
+        res = " ".join([str(el) for el in data])
+        to_bytes = bytes(res.encode('utf-8'))
+        return to_bytes
     
