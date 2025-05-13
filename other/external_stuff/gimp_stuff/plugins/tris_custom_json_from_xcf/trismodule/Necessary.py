@@ -39,16 +39,32 @@ class Necessary():
         print(f"{cls} update_layer")
         sel_layers = cls._image.get_selected_layers()
         assert type(sel_layers) is list and len(sel_layers) != 0, "No layer selected! Make sure that at least one layer exists in image!"
-        l = sel_layers[0]
+        #l = sel_layers[0]
+        cls._current_layer = sel_layers[0]
 
-        cls._current_layer = l
+        # some_bool, ox, oy = l.get_offsets()
+        # cls._layer_x = ox
+        # cls._layer_y = oy
+        # cls._layer_width = l.get_width()
+        # cls._layer_height = l.get_height()
+        # cls._layer_name = l.get_name()
+        return
+    @classmethod
+    def get_layer_details(cls, layer=None, store_res=False):
+        if layer is None:
+            layer = cls._current_layer       
+        _, ox, oy = layer.get_offsets()
+        width = layer.get_width()
+        height = layer.get_height()
+        name = layer.get_name()
+        if store_res:
+            cls._layer_x = ox
+            cls._layer_y = oy
+            cls._layer_width = width
+            cls._layer_height = height
+            cls._layer_name = name
+        return ox, oy, width, height, name
 
-        some_bool, ox, oy = l.get_offsets()
-        cls._layer_x = ox
-        cls._layer_y = oy
-        cls._layer_width = l.get_width()
-        cls._layer_height = l.get_height()
-        cls._layer_name = l.get_name()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
