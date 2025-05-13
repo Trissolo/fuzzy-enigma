@@ -52,10 +52,16 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         #### END TrisDialog init ####
     
     def refresh_all(self):
+        self.hide_all_tools()
         for wid in self.summary_widgets_ary:
             print(f"Refreshing: {wid}")
             wid.refresh()
         print("Refresh_all (done)\n")
+
+    def hide_all_tools(self):
+        for tool_widget in self.tool_widgets_ary:
+            tool_widget.hide()
+        return self
         
     def generate_summary_widget(self, param, idx):
         return TrisSummary(param, idx, self)
