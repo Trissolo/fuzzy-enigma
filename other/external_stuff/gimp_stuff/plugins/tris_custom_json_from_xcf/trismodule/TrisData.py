@@ -76,10 +76,74 @@ class TrisData():
         return not None in self.data
     
     @staticmethod
-    def encode_utf8(data):
-        #if type(data) is not list:
-         #   data = [data]
-        res = " ".join([str(el) for el in data])
-        to_bytes = bytes(res.encode('utf-8'))
-        return to_bytes
+    def ary_to_bytes(data):
+        return (" ".join([str(el) for el in data])).encode('utf-8')
+
+    @staticmethod
+    def para_data_to_ary(data):
+        res_string = str(object=bytes(data), encoding='utf-8')
+        return [int(x) for x in res_string.split(" ")]
     
+    ###### old
+    # @staticmethod
+    # def encode_utf8(data):
+    #     res = (" ".join([str(el) for el in data])).encode('utf-8')
+    #     to_bytes = bytes(res)
+    #     return to_bytes
+    
+    # @staticmethod
+    # def grab_parasite_data(parasite):
+    #     #res_string = bytes(parasite.get_data()).decode('utf-8') # <- old way
+    #     res_string = str(object=bytes(parasite.get_data()), encoding='utf-8')
+    #     to_int_ary = [int(x) for x in res_string.split(" ")]
+    #     return to_int_ary[0] if len(to_int_ary) == 1 else to_int_ary
+        # ''.join([chr(x) for x in da_para])
+        #[int(x) for x in fin.split(" ")]
+        '''
+        def ary_to_bytes(data):
+        res = (" ".join([str(el) for el in data])).encode('utf-8')
+        to_bytes = bytes(res)
+        return to_bytes
+
+    
+        def bytes_to_ary(data):
+            res_string = str(object=bytes(data), encoding='utf-8'))
+            to_int_ary = [int(x) for x in res_string.split(" ")]
+            return to_int_ary
+
+        ary
+        [0, 701, 3]
+
+        x_to_y = ary_to_bytes(ary)
+        b'0 701 3'
+
+        para = Gimp.Parasite.new("test", 0, x_to_y)
+
+        data_from_para = para.get_data()
+        [48, 32, 55, 48, 49, 32, 51]
+        '''
+'''
+def ary_to_bytes(data):
+    return (" ".join([str(el) for el in data])).encode('utf-8')
+
+
+def para_data_to_ary(data):
+    res_string = str(object=bytes(data), encoding='utf-8')
+    return [int(x) for x in res_string.split(" ")]
+
+ary = [1, 701, 31]
+ary
+[1, 701, 31]
+
+x_to_y = ary_to_bytes(ary)
+b'1 701 31'
+
+para = Gimp.Parasite.new("test", 0, x_to_y)
+data_from_para = para.get_data()
+data_from_para
+[49, 32, 55, 48, 49, 32, 51, 49]
+
+y_to_x = bytes_to_ary(data_from_para)
+y_to_x
+[1, 701, 31]
+'''
