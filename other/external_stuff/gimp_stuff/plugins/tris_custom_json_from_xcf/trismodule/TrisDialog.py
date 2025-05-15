@@ -15,6 +15,7 @@ from .TrisSummary import TrisSummary
 from .trisLabel import TrisLabel
 from .generic_helpers import make_box, make_button
 from .Necessary import Necessary
+from .TrisData import TrisData
 
 class TrisDialog(Necessary, GimpUi.Dialog):
     def __init__(self, **kwargs):
@@ -31,10 +32,18 @@ class TrisDialog(Necessary, GimpUi.Dialog):
         #containers
         left_box, right_box = self.generate_containers()
 
+        # slots:
+        # hovernamesChooser --> 1 slot
+        # ToolSuffix ---------> 2 slots
+        hardcoded_slot_amount = [1, 2]
         #populate
         #for idx, prop in enumerate(self.gamedata["thingProps"]):
         for idx, tool_class in enumerate([hovernamesChooser, ToolSuffix]):
             prop = self.gamedata["thingProps"][idx]
+            # build the TrisData and place it in the appropriate array inside the 'Necessary' class
+            slots = hardcoded_slot_amount[idx]
+            Necessary._parasite_data_ary.append(TrisData(slots))
+            
             # build the SummaryWidget
             summary_widget = TrisSummary(prop, idx)
             left_box.pack_start(summary_widget.div, False, False, 0)
@@ -44,11 +53,10 @@ class TrisDialog(Necessary, GimpUi.Dialog):
             self.tool_widgets_ary.append(temp_tool_widget)
             right_box.pack_start(temp_tool_widget.div, True, True, 0)
         
-        print("RICAZZZZZZZZZZZZZZZZZZZZZZZZZZZZO")
-        print(self.current_layer, type(self)._current_layer)
-        self.update_current_layer()
-        print(self.current_layer, type(self)._current_layer)
-        #self.refresh_all()
+        print("TRICAZZUS!")
+        #test
+        #Necessary.update_layer()
+        #Necessary.grab_existing_parasite_data()
         #### END TrisDialog init ####
     
     def refresh_all(self):

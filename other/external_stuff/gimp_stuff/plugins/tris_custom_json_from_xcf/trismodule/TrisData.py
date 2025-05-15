@@ -1,76 +1,71 @@
 class TrisData():
-    def __init__(self):
+    def __init__(self, slots):
         self._data = []
-        self._max_length = 0
-        self.emu_number = False
-        self.emu_variable = False
-        self.emu_condition = False
+        self.slots = slots
+        self.emu_number = slots == 1
+        self.emu_variable = slots == 2
+        self.emu_condition = slots == 3
+        self.reset()
     
     @property
     def data(self):
         return self._data
     
     @property
-    def max_length(self):
-        """Getter for the max_length property."""
-        return self._max_length
+    def slots(self):
+        """Getter for the slots property."""
+        return self._slots
 
-    @max_length.setter
-    def max_length(self, value):
-        """Setter for the max_length property."""
+    @slots.setter
+    def slots(self, value):
+        """Setter for the slots property."""
         if 0 < value < 4:
-            self._max_length = value
+            self._slots = value
         else:
-            raise ValueError("OutOfRange Error. 'TrisData.max_length' must be between 1 and 3")
+            raise ValueError("OverflowError Out Of Range Error. 'TrisData.slots' must be between 1 and 3")
 
-    def set_behavior(self, behavior):
-        self.max_length = behavior
-        self.emu_number = behavior == 1
-        self.emu_variable = behavior == 2
-        self.emu_condition = behavior == 3
-        return self.reset()
+    # def set_behavior(self, behavior):
+    #     self.slots = behavior
+    #     self.emu_number = behavior == 1
+    #     self.emu_variable = behavior == 2
+    #     self.emu_condition = behavior == 3
+    #     return self.reset()
     
     def reset(self):
-        self.set_from_array([None] * self.max_length)
+        self.set_from_array([None] * self.slots)
         return self
-    
-    def has_a_number(self):
-        return self.emu_number
-    
-    def has_a_varkind(self):
-        return self.emu_variable
-    
-    def has_a_condition(self):
-        return self.emu_condition
     
     def set_from_array(self, array):
         self.data.clear()
         self.data.extend(array)
         return self
+        
     def set_at_zero(self, value):
         self.data[0] = value
         return self
     
     def set_at_one(self, value):
-        if not self.has_a_number:
-            self.data[1] = value
-            return self
+        assert not self.emu_number, "No slot ONE available"
+        #if not self.emu_number:
+        self.data[1] = value
+        return self
         
     def set_at_two(self, value):
-        if self.has_a_condition:
-            self.data[2] = value
-            return self
+        assert self.emu_condition, "No slot TWO available"
+        #if self.emu_condition:
+        self.data[2] = value
+        return self
     
     def get_at_zero(self):
         return self.data[0]
     
     def get_at_one(self):
-        if not self.has_a_number:
-            return self.data[1] 
+        assert not self.emu_number, "No slot ONE available"
+        return self.data[1] 
         
     def get_at_two(self):
-        if self.has_a_condition:
-            return self.data[2]
+        assert self.emu_condition, "No slot TWO available"
+        return self.data[2]
     
     def is_valid(self):
         return not None in self.data
@@ -83,67 +78,31 @@ class TrisData():
     def para_data_to_ary(data):
         res_string = str(object=bytes(data), encoding='utf-8')
         return [int(x) for x in res_string.split(" ")]
-    
-    ###### old
-    # @staticmethod
-    # def encode_utf8(data):
-    #     res = (" ".join([str(el) for el in data])).encode('utf-8')
-    #     to_bytes = bytes(res)
-    #     return to_bytes
-    
-    # @staticmethod
-    # def grab_parasite_data(parasite):
-    #     #res_string = bytes(parasite.get_data()).decode('utf-8') # <- old way
-    #     res_string = str(object=bytes(parasite.get_data()), encoding='utf-8')
-    #     to_int_ary = [int(x) for x in res_string.split(" ")]
-    #     return to_int_ary[0] if len(to_int_ary) == 1 else to_int_ary
-        # ''.join([chr(x) for x in da_para])
-        #[int(x) for x in fin.split(" ")]
-        '''
-        def ary_to_bytes(data):
-        res = (" ".join([str(el) for el in data])).encode('utf-8')
-        to_bytes = bytes(res)
-        return to_bytes
 
-    
-        def bytes_to_ary(data):
-            res_string = str(object=bytes(data), encoding='utf-8'))
-            to_int_ary = [int(x) for x in res_string.split(" ")]
-            return to_int_ary
-
-        ary
-        [0, 701, 3]
-
-        x_to_y = ary_to_bytes(ary)
-        b'0 701 3'
-
-        para = Gimp.Parasite.new("test", 0, x_to_y)
-
-        data_from_para = para.get_data()
-        [48, 32, 55, 48, 49, 32, 51]
-        '''
 '''
 def ary_to_bytes(data):
-    return (" ".join([str(el) for el in data])).encode('utf-8')
-
+       return (" ".join([str(el) for el in data])).encode('utf-8')
 
 def para_data_to_ary(data):
-    res_string = str(object=bytes(data), encoding='utf-8')
-    return [int(x) for x in res_string.split(" ")]
+   res_string = str(object=bytes(data), encoding='utf-8')
+   return [int(x) for x in res_string.split(" ")]
 
-ary = [1, 701, 31]
-ary
-[1, 701, 31]
+da_scrivere = [0, 40, 235]
 
-x_to_y = ary_to_bytes(ary)
-b'1 701 31'
+pronti_da_scrivere = ary_to_bytes(da_scrivere)
+b'0 40 235'
 
-para = Gimp.Parasite.new("test", 0, x_to_y)
-data_from_para = para.get_data()
-data_from_para
-[49, 32, 55, 48, 49, 32, 51, 49]
+tempara = Gimp.Parasite.new("tempara", 0, pronti_da_scrivere)
+<Gimp.Parasite object at 0x7ed6db9c21b0 (GimpParasite at 0x5dd80f1e6030)>
 
-y_to_x = bytes_to_ary(data_from_para)
-y_to_x
-[1, 701, 31]
+tempara.get_name()
+'tempara'
+tempara.get_data()
+[48, 32, 52, 48, 32, 50, 51, 53]
+
+dati_del_parassita = tempara.get_data()
+[48, 32, 52, 48, 32, 50, 51, 53]
+
+quelli_di_prima = para_data_to_ary(dati_del_parassita)
+[0, 40, 235]
 '''
