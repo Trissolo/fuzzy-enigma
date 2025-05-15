@@ -18,7 +18,8 @@ class TrisSummary(Necessary):
     def __init__(self, prop, idx):
         self.property = prop
         self.idx = idx
-        self.parasite_data = None
+        #self.parasite_data = None
+        #data_receptacle
 
         #First Label
         self.label_key = TrisLabel(f"{prop}:")
@@ -66,7 +67,7 @@ class TrisSummary(Necessary):
         return self
     
     def _show_off_json_value(self, text = None, highlight = False):
-        self.label_value.write(text=text, bgcolor=0x45ba76, size=116, pad=1, monospace=True) if highlight else self.label_value.write(text, size=116, pad=2, monospace=True)
+        self.label_value.write(text=text, bgcolor=0x45ba76, size=116, monospace=True) if highlight else self.label_value.write(text, size=116, pad=2, monospace=True)
         return self
     
     def labels_no_data(self):
@@ -85,7 +86,7 @@ class TrisSummary(Necessary):
         return self
 
     def receive_data(self, para_data):
-        self.parasite_data = para_data
+        self.data_receptacle.set_from_array(para_data)
         parsed_text = self.parse_parasite_data(para_data)
         self.labels_potential_data(parsed_text)
         self.button_b.show()
@@ -110,9 +111,23 @@ class TrisSummary(Necessary):
         if para is None:
             self.labels_no_data()
         else:
-            data = Necessary.grab_parasite_data(para)
-            parsed_text = self.parse_parasite_data(data)
-            self.labels_existing_data(parsed_text)
+            self.data_receptacle.absorb_parasite(para)
+            print("obtained data from Parasite! (hard coded)")
+            print(f"{self.data_receptacle.data = }")
+            if self.data_receptacle.emu_number:
+                self.labels_existing_data(self.data_receptacle.get_at_zero())
+            elif self.data_receptacle.emu_variable:
+                kind = ["BOOL", "CRUMBLE", "NIBBLE", "BYTE"][self.data_receptacle.get_at_zero()]
+                varid = self.data_receptacle.get_at_one()
+                assembled = f"[{kind}] {varid}"
+                self.labels_existing_data(assembled)
+            #self.emu_number = behavior == 1
+            #self.emu_variable = behavior == 2
+            #self.emu_condition = behavior == 3
+
+            #OOLD
+            #parsed_text = self.parse_parasite_data(data)
+            #self.labels_existing_data(parsed_text)
             self.button_d.show()
             # duplicate code
             for tool_widget in self.tool_widgets_ary:
@@ -131,7 +146,8 @@ class TrisSummary(Necessary):
         return self
     
     def add_parasite(self):
-        d = Necessary.encode_data(self.parasite_data)
+        d = self.data_receptacle.rawencoded()
+        #d = Necessary.encode_data(self.parasite_data)
         p = Gimp.Parasite.new(name=self.property, flags=Gimp.PARASITE_PERSISTENT, data=d)
         self.current_layer.attach_parasite(p)
         #return self.save_xcf()

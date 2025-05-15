@@ -86,7 +86,7 @@ class Necessary():
         super().__init__(**kwargs)
     
     @property
-    def existing_data(self):
+    def data_receptacle(self):
         return Necessary._parasite_data_ary[self.idx]
     
     def update_current_layer(self):

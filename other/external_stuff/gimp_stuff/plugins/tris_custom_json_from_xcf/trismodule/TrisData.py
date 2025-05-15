@@ -70,6 +70,14 @@ class TrisData():
     def is_valid(self):
         return not None in self.data
     
+    def rawencoded(self):
+        return type(self).ary_to_bytes(self.data)
+    
+    def absorb_parasite(self, parasite):
+        data = type(self).para_data_to_ary(parasite.get_data())
+        self.set_from_array(data)
+    
+    
     @staticmethod
     def ary_to_bytes(data):
         return (" ".join([str(el) for el in data])).encode('utf-8')
