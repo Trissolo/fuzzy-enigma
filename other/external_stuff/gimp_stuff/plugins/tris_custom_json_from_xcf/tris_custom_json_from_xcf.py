@@ -126,7 +126,27 @@ class AdventureGameNook(Gimp.PlugIn):
         # self.gamedata["thingKind"]
         # self.gamedata["thingProps"]
         #self.gamedata = grabbeddata
-        return grabbeddata      
+        return grabbeddata
+    
+    def load_splitted_jsons(self):
+        from os import listdir
+        print("Splitted JSON grabbing")
+
+        # wanted dir path, as string
+        folder_path = f"{sys.path[0]}{GLib.DIR_SEPARATOR_S}splitted_gamedata{GLib.DIR_SEPARATOR_S}"
+        
+        # list of filenames, as string
+        dir_content = listdir(folder_path)
+        print(*dir_content, sep="\n")
+
+        
+        # bools = None
+        # wanted_file = "bool_names.json"
+        # with open(f"{folder_path}{wanted_file}") as json_file:
+        #     bools = json.load(json_file)
+
+        # print(f"{bools =}")
+        return self
     
     def run(self, procedure, run_mode, image, drawables, config, run_data):
         print("** Starting -from scratch!- Json procedure **")
@@ -145,18 +165,30 @@ class AdventureGameNook(Gimp.PlugIn):
         
         print("*** Generate Game Json Plugin ***")
         
+        self.load_splitted_jsons()
+        '''
+        {
+            "kind": "ab",
+            "x": 90,
+            "y": 68,
+            "frame": "r2cabinetDoors",
+            "suffix": [0, 7],
+            "skipCond": "b_4_1",
+            "hoverName": 8
+        }
+        '''
         #imports
-        from trismodule import WidgetTree, TrisLabel, TrisDialog, TrisEnum, Necessary
+        #from trismodule import WidgetTree, TrisLabel, TrisDialog, TrisEnum, Necessary
         #print("TrisDialog MRO:", TrisDialog.__mro__)
 
         # get the gamedata.JSON
-        gamedata = self.load_and_parse_gamedata_json()
+        #gamedata = self.load_and_parse_gamedata_json()
 
         # Initialize the shared stuff, managed by 'Necessary' class
-        Necessary.setup(image=image, gamedata=gamedata)
+        #Necessary.setup(image=image, gamedata=gamedata)
         
         #test Plugin Dialog
-        dialog = TrisDialog().run()
+        #dialog = TrisDialog().run()
         #dialog.run()
 
         
