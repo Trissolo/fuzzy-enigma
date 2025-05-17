@@ -2,8 +2,8 @@ from trispackage import LayerManager, TrisData
 
 class TrisDialog(LayerManager):
     def __init__(self, image):
-        super().__init__()
-        self.set_image(image=image)
+        super().__init__(image)
+        self.summary_ary = []
         #self.update_layer()
 
         for _ in range(5):
