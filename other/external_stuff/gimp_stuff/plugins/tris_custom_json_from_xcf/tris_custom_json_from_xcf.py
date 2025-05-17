@@ -165,7 +165,15 @@ class AdventureGameNook(Gimp.PlugIn):
         
         print("*** Generate Game Json Plugin ***")
         
-        self.load_splitted_jsons()
+        from trispackage import layer_manager
+        layer_manager.set_image(image=image)
+        layer_manager.update_layer()
+        print("GAG INSTANCE")
+        print(f"{layer_manager.layer.get_name() = }")
+        # print(f"{LayerManager.image.get_name()=}")
+        # LayerManager.update_layer()
+        # print(f"{LayerManager._layer.get_name()=}")
+        # #self.load_splitted_jsons()
         '''
         {
             "kind": "ab",
