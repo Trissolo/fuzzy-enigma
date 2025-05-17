@@ -10,7 +10,7 @@ class TrisData():
         self.proposed = self.final.copy()
         
         #self[1] = 892
-        
+    
     
     def __getitem__(self, index):
         return self.proposed[index]
@@ -35,25 +35,18 @@ class TrisData():
     def set_from_array(source, target):
         target.clear()
         target.extend(source)
-
-
-
-
-
-
-
-
-
+    
     def absorb_parasite(self, parasite):
         data = type(self).para_data_to_ary(parasite.get_data())
-        self.set_from_array(data)
-    
+        self.set_from_array(data, self.final)
     
     @staticmethod
     def ary_to_bytes(data):
+        '''Encode an array of any integer in a <bytes array> '''
         return (" ".join([str(el) for el in data])).encode('ascii')
 
     @staticmethod
     def para_data_to_ary(data):
+        '''Convert a <bytes array> to a compact int array'''
         res_string = str(object=bytes(data), encoding='ascii')
         return [int(x) for x in res_string.split(" ")]
