@@ -1,13 +1,15 @@
 # import gi
 # gi.require_version("Gimp", "3.0")
 # from gi.repository.Gimp import Parasite as GimpPara
-
+#from trispackage import _LayerManager  #callable_layer_manager_instance
+#layer = _LayerManager()
 
 class TrisData():
     def __init__(self, length):
         self.length = length
         self.final = [None] * length
         self.proposed = self.final.copy()
+        self.layer = None # layer #callable_layer_manager_instance
         
         #self[1] = 892
     
@@ -26,6 +28,11 @@ class TrisData():
         
     def proposal_rejected(self):
         type(self).set_from_array(self.final, self.proposed)
+    
+    def clear_proposed(self):
+        #type(self).set_from_array([None] * self.length, self.proposed)
+        for idx in range(self.length):
+            self[idx] = None
     
     def info(self):
         print(f"{self.final=}")
@@ -48,5 +55,17 @@ class TrisData():
     @staticmethod
     def para_data_to_ary(data):
         '''Convert a <bytes array> to a compact int array'''
-        res_string = str(object=bytes(data), encoding='ascii')
-        return [int(x) for x in res_string.split(" ")]
+        bytes_as_string = str(object=bytes(data), encoding='ascii')
+        return [int(x) for x in bytes_as_string.split(" ")]
+
+    @classmethod
+    def SingleValue(cls):
+        return cls(1)
+    
+    @classmethod
+    def VariableKind(cls):
+        return cls(2)
+    
+    @classmethod
+    def Condition(cls):
+        return cls(3)

@@ -1,8 +1,6 @@
-class LayerManager():
-    def __init__(self, image):
-        self.image = image
-        self.layer = None # image.get_selected_layers()[0] # or 'self.layer = None' in '__init__'? I'm not sure, yet
-        print("LayerManager INITIALIZED")
+class _LayerManager():
+    image = None
+    layer = None
 
     # @property
     # def layer(self):
@@ -12,11 +10,27 @@ class LayerManager():
     # def layer(self, value):
     #      self._layer = value
 
-    def update_layer(self):
-            self.layer = self.image.get_selected_layers()[0]
-            self.check_parasites()
-            return self.layer
+    @classmethod
+    def setup(cls, image):
+         cls.image = image
+         cls.update_layer()
+    @classmethod
+    def update_layer(cls):
+        cls.layer = cls.image.get_selected_layers()[0]
     
-    def check_parasites(self):
-         print("\nChecking data...")
-         print(f"{len(self.summary_ary) = }")
+    # instance things:
+    # def __init__(self):
+    #     print("LayerManager instance created")
+
+    def update(self):
+        print("A LayerManager's instance is updating layer")
+        type(self).update_layer()
+
+    def __call__(self):
+        return type(self).layer
+    
+    def set_image_globally(self, image):
+        type(self).setup(image)
+
+
+callable_layer_manager_instance = _LayerManager()

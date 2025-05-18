@@ -166,16 +166,13 @@ class AdventureGameNook(Gimp.PlugIn):
         print("*** Generate Game Json Plugin ***")
         
         from trispackage.TrisDialog import TrisDialog
-        # layer_manager.set_image(image=image)
-        # layer_manager.update_layer()
-        dialog = TrisDialog(image)
-        print("GAG INSTANCE")
-        dialog.check_parasites()
         
-        # print(f"{LayerManager.image.get_name()=}")
-        # LayerManager.update_layer()
-        # print(f"{LayerManager._layer.get_name()=}")
-        # #self.load_splitted_jsons()
+        print("Plugin is creating the TrisDialog()")
+        dialog = TrisDialog(image)
+        
+        #from trispackage.logic.Stocker import bools   #logic.Stocker import bools
+        #print(f"{bools =}")
+        
         '''
         {
             "kind": "ab",
