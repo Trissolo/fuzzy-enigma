@@ -15,9 +15,12 @@ from .LayerManager import LayerManager
 from .TrisData import TrisData
 
 class TrisSummary(LayerManager):
+    datasize_by_property = thingProps_dataSize
     def __init__(self, property, image):
         super().__init__(image)
-        #self.data = TrisData.
+        self.property = property
+        self.data = TrisData(type(self).datasize_by_property[property], None)
+        print(f"Summary for {property} here!")
 
 '''
 from .trisLabel import TrisLabel
