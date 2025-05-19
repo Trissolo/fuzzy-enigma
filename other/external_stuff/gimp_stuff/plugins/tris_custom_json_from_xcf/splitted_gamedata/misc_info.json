@@ -36,15 +36,26 @@
         }
     ],
 
+    "thingProps": ["kind", "hoverName", "suffix", "skipCond", "animation", "noInteraction"],
+
+    "thingProps_dataSize": {
+        "kind": 1,
+        "hoverName": 1,
+        "suffix": 2,
+        "skipCondition": 3,
+        "animation": 1,
+        "noInteraction": 1
+        },
+
     "thingOldProps": ["hoverName", "suffix", "skipCondition", "animation", "noInteraction"],
 
     "randomExample":{
         "kind": "ab",
-        "x": 90,
-        "y": 68,
         "frame": "r2cabinetDoors",
         "suffix": [0, 7],
         "skipCond": [0, 351, 1],
-        "hoverName": 8   
+        "hoverName": 8,
+        "x": 90,
+        "y": 68
     }
 }

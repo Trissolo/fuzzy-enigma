@@ -1,5 +1,4 @@
-import sys
-import json
+
 #from os import listdir
 #complete_path= f"{sys.path[0]}/"
 #qqqu = sys.path[0]
@@ -11,11 +10,24 @@ import json
 #dir_content = listdir(folder_path)
 #print(*dir_content, sep="\n")
 #print(complete_path)
+def _grab_file_hardcoded():
+    import sys
+    import json
+    base_dir = f"{sys.path[0]}/splitted_gamedata/"
+    vars = []
 
-bools = None
-wanted_file = "bool_names.json"
-with open(f"{sys.path[0]}/splitted_gamedata/{wanted_file}") as json_file:
-    bools = json.load(json_file)
+    for varkind in ["bool_names", "crumble_names", "nibble_names", "byte_names"]:
+        with open(f"{base_dir}{varkind}.json") as json_file:
+            vars.append(json.load(json_file))
+        
+    hover_names = None
+    with open(f"{base_dir}hover_names.json") as json_file:
+        hover_names = json.load(json_file)
+    
+    return vars, hover_names
+
+var_ary, hover_names_ary = _grab_file_hardcoded()
+
 '''
 class Stocker():
     data_ary = []
