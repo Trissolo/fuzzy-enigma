@@ -13,7 +13,7 @@
 def _grab_file_hardcoded():
     import sys
     import json
-    base_dir = f"{sys.path[0]}/splitted_gamedata/"
+    base_dir = f"{sys.path[0]}/trispackage/splitted_gamedata/"
     vars = []
 
     for varkind in ["bool_names", "crumble_names", "nibble_names", "byte_names"]:
@@ -24,9 +24,16 @@ def _grab_file_hardcoded():
     with open(f"{base_dir}hover_names.json") as json_file:
         hover_names = json.load(json_file)
     
-    return vars, hover_names
+    misc_info = None
+    with open(f"{base_dir}misc_info.json") as json_file:
+        misc_info = json.load(json_file)
+    
+    thingProps_dataSize = misc_info['thingProps_dataSize']
+    print(thingProps_dataSize)
 
-var_ary, hover_names_ary = _grab_file_hardcoded()
+    return vars, hover_names, thingProps_dataSize
+
+var_ary, hover_names_ary, thingProps_dataSize = _grab_file_hardcoded()
 
 '''
 class Stocker():

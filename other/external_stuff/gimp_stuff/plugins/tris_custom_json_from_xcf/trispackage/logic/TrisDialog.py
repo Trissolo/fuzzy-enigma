@@ -1,4 +1,5 @@
 from .LayerManager import LayerManager
+from .TrisSummary import TrisSummary
 
 class TrisDialog(LayerManager):
     def __init__(self, image):
