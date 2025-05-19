@@ -29,13 +29,10 @@ class LayerManager():
 
     @property
     def layer(self):
-        return LayerManager.layer #provide_layer()
+        return LayerManager.layer
 
     #def __call__(self):
     #    return type(self).layer
     
     def set_image_globally(self, image):
         LayerManager.setup(image)
-
-
-#callable_layer_manager_instance = _LayerManager()
