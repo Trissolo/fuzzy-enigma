@@ -1,15 +1,17 @@
 # import gi
 # gi.require_version("Gimp", "3.0")
 # from gi.repository.Gimp import Parasite as GimpPara
-#from trispackage import _LayerManager  #callable_layer_manager_instance
-#layer = _LayerManager()
+from .LayerManager import LayerManager
 
-class TrisData():
-    def __init__(self, length):
+
+class TrisData(LayerManager):
+    def __init__(self, length, image):
+        
+        print(self, self.layer)
         self.length = length
         self.final = [None] * length
         self.proposed = self.final.copy()
-        self.layer = None # layer #callable_layer_manager_instance
+        super().__init__(image=image)
         
         #self[1] = 892
     
@@ -38,6 +40,7 @@ class TrisData():
         print(f"{self.final=}")
         print(f"{self.proposed=}")
     
+    
     @staticmethod
     def set_from_array(source, target):
         target.clear()
@@ -60,12 +63,12 @@ class TrisData():
 
     @classmethod
     def SingleValue(cls):
-        return cls(1)
+        return cls(1, None)
     
     @classmethod
     def VariableKind(cls):
-        return cls(2)
+        return cls(2, None)
     
     @classmethod
     def Condition(cls):
-        return cls(3)
+        return cls(3, None)

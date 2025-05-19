@@ -1,4 +1,4 @@
-class _LayerManager():
+class LayerManager():
     image = None
     layer = None
 
@@ -13,24 +13,29 @@ class _LayerManager():
     @classmethod
     def setup(cls, image):
          cls.image = image
-         cls.update_layer()
+         cls.layer = None
+         cls.update()
     @classmethod
-    def update_layer(cls):
+    def update(cls):
         cls.layer = cls.image.get_selected_layers()[0]
+    # @classmethod
+    # def provide_layer(cls):
+    #     return cls.layer
     
     # instance things:
-    # def __init__(self):
-    #     print("LayerManager instance created")
+    def __init__(self, image):
+        if image is not None:
+            self.set_image_globally(image)
 
-    def update(self):
-        print("A LayerManager's instance is updating layer")
-        type(self).update_layer()
+    @property
+    def layer(self):
+        return LayerManager.layer #provide_layer()
 
-    def __call__(self):
-        return type(self).layer
+    #def __call__(self):
+    #    return type(self).layer
     
     def set_image_globally(self, image):
-        type(self).setup(image)
+        LayerManager.setup(image)
 
 
-callable_layer_manager_instance = _LayerManager()
+#callable_layer_manager_instance = _LayerManager()

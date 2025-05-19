@@ -165,8 +165,8 @@ class AdventureGameNook(Gimp.PlugIn):
         
         print("*** Generate Game Json Plugin ***")
         
-        from trispackage.TrisDialog import TrisDialog
-        
+        #from other.external_stuff.gimp_stuff.plugins.tris_custom_json_from_xcf.trispackage.logic.TrisDialog import TrisDialog
+        from trispackage import TrisDialog
         print("Plugin is creating the TrisDialog()")
         dialog = TrisDialog(image)
         
