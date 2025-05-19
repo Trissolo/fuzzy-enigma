@@ -6,15 +6,10 @@ from .LayerManager import LayerManager
 
 class TrisData(LayerManager):
     def __init__(self, length, image):
-        
-        print(self, self.layer)
+        super().__init__(image=image)
         self.length = length
         self.final = [None] * length
         self.proposed = self.final.copy()
-        super().__init__(image=image)
-        
-        #self[1] = 892
-    
     
     def __getitem__(self, index):
         return self.proposed[index]
@@ -32,15 +27,13 @@ class TrisData(LayerManager):
         type(self).set_from_array(self.final, self.proposed)
     
     def clear_proposed(self):
-        #type(self).set_from_array([None] * self.length, self.proposed)
         for idx in range(self.length):
             self[idx] = None
     
     def info(self):
         print(f"{self.final=}")
         print(f"{self.proposed=}")
-    
-    
+      
     @staticmethod
     def set_from_array(source, target):
         target.clear()
