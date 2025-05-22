@@ -9,18 +9,32 @@
 # gi.require_version("Gtk", "3.0")
 # from gi.repository import Gtk
 
-from ..splitted_gamedata.gamedata_grabber import var_ary, hover_names_ary, thingProps_dataSize
 
 from .LayerManager import LayerManager
 from .TrisData import TrisData
+from ..splitted_gamedata.gamedata_grabber import thingProps_dataSize#vars_ary, hover_names_ary, thingKind_dict
+#vars_names_ary, hover_names_ary, thingProps_dataSize, thingKind_dict = grab_file_hardcoded()
+#thingProps_props = thingProps_dataSize.keys()
 
 class TrisSummary(LayerManager):
     datasize_by_property = thingProps_dataSize
-    def __init__(self, property, image):
-        super().__init__(image)
+    def __init__(self, property, enum):
+        super().__init__(None)
         self.property = property
         self.data = TrisData(type(self).datasize_by_property[property], None)
-        print(f"Summary for {property} here!")
+        self.enum = enum
+        
+        print(f"Summary for '{property}' here!")
+        print(f"{property} widget has also:\n{self.enum=}")
+
+    def refresh(self):
+        para = self.layer.get_parasite(self.property)
+        if para is None:
+            self.data.clear_proposed()
+            self.data.proposal_accepted()
+        else:
+            self.data.absorb_parasite(para)
+
 
 '''
 from .trisLabel import TrisLabel

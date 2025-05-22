@@ -3,7 +3,6 @@
 # from gi.repository.Gimp import Parasite as GimpPara
 from .LayerManager import LayerManager
 
-
 class TrisData(LayerManager):
     def __init__(self, length, image):
         super().__init__(image=image)
@@ -54,14 +53,14 @@ class TrisData(LayerManager):
         bytes_as_string = str(object=bytes(data), encoding='ascii')
         return [int(x) for x in bytes_as_string.split(" ")]
 
-    @classmethod
-    def SingleValue(cls):
-        return cls(1, None)
+    # @classmethod
+    # def SingleValue(cls):
+    #     return cls(1, None)
     
-    @classmethod
-    def VariableKind(cls):
-        return cls(2, None)
+    # @classmethod
+    # def VariableKind(cls):
+    #     return cls(2, None)
     
-    @classmethod
-    def Condition(cls):
-        return cls(3, None)
+    # @classmethod
+    # def Condition(cls):
+    #     return cls(3, None)
