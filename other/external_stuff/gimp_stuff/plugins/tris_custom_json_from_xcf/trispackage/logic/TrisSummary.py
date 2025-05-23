@@ -33,12 +33,22 @@ class TrisSummary(LayerManager):
         if para is None:
             self.data.reset_final()
             self.data.proposal_rejected()
-            message = f"Not set"
+            #message = f"Not set"
         else:
             self.data.absorb_parasite(para)
-            message = self.names_array[self.data.final[0]]
-        
-        print(f"Layer {self.layer.get_name()} <{self.property}: {message}>")
+            #message = self.names_array[self.data.final[0]]
+        print(f"Layer {self.layer.get_name()} <{self.property}: {self.parse_final()}>")
+
+    def parse_ary(self, ary):
+        print("Parsing Array:", ary)
+        val = ary[0]
+        return "Not set" if val is None else self.names_array[val]
+    
+    def parse_final(self):
+        return self.parse_ary(self.data.final)
+    
+    def parse_proposed(self):
+        return self.parse_ary(self.data.proposed)
 
 
 
