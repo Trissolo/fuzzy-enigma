@@ -29,6 +29,17 @@ class TrisData(LayerManager):
         for idx in range(self.length):
             self[idx] = None
     
+    def reset_final(self):
+        return self._reset_ary(self.final)
+    
+    def reset_proposed(self):
+        return self._reset_ary(self.proposed)
+    
+    def _reset_ary(self, ary):
+        for idx in range(self.length):
+            ary[idx] = None
+            return self
+    
     def info(self):
         print(f"{self.final=}")
         print(f"{self.proposed=}")
