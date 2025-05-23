@@ -18,22 +18,29 @@ from ..splitted_gamedata.gamedata_grabber import thingProps_dataSize#vars_ary, h
 
 class TrisSummary(LayerManager):
     datasize_by_property = thingProps_dataSize
-    def __init__(self, property, enum):
+    def __init__(self, property, names_array):
         super().__init__(None)
         self.property = property
         self.data = TrisData(type(self).datasize_by_property[property], None)
-        self.enum = enum
+        self.names_array = names_array
         
-        print(f"Summary for '{property}' here!")
-        print(f"{property} widget has also:\n{self.enum=}")
+        print(f"(Summary for '{property}' here!)")
+        #print(f"{property} widget has also:\n{self.names_array=}")
 
     def refresh(self):
         para = self.layer.get_parasite(self.property)
+        message = ""
         if para is None:
-            self.data.clear_proposed()
-            self.data.proposal_accepted()
+            self.data.reset_final()
+            self.data.proposal_rejected()
+            message = f"Not set"
         else:
             self.data.absorb_parasite(para)
+            message = self.names_array[self.data.final[0]]
+        
+        print(f"Layer {self.layer.get_name()} <{self.property}: {message}>")
+
+
 
 
 '''
