@@ -4,20 +4,20 @@
 from .LayerManager import LayerManager
 
 class TrisData(LayerManager):
-    def __init__(self, length, image):
-        super().__init__(image=image)
+    def __init__(self, length):
+        super().__init__(None)
         self.length = length
         self.final = [None] * length
         self.proposed = self.final.copy()
     
-    def __getitem__(self, index):
-        return self.proposed[index]
+    # def __getitem__(self, index):
+    #     return self.proposed[index]
         
-    def __setitem__(self, index, newvalue):
-        self.proposed[index] = newvalue
+    # def __setitem__(self, index, newvalue):
+    #     self.proposed[index] = newvalue
     
-    def __len__(self):
-        return len(self.proposed)
+    # def __len__(self):
+    #     return len(self.proposed)
         
     def proposal_accepted(self):
         type(self).set_from_array(self.proposed, self.final)
@@ -25,9 +25,9 @@ class TrisData(LayerManager):
     def proposal_rejected(self):
         type(self).set_from_array(self.final, self.proposed)
     
-    def clear_proposed(self):
-        for idx in range(self.length):
-            self[idx] = None
+    # def clear_proposed(self):
+    #     for idx in range(self.length):
+    #         self[idx] = None
     
     def reset_final(self):
         return self._reset_ary(self.final)

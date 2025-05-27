@@ -47,9 +47,14 @@ def _grab_file_hardcoded():
         thingKind_dict[b] = a
         thingKind_dict[int(a)] = b
     
-    names = {"hover_names_ary": hover_names_ary,
-             "vars_ary": vars_ary, #ary of arys
-             "thingKind_dict": thingKind_dict}
+    names = {
+        "kind": thingKind_dict,
+        "hoverName": hover_names_ary,
+        "suffix": vars_ary,
+        "skipCond": vars_ary,
+        "animation": [*"ABCD"],
+        "noInteraction": [*"EFGH"]
+             }
 
     # check
     for elem in names:

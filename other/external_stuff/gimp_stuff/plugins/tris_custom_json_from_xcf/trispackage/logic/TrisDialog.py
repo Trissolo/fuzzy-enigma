@@ -1,7 +1,7 @@
 from .LayerManager import LayerManager
 from .TrisSummary import TrisSummary
 from ..splitted_gamedata.gamedata_grabber import thingProps_dataSize, names
-from .prefabs.MainBar import MainBar
+from ..gui.MainBar import MainBar
 import gi
 
 gi.require_version("Gimp", "3.0")
@@ -31,10 +31,14 @@ class TrisDialog(LayerManager):
 
         print(f"TrisDialog's {self.layer.get_name() =}")
         print("KEYS:", *thingProps_dataSize.keys())
+        print("PARASITES:")
+        for lay in self.image.get_layers():
+            print(lay.get_name(), lay.get_parasite_list())
+
 
 
         for jproperty in thingProps_dataSize.keys():
-            prop_widget = TrisSummary(jproperty, names["hover_names_ary"])
+            prop_widget = TrisSummary(jproperty)
             self.gui_widget.append(prop_widget)
             self.div.pack_start(prop_widget.div, False, False, 0)
         
