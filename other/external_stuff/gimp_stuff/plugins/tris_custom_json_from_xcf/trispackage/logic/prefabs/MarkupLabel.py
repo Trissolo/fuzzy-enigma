@@ -30,13 +30,13 @@ class MarkupLabel(Gtk.Label):
     
     @classmethod
     def assemble_span(cls, text, color=None, bgcolor=None, size=100, width=0, align = "<", monospace=False, italic=False, bold=False):
+        if width > 0: text = f"{text:{align}{width}}"
         color = f'color="#{cls.int_to_hex_string(color)}"' if type(color) == int else ""
         bgcolor = f'bgcolor="#{cls.int_to_hex_string(bgcolor)}"' if type(bgcolor) == int else ""
         size = f'size="{size}%"' if type(size) == int else ""
         if italic: text = f"<i>{text}</i>"
         if bold: text = f"<b>{text}</b>"
         if monospace: text = f"<tt>{text}</tt>"
-        if width > 0: text = f"{text:{align}{width}}"
         return f"<span {color} {bgcolor} {size}>{text}</span>"  
     
     @staticmethod

@@ -170,7 +170,10 @@ class AdventureGameNook(Gimp.PlugIn):
         from trispackage import TrisDialog
 
         print("Plugin is creating the TrisDialog()")
-        dialog = TrisDialog(image)
+        dialog_holder = TrisDialog(image)
+        dialog_holder.dialog.show_all()
+        dialog_holder.dialog.run()
+
         
         '''
         {

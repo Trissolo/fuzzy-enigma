@@ -1,4 +1,4 @@
-# import gi
+import gi
 
 # gi.require_version("Gimp", "3.0")
 # from gi.repository import Gimp
@@ -6,12 +6,13 @@
 # gi.require_version("GimpUi", "3.0")
 # from gi.repository import GimpUi
 
-# gi.require_version("Gtk", "3.0")
-# from gi.repository import Gtk
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 
 from .LayerManager import LayerManager
 from .TrisData import TrisData
+from .prefabs.LeftSummary import LeftSummary
 from ..splitted_gamedata.gamedata_grabber import thingProps_dataSize#vars_ary, hover_names_ary, thingKind_dict
 #vars_names_ary, hover_names_ary, thingProps_dataSize, thingKind_dict = grab_file_hardcoded()
 #thingProps_props = thingProps_dataSize.keys()
@@ -24,25 +25,36 @@ class TrisSummary(LayerManager):
         self.data = TrisData(type(self).datasize_by_property[property], None)
         self.names_array = names_array
         
-        print(f"(Summary for '{property}' here!)")
+        # GUI stuff
+        self.left = LeftSummary(property=property)
+        self.div = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        self.div.pack_start(self.left.div, False, False, 0)
+        self.div.show()
+
+        #print(f"(Summary for '{property}' here!)")
         #print(f"{property} widget has also:\n{self.names_array=}")
 
     def refresh(self):
         para = self.layer.get_parasite(self.property)
-        message = ""
         if para is None:
             self.data.reset_final()
             self.data.proposal_rejected()
-            #message = f"Not set"
         else:
             self.data.absorb_parasite(para)
-            #message = self.names_array[self.data.final[0]]
-        print(f"Layer {self.layer.get_name()} <{self.property}: {self.parse_final()}>")
+        
+        #print(f"Layer {self.layer.get_name()} <{self.property}: {self.parse_final()}>\n")
+        #return self.parse_final()
+        self.on_left_gui()
+    def on_left_gui(self):
+        val = self.parse_final()
+        if val is None:
+            val = "- - - -"
+        self.left.label_b.write(val, width=20, monospace=True)
 
     def parse_ary(self, ary):
-        print("Parsing Array:", ary)
-        val = ary[0]
-        return "Not set" if val is None else self.names_array[val]
+        #print("Parsing Array:", ary)
+        val_at_zero = ary[0]
+        return None if val_at_zero is None else self.names_array[val_at_zero]
     
     def parse_final(self):
         return self.parse_ary(self.data.final)
